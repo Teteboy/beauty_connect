@@ -1,0 +1,35 @@
+name: beauty_connect
+description: "A beauty services booking app"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.4.4 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  permission_handler: ^11.0.1
+  provider: ^6.1.1
+  go_router: ^12.1.3
+  http: ^1.1.2
+  shared_preferences: ^2.2.2
+  cached_network_image: ^3.3.0
+  image_picker: ^1.0.4
+  url_launcher: ^6.2.1
+  intl: ^0.20.2
+  file_picker: ^10.2.0
+  table_calendar: ^3.2.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+  # Remove asset directories until they contain files
+  # assets:
+  #   - assets/images/
+  #   - assets/icons/
