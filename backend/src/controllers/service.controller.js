@@ -1,5 +1,41 @@
-const { Service, User, ServiceImage } = require('../models');
+const { Service, User, ServiceImage, Review, sequelize } = require('../models');
 const { Op } = require('sequelize');
+
+// Attache la note moyenne et le nombre d'avis à chaque technicien
+// des services retournés.
+async function attachTechnicianRatings(services) {
+  const techIds = [...new Set(services.map(s => s.technicianId))];
+  if (techIds.length === 0) return services;
+
+  const aggregates = await Review.findAll({
+    where: { technicianId: { [Op.in]: techIds } },
+    attributes: [
+      'technicianId',
+      [sequelize.fn('AVG', sequelize.col('rating')), 'ratingAvg'],
+      [sequelize.fn('COUNT', sequelize.col('id')), 'reviewsCount'],
+    ],
+    group: ['technicianId'],
+    raw: true,
+  });
+
+  const ratings = {};
+  for (const agg of aggregates) {
+    ratings[agg.technicianId] = {
+      ratingAvg: parseFloat(agg.ratingAvg),
+      reviewsCount: parseInt(agg.reviewsCount, 10),
+    };
+  }
+
+  return services.map(s => {
+    const service = s.get({ plain: true });
+    if (service.technician) {
+      const r = ratings[service.technicianId];
+      service.technician.ratingAvg = r ? r.ratingAvg : null;
+      service.technician.reviewsCount = r ? r.reviewsCount : 0;
+    }
+    return service;
+  });
+}
 
 exports.getAllServices = async (req, res) => {
   try {
@@ -36,8 +72,10 @@ exports.getAllServices = async (req, res) => {
       order: [['createdAt', 'DESC']]
     });
     
+    const enriched = await attachTechnicianRatings(services);
+
     // Return array of services
-    res.status(200).json(services);
+    res.status(200).json(enriched);
   } catch (error) {
     console.error('Get services error:', error);
     res.status(500).json({ message: 'Server error while fetching services' });
@@ -84,8 +122,9 @@ exports.getServicesByTechnician = async (req, res) => {
       ],
       order: [['createdAt', 'DESC']]
     });
-    
-    res.status(200).json(services);
+
+    const enriched = await attachTechnicianRatings(services);
+    res.status(200).json(enriched);
   } catch (error) {
     console.error('Get services by technician error:', error);
     res.status(500).json({ message: 'Server error while fetching services' });

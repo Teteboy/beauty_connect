@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import '../../../core/models/service.dart';
+import '../../../core/providers/favorites_provider.dart';
 import '../../../core/theme/app_colors.dart';
 
 class ServiceCard extends StatelessWidget {
@@ -75,26 +77,52 @@ class ServiceCard extends StatelessWidget {
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                            Text(service.technician?.fullName ?? service.name,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleMedium
-                                    ?.copyWith(
-                                        color: AppColors.primary,
-                                        fontWeight: FontWeight.w700)),
+                            Row(children: [
+                              Expanded(
+                                  child: Text(
+                                      service.technician?.fullName ??
+                                          service.name,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium
+                                          ?.copyWith(
+                                              color: AppColors.primary,
+                                              fontWeight: FontWeight.w700))),
+                              Consumer<FavoritesProvider>(
+                                  builder: (context, favorites, _) {
+                                return GestureDetector(
+                                    onTap: () =>
+                                        favorites.toggle(service.technicianId),
+                                    child: Icon(LucideIcons.heart,
+                                        size: 18,
+                                        color: AppColors.accent));
+                              }),
+                            ]),
                             const SizedBox(height: 4),
                             Text(
                                 '${category(service.category)} · ${service.name}',
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: Theme.of(context).textTheme.bodySmall),
-                            if (service.technician?.location != null)
-                              Text(service.technician!.location!,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: Theme.of(context).textTheme.bodySmall),
+                            const SizedBox(height: 3),
+                            Row(children: [
+                              const Icon(LucideIcons.star,
+                                  size: 12, color: AppColors.amber),
+                              const SizedBox(width: 3),
+                              Expanded(
+                                  child: Text(
+                                      service.technician?.ratingAvg != null
+                                          ? '${service.technician!.ratingAvg!.toStringAsFixed(1).replaceAll('.', ',')} (${service.technician!.reviewsCount} avis)${service.technician?.location == null ? '' : ' · ${service.technician!.location}'}'
+                                          : (service.technician?.location ??
+                                              'Nouveau'),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall)),
+                            ]),
                             const SizedBox(height: 5),
                             Row(children: [
                               Expanded(

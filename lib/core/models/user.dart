@@ -12,6 +12,8 @@ class User {
   final String? profileImage;
   final String? specialty;
   final bool isVerified;
+  final double? ratingAvg;
+  final int reviewsCount;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -27,6 +29,8 @@ class User {
     this.profileImage,
     this.specialty,
     required this.isVerified,
+    this.ratingAvg,
+    this.reviewsCount = 0,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -45,6 +49,8 @@ class User {
         profileImage: resolveAssetUrl(json['profileImage'] as String?),
         specialty: json['specialty'] as String?,
         isVerified: json['isVerified'] as bool? ?? false,
+        ratingAvg: (json['ratingAvg'] as num?)?.toDouble(),
+        reviewsCount: (json['reviewsCount'] as num?)?.toInt() ?? 0,
         createdAt: json['createdAt'] != null
             ? DateTime.parse(json['createdAt'] as String)
             : DateTime.now(),

@@ -43,9 +43,9 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
           child: ListView(
             children: [
               Container(
-                padding: const EdgeInsets.fromLTRB(16, 24, 16, 20),
+                padding: const EdgeInsets.fromLTRB(16, 24, 16, 44),
                 decoration: const BoxDecoration(
-                  color: AppColors.primaryDark,
+                  color: AppColors.primary,
                   borderRadius:
                       BorderRadius.vertical(bottom: Radius.circular(28)),
                 ),
@@ -64,12 +64,14 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                         const SizedBox(height: 6),
                         Row(children: [
                           const Icon(LucideIcons.mapPin,
-                              size: 16, color: Colors.white),
+                              size: 14, color: Colors.white70),
                           const SizedBox(width: 4),
                           Expanded(
                               child: Text(user?.location ?? 'Douala, Bonapriso',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
-                                      color: Colors.white, fontSize: 12)))
+                                      color: Colors.white70, fontSize: 12)))
                         ]),
                       ])),
                   Stack(children: [
@@ -85,27 +87,44 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                           child: CircleAvatar(
                               radius: 4, backgroundColor: AppColors.accent)),
                   ]),
+                  const SizedBox(width: 4),
                   GestureDetector(
                       onTap: () => context.go('/profile'),
-                      child: CircleAvatar(
-                          backgroundColor: AppColors.navyBackground,
-                          backgroundImage: user?.profileImage != null
-                              ? NetworkImage(user!.profileImage!)
-                              : null,
-                          child: user?.profileImage == null
-                              ? const Icon(LucideIcons.user,
-                                  color: AppColors.primary)
-                              : null)),
+                      child: Container(
+                          decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border:
+                                  Border.all(color: Colors.white, width: 2)),
+                          child: CircleAvatar(
+                              radius: 20,
+                              backgroundColor: AppColors.navyBackground,
+                              backgroundImage: user?.profileImage != null
+                                  ? NetworkImage(user!.profileImage!)
+                                  : null,
+                              child: user?.profileImage == null
+                                  ? const Icon(LucideIcons.user,
+                                      color: AppColors.primary, size: 18)
+                                  : null))),
                 ]),
               ),
-              Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: SearchField(
-                      hintText: 'Rechercher un service ou prestataire',
-                      onSubmitted: (query) => context
-                          .go('/services?search=${Uri.encodeComponent(query)}'),
-                      onFilterTap: () => context.go('/services'))),
-              const CategoriesGrid(),
+              Transform.translate(
+                  offset: const Offset(0, -24),
+                  child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Container(
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: AppColors.cardShadow),
+                          child: SearchField(
+                              hintText:
+                                  'Rechercher un service ou prestataire',
+                              onSubmitted: (query) => context.go(
+                                  '/services?search=${Uri.encodeComponent(query)}'),
+                              onFilterTap: () => context.go('/services'))))),
+              Transform.translate(
+                  offset: const Offset(0, -12),
+                  child: const CategoriesGrid()),
               Padding(
                   padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
                   child: SectionHeader(
