@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/custom_button.dart';
+import '../../../core/utils/navigation.dart';
 
 /// Écran « Abonnement et visibilité » (prestataire).
 ///
@@ -79,7 +80,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
 
   void _goBack() {
     if (context.canPop()) {
-      context.pop();
+      safePop(context, fallback: '/profile');
     } else {
       context.go('/profile');
     }

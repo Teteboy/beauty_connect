@@ -9,6 +9,7 @@ import '../../../core/providers/analytics_provider.dart';
 import '../../../core/providers/booking_provider.dart';
 import '../../../core/providers/review_provider.dart';
 import '../../../core/widgets/status_badge.dart';
+import '../../../core/utils/navigation.dart';
 
 class AnalyticsScreen extends StatefulWidget {
   const AnalyticsScreen({super.key});
@@ -70,7 +71,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
           title: const Text('Gains et statistiques'),
           leading: IconButton(
               onPressed: () =>
-                  context.canPop() ? context.pop() : context.go('/profile'),
+                  context.canPop() ? safePop(context, fallback: '/profile') : context.go('/profile'),
               icon: const Icon(LucideIcons.arrowLeft)),
           actions: [
             PopupMenuButton<String>(

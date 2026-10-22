@@ -10,6 +10,7 @@ import '../../../core/models/service.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/custom_text_field.dart';
 import '../../../core/widgets/custom_dropdown.dart';
+import '../../../core/utils/navigation.dart';
 
 class EditServiceScreen extends StatefulWidget {
   final String serviceId;
@@ -61,7 +62,7 @@ class _EditServiceScreenState extends State<EditServiceScreen> {
 
   void _back() {
     if (context.canPop()) {
-      context.pop();
+      safePop(context, fallback: '/my-services');
     } else {
       context.go('/my-services');
     }

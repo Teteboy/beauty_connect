@@ -13,6 +13,7 @@ import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/status_badge.dart';
 import '../../services/widgets/service_card.dart';
 import '../widgets/reschedule_sheet.dart';
+import '../../../core/utils/navigation.dart';
 
 class BookingDetailScreen extends StatefulWidget {
   final String bookingId;
@@ -67,7 +68,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
 
   void _navigateBack() {
     if (Navigator.of(context).canPop()) {
-      context.pop();
+      safePop(context, fallback: context.read<AuthProvider>().user?.isTechnician == true ? '/technician-bookings' : '/my-bookings');
     } else {
       context.go(context.read<AuthProvider>().user?.role == 'technician'
           ? '/technician-bookings'

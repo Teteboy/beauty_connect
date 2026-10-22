@@ -130,9 +130,14 @@ class _TechnicianBookingsScreenState extends State<TechnicianBookingsScreen> {
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
-              child: _TabSelector(
-                selectedIndex: _selectedTab,
-                onSelected: (index) => setState(() => _selectedTab = index),
+              child: Consumer<BookingProvider>(
+                builder: (context, provider, _) => _TabSelector(
+                  selectedIndex: _selectedTab,
+                  pendingCount: provider.technicianBookings
+                      .where((b) => b.status == 'pending')
+                      .length,
+                  onSelected: (index) => setState(() => _selectedTab = index),
+                ),
               ),
             ),
             if (_selectedTab == 1) _buildAgenda(),
@@ -176,13 +181,16 @@ class _TabSelector extends StatelessWidget {
   const _TabSelector({
     required this.selectedIndex,
     required this.onSelected,
+    this.pendingCount = 0,
   });
 
   final int selectedIndex;
   final ValueChanged<int> onSelected;
+  final int pendingCount;
 
   @override
   Widget build(BuildContext context) {
+    const tabs = ['Nouvelles', 'Planifiées', 'Historique'];
     return Container(
       height: 45,
       padding: const EdgeInsets.all(4),
@@ -192,9 +200,12 @@ class _TabSelector extends StatelessWidget {
       ),
       child: Row(
         children: List.generate(
-          _TechnicianBookingsScreenState._tabs.length,
+          tabs.length,
           (index) {
             final selected = selectedIndex == index;
+            final label = index == 0 && pendingCount > 0
+                ? 'Nouvelles ($pendingCount)'
+                : tabs[index];
             return Expanded(
               child: GestureDetector(
                 onTap: () => onSelected(index),
@@ -215,7 +226,9 @@ class _TabSelector extends StatelessWidget {
                         : null,
                   ),
                   child: Text(
-                    _TechnicianBookingsScreenState._tabs[index],
+                    label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: selected ? Colors.white : AppColors.primary,
                           fontSize: 11,
@@ -244,6 +257,25 @@ class _BookingsList extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
       children: [
+        if (tabName == 'Nouvelles demandes' && bookings.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 14),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('À vous de jouer',
+                    style: Theme.of(context)
+                        .textTheme
+                        .headlineSmall
+                        ?.copyWith(color: AppColors.primary)),
+                Text('${bookings.length} demande${bookings.length > 1 ? 's' : ''}',
+                    style: const TextStyle(
+                        color: AppColors.accent,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 12)),
+              ],
+            ),
+          ),
         if (bookings.isEmpty)
           _EmptyState(message: 'Aucune réservation dans cette rubrique')
         else
@@ -337,7 +369,17 @@ class _TechnicianBookingCard extends StatelessWidget {
                         StatusBadge(status: booking.status),
                       ],
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 2),
+                    Text(
+                      _receivedAgo(booking),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.textLight,
+                            fontSize: 11,
+                          ),
+                    ),
+                    const SizedBox(height: 8),
                     Text(
                       booking.serviceName,
                       maxLines: 1,
@@ -383,6 +425,20 @@ class _TechnicianBookingCard extends StatelessWidget {
               ),
             ],
           ),
+          if (booking.notes?.isNotEmpty == true)
+            Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  '« ${booking.notes} »',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.textMedium,
+                        fontStyle: FontStyle.italic,
+                      ),
+                ),
+              ),
+            ),
           const SizedBox(height: 16),
           const Divider(height: 1),
           const SizedBox(height: 12),
@@ -428,6 +484,17 @@ class _TechnicianBookingCard extends StatelessWidget {
     }
   }
 
+  String _receivedAgo(Booking booking) {
+    final diff = DateTime.now().difference(booking.createdAt);
+    if (diff.inMinutes < 60) {
+      return 'Demande reçue il y a ${diff.inMinutes.clamp(1, 59)} min';
+    }
+    if (diff.inHours < 24) {
+      return 'Demande reçue il y a ${diff.inHours} h';
+    }
+    return 'Demande reçue il y a ${diff.inDays} j';
+  }
+
   Widget _imagePlaceholder() => Container(
         color: AppColors.chipBackground,
         child: const Icon(LucideIcons.flower, color: AppColors.primaryLight),
@@ -454,13 +521,15 @@ class _ActionButton extends StatelessWidget {
           color: outlined ? AppColors.error : Colors.white,
         );
     return SizedBox(
-      height: 42,
+      height: 44,
       child: outlined
           ? OutlinedButton(
               onPressed: onPressed,
               style: OutlinedButton.styleFrom(
                 padding: EdgeInsets.zero,
                 side: const BorderSide(color: AppColors.error),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(22)),
               ),
               child: Text(label, style: style),
             )
@@ -469,6 +538,8 @@ class _ActionButton extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 padding: EdgeInsets.zero,
                 backgroundColor: backgroundColor ?? AppColors.primary,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(22)),
               ),
               child: Text(label, style: style),
             ),

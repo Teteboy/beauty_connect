@@ -27,6 +27,12 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  void _socialUnavailable(String provider) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Connexion $provider bientôt disponible.'),
+        behavior: SnackBarBehavior.floating));
+  }
+
   Future<void> _login() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     final authProvider = context.read<AuthProvider>();
@@ -155,7 +161,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       icon: Icons.g_mobiledata,
                       isOutlined: true,
                       height: 50,
-                      onPressed: () {})),
+                      onPressed: () => _socialUnavailable('Google'))),
               const SizedBox(width: 12),
               Expanded(
                   child: CustomButton(
@@ -163,7 +169,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       icon: LucideIcons.apple,
                       isOutlined: true,
                       height: 50,
-                      onPressed: () {})),
+                      onPressed: () => _socialUnavailable('Apple'))),
             ]),
             const SizedBox(height: 32),
             const Text('Pas encore de compte ?', textAlign: TextAlign.center),

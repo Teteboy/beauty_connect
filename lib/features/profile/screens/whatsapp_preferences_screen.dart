@@ -6,6 +6,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/storage_helper.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/custom_text_field.dart';
+import '../../../core/utils/navigation.dart';
 
 /// Écran « Notifications WhatsApp » (mon compte).
 ///
@@ -88,7 +89,7 @@ class _WhatsappPreferencesScreenState extends State<WhatsappPreferencesScreen> {
 
   void _goBack() {
     if (context.canPop()) {
-      context.pop();
+      safePop(context, fallback: '/profile');
     } else {
       context.go('/profile');
     }

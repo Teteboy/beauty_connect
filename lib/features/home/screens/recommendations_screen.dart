@@ -128,7 +128,7 @@ class _RecommendationsScreenState extends State<RecommendationsScreen> {
               ),
             const SizedBox(height: 8),
             InkWell(
-              onTap: () {},
+              onTap: () => context.go('/profile'),
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 child: Row(

@@ -135,6 +135,14 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
                                                         fontWeight:
                                                             FontWeight.w600))),
                                           ])),
+                                      IconButton(
+                                          tooltip: 'Modifier le profil',
+                                          onPressed: () =>
+                                              context.go('/edit-profile'),
+                                          icon: const Icon(
+                                              LucideIcons.pencil,
+                                              color: Colors.white,
+                                              size: 18)),
                                     ])),
                                 const SizedBox(height: 16),
                                 Row(children: [
@@ -154,15 +162,55 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
                                   Expanded(child: _stat('—', 'Taux de réponse'))
                                 ]),
                                 const SizedBox(height: 20),
-                                _link(LucideIcons.scissors, 'Mes Services',
-                                    '/my-services'),
-                                _link(LucideIcons.calendarDays,
-                                    'Mes Réservations', '/technician-bookings'),
-                                _link(LucideIcons.messageCircle, 'Mes Messages',
-                                    '/messages'),
-                                _link(LucideIcons.wallet,
-                                    'Gains', '/analytics'),
-                                const SizedBox(height: 16),
+                                Row(children: [
+                                  Expanded(
+                                      child: _quickAction(LucideIcons.scissors,
+                                          'Services', '/my-services')),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                      child: _quickAction(
+                                          LucideIcons.calendarDays,
+                                          'Réservations',
+                                          '/technician-bookings')),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                      child: _quickAction(
+                                          LucideIcons.messageCircle,
+                                          'Messages',
+                                          '/messages')),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                      child: _quickAction(LucideIcons.wallet,
+                                          'Gains', '/earnings')),
+                                ]),
+                                const SizedBox(height: 24),
+                                SectionHeader(
+                                    title: 'Accès opérationnels',
+                                    actionLabel: null,
+                                    onActionTap: null),
+                                const SizedBox(height: 12),
+                                Row(children: [
+                                  Expanded(
+                                      child: _opTile(LucideIcons.calendarClock,
+                                          'Disponibilités', '/availability')),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                      child: _opTile(LucideIcons.badgeCheck,
+                                          'Vérification', '/verification')),
+                                ]),
+                                const SizedBox(height: 12),
+                                Row(children: [
+                                  Expanded(
+                                      child: _opTile(LucideIcons.creditCard,
+                                          'Abonnement', '/subscription')),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                      child: _opTile(
+                                          LucideIcons.messageSquare,
+                                          'Préférences WhatsApp',
+                                          '/whatsapp-preferences')),
+                                ]),
+                                const SizedBox(height: 24),
                                 SectionHeader(
                                     title: 'Prochain rendez-vous',
                                     actionLabel: 'Tout voir',
@@ -229,22 +277,47 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
         Text(label,
             style: const TextStyle(color: AppColors.textMedium, fontSize: 12)),
       ]));
-  Widget _link(IconData icon, String title, String route) => Padding(
-      padding: const EdgeInsets.only(bottom: 10),
+  Widget _quickAction(IconData icon, String label, String route) =>
+      GestureDetector(
+          onTap: () => context.go(route),
+          child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              decoration: BoxDecoration(
+                  color: AppColors.orangePale,
+                  borderRadius: BorderRadius.circular(14)),
+              child: Column(children: [
+                Icon(icon, color: AppColors.accent, size: 22),
+                const SizedBox(height: 6),
+                Text(label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                        color: AppColors.accent,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700)),
+              ])));
+
+  Widget _opTile(IconData icon, String label, String route) => GestureDetector(
+      onTap: () => context.go(route),
       child: Container(
+          padding: const EdgeInsets.all(14),
           decoration: _cardDecoration,
-          child: ListTile(
-              onTap: () => context.go(route),
-              leading: Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                      color: AppColors.orangePale,
-                      borderRadius: BorderRadius.circular(12)),
-                  child: Icon(icon, color: AppColors.accent)),
-              title: Text(title,
-                  style: const TextStyle(
-                      color: AppColors.primaryDark,
-                      fontWeight: FontWeight.w600)),
-              trailing:
-                  const Icon(LucideIcons.chevronRight, color: AppColors.primary))));
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                        color: AppColors.navyBackground,
+                        borderRadius: BorderRadius.circular(10)),
+                    child: Icon(icon, color: AppColors.primary, size: 20)),
+                const SizedBox(height: 10),
+                Text(label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                        color: AppColors.primaryDark,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 13)),
+              ])));
 }

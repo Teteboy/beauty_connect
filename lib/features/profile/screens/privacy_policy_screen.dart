@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../core/providers/notification_provider.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/navigation.dart';
 
 class PrivacyPolicyScreen extends StatefulWidget {
   const PrivacyPolicyScreen({super.key});
@@ -35,7 +36,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
                 children: [
                   IconButton(
                     onPressed: () => context.canPop()
-                        ? context.pop()
+                        ? safePop(context, fallback: '/profile')
                         : context.go('/profile'),
                     icon:
                         const Icon(LucideIcons.arrowLeft, color: AppColors.textDark),

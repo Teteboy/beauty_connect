@@ -12,6 +12,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/section_header.dart';
 import '../widgets/service_card.dart';
+import '../../../core/utils/navigation.dart';
 
 class ServiceCatalogueScreen extends StatefulWidget {
   final String serviceId;
@@ -107,7 +108,7 @@ class _ServiceCatalogueScreenState extends State<ServiceCatalogueScreen> {
       return Scaffold(
         appBar: AppBar(
             leading: IconButton(
-                onPressed: () => context.pop(),
+                onPressed: () => safePop(context, fallback: '/services'),
                 icon: const Icon(LucideIcons.arrowLeft))),
         body: Center(
           child: Padding(
@@ -151,7 +152,7 @@ class _ServiceCatalogueScreenState extends State<ServiceCatalogueScreen> {
         elevation: 0,
         scrolledUnderElevation: 0,
         leading: IconButton(
-          onPressed: () => context.pop(),
+          onPressed: () => safePop(context, fallback: '/services'),
           icon: const Icon(LucideIcons.arrowLeft, color: AppColors.textDark),
         ),
         title: Text(
@@ -163,8 +164,10 @@ class _ServiceCatalogueScreenState extends State<ServiceCatalogueScreen> {
         ),
         actions: [
           IconButton(
-            onPressed: () {},
-            icon: const Icon(LucideIcons.share2, color: AppColors.textDark),
+            tooltip: 'Contacter',
+            onPressed: () => context.go('/chat/${tech.id}'),
+            icon: const Icon(LucideIcons.messageCircle,
+                color: AppColors.textDark),
           ),
         ],
       ),
@@ -356,8 +359,6 @@ class _ServiceCatalogueScreenState extends State<ServiceCatalogueScreen> {
                 const SizedBox(height: 20),
                 SectionHeader(
                   title: 'Mon portfolio',
-                  actionLabel: 'Tout voir',
-                  onActionTap: () {},
                 ),
                 const SizedBox(height: 16),
                 SizedBox(

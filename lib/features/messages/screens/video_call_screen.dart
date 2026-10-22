@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../core/theme/app_colors.dart';
@@ -159,8 +160,8 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
               const ConceptEyebrow(),
               const Spacer(),
               IconButton(
-                onPressed: () {},
-                icon: const Icon(LucideIcons.ellipsis, color: Colors.white),
+                onPressed: () => context.pop(),
+                icon: const Icon(LucideIcons.x, color: Colors.white),
               ),
             ],
           ),

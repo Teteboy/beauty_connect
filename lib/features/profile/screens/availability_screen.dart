@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/storage_helper.dart';
 import '../../../core/widgets/custom_button.dart';
+import '../../../core/utils/navigation.dart';
 
 /// Écran « Mes disponibilités » (prestataire).
 ///
@@ -135,7 +136,7 @@ class _AvailabilityScreenState extends State<AvailabilityScreen> {
 
   void _goBack() {
     if (context.canPop()) {
-      context.pop();
+      safePop(context, fallback: '/profile');
     } else {
       context.go('/profile');
     }

@@ -9,6 +9,7 @@ import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/custom_text_field.dart';
 import '../../../core/widgets/custom_dropdown.dart';
 import '../../../core/providers/service_provider.dart';
+import '../../../core/utils/navigation.dart';
 
 class AddServiceScreen extends StatefulWidget {
   const AddServiceScreen({super.key});
@@ -107,7 +108,7 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
     setState(() => _isLoading = false);
     if (success) {
       _message('Service ajouté avec succès');
-      context.pop();
+      safePop(context, fallback: '/my-services');
     } else {
       _message('Impossible de créer le service. Réessayez.', error: true);
     }
@@ -130,7 +131,7 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
             title: const Text('Nouveau service'),
             leading: IconButton(
                 icon: const Icon(LucideIcons.arrowLeft),
-                onPressed: () => context.pop())),
+                onPressed: () => safePop(context, fallback: '/my-services'))),
         bottomNavigationBar: SafeArea(
             child: Padding(
                 padding: const EdgeInsets.all(16),

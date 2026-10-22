@@ -11,6 +11,7 @@ import '../../../core/services/api_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/storage_helper.dart';
 import '../../../core/widgets/custom_button.dart';
+import '../../../core/utils/navigation.dart';
 
 /// Écran « Vérifier mon profil » (prestataire).
 ///
@@ -99,7 +100,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
 
   void _goBack() {
     if (context.canPop()) {
-      context.pop();
+      safePop(context, fallback: '/profile');
     } else {
       context.go('/profile');
     }

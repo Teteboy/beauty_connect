@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../../../core/models/notification.dart';
 import '../../../core/providers/notification_provider.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/navigation.dart';
 
 class NotificationSettingsScreen extends StatefulWidget {
   const NotificationSettingsScreen({super.key});
@@ -27,7 +28,7 @@ class _NotificationSettingsScreenState
 
   void _goBack() {
     if (context.canPop()) {
-      context.pop();
+      safePop(context, fallback: '/profile');
     } else {
       context.go('/profile');
     }

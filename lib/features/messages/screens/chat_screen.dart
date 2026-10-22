@@ -7,7 +7,9 @@ import 'package:provider/provider.dart';
 import '../../../core/models/message.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/providers/message_provider.dart';
+import '../../../core/services/api_service.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/asset_url.dart';
 
 class ChatScreen extends StatefulWidget {
   final String userId;
@@ -50,7 +52,7 @@ class _ChatScreenState extends State<ChatScreen> {
     context.read<MessageProvider>().fetchMessages(widget.userId);
   }
 
-  void _findOtherUserInfo() {
+  void _findOtherUserInfo() async {
     final conversations = context.read<MessageProvider>().conversations;
     try {
       final conversation = conversations.firstWhere(
@@ -62,10 +64,26 @@ class _ChatScreenState extends State<ChatScreen> {
         _otherUserAvatar = conversation.user.profileImage;
         _isOnline = true;
       });
-    } catch (e) {
-      setState(() {
-        _otherUserName = 'Utilisateur';
-      });
+      return;
+    } catch (_) {}
+
+    // Nouvelle conversation : récupérer le profil via l'API utilisateurs
+    try {
+      final response = await ApiService.get('/users/${widget.userId}');
+      if (response is Map<String, dynamic>) {
+        final user = response['user'] is Map<String, dynamic>
+            ? response['user'] as Map<String, dynamic>
+            : response;
+        if (!mounted) return;
+        setState(() {
+          _otherUserName =
+              '${user['firstName'] ?? ''} ${user['lastName'] ?? ''}'.trim();
+          _otherUserAvatar = resolveAssetUrl(
+              user['profileImage']?.toString());
+        });
+      }
+    } catch (_) {
+      if (mounted) setState(() => _otherUserName = 'Utilisateur');
     }
   }
 
@@ -187,10 +205,7 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
         actions: [
           IconButton(
-            onPressed: () {},
-            icon: const Icon(LucideIcons.phone, color: AppColors.textDark),
-          ),
-          IconButton(
+            tooltip: 'Consultation vidéo',
             onPressed: () => context.push(
               '/video-call/${widget.userId}',
               extra: _otherUserName,
@@ -274,11 +289,6 @@ class _ChatScreenState extends State<ChatScreen> {
         top: false,
         child: Row(
           children: [
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(LucideIcons.paperclip, color: AppColors.primary),
-            ),
-            const SizedBox(width: 4),
             Expanded(
               child: TextField(
                 controller: _messageController,

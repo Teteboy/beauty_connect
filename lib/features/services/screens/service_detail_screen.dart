@@ -11,6 +11,7 @@ import '../../../core/constants/business_constants.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../widgets/service_card.dart';
+import '../../../core/utils/navigation.dart';
 
 class ServiceDetailScreen extends StatefulWidget {
   final String serviceId;
@@ -124,7 +125,7 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
       appBar: AppBar(
           leading: IconButton(
               onPressed: () =>
-                  context.canPop() ? context.pop() : context.go('/services'),
+                  context.canPop() ? safePop(context, fallback: '/services') : context.go('/services'),
               icon: const Icon(LucideIcons.arrowLeft, color: AppColors.primary)),
           title: const Text('Demande de réservation')),
       body: SingleChildScrollView(
@@ -272,14 +273,31 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                         style: const TextStyle(
                             color: AppColors.primary, fontSize: 11))),
                 const SizedBox(height: 10),
-                Consumer<BookingProvider>(
-                    builder: (context, provider, _) => CustomButton(
-                        text: service.isAvailable
-                            ? 'Confirmer la réservation'
-                            : 'Indisponible',
-                        isLoading: provider.isLoading,
-                        onPressed:
-                            service.isAvailable ? _confirmBooking : null)),
+                Row(children: [
+                  Container(
+                      width: 54,
+                      height: 54,
+                      decoration: BoxDecoration(
+                          color: AppColors.navyBackground,
+                          borderRadius: BorderRadius.circular(16)),
+                      child: IconButton(
+                          tooltip: 'Contacter le prestataire',
+                          onPressed: () =>
+                              context.go('/chat/${service.technicianId}'),
+                          icon: const Icon(LucideIcons.messageCircle,
+                              color: AppColors.primary))),
+                  const SizedBox(width: 12),
+                  Expanded(
+                      child: Consumer<BookingProvider>(
+                          builder: (context, provider, _) => CustomButton(
+                              text: service.isAvailable
+                                  ? 'Confirmer la réservation'
+                                  : 'Indisponible',
+                              isLoading: provider.isLoading,
+                              onPressed: service.isAvailable
+                                  ? _confirmBooking
+                                  : null))),
+                ]),
               ]))),
     );
   }

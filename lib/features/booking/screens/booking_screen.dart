@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import '../../../core/providers/auth_provider.dart';
 import '../../../core/providers/booking_provider.dart';
 import '../../../core/providers/service_provider.dart';
 import '../../../core/models/service.dart';
@@ -10,6 +11,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/constants/business_constants.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../../services/widgets/service_card.dart';
+import '../../../core/utils/navigation.dart';
 
 class BookingScreen extends StatefulWidget {
   final String serviceId;
@@ -86,7 +88,7 @@ class _BookingScreenState extends State<BookingScreen> {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text('Demande de réservation envoyée !'),
           backgroundColor: AppColors.success));
-      context.pop();
+      safePop(context, fallback: context.read<AuthProvider>().user?.isTechnician == true ? '/technician-bookings' : '/my-bookings');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text('Impossible de créer la réservation. Réessayez.'),

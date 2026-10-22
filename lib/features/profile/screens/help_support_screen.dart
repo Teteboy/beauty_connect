@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/search_field.dart';
+import '../../../core/utils/navigation.dart';
 
 class HelpSupportScreen extends StatefulWidget {
   const HelpSupportScreen({super.key});
@@ -73,7 +74,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                 children: [
                   IconButton(
                     onPressed: () => context.canPop()
-                        ? context.pop()
+                        ? safePop(context, fallback: '/profile')
                         : context.go('/profile'),
                     icon:
                         const Icon(LucideIcons.arrowLeft, color: AppColors.textDark),

@@ -5,7 +5,9 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/providers/auth_provider.dart';
+import '../../../core/providers/service_provider.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/widgets/custom_button.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -144,6 +146,8 @@ class ProfileScreen extends StatelessWidget {
                             ],
                           ),
                         ),
+                        if (user.isTechnician)
+                          _TechnicianExtras(user: user),
                         const SizedBox(height: 24),
 
                         // Menu list
@@ -239,6 +243,144 @@ class ProfileScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+class _TechnicianExtras extends StatefulWidget {
+  final dynamic user;
+  const _TechnicianExtras({required this.user});
+
+  @override
+  State<_TechnicianExtras> createState() => _TechnicianExtrasState();
+}
+
+class _TechnicianExtrasState extends State<_TechnicianExtras> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback(
+        (_) => context.read<ServiceProvider>().loadMyServices());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final user = widget.user;
+    final services = context.watch<ServiceProvider>().myServices;
+    final images = services
+        .expand((s) => [
+              if (s.imageUrl?.isNotEmpty == true) s.imageUrl!,
+              ...s.images.map((i) => i.imageUrl).where((u) => u.isNotEmpty),
+            ])
+        .toSet()
+        .toList();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 14),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            _pill(user.specialty ?? 'Beauté'),
+            if (user.location != null && user.location!.isNotEmpty)
+              _pill(user.location!),
+          ],
+        ),
+        if (user.bio != null && user.bio!.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          Text(user.bio!,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(color: AppColors.textMedium, height: 1.5)),
+        ],
+        const SizedBox(height: 14),
+        Row(children: [
+          Expanded(
+              child: CustomButton(
+                  text: 'Modifier mon profil',
+                  height: 48,
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  onPressed: () => context.go('/edit-profile'))),
+          const SizedBox(width: 12),
+          Expanded(
+              child: CustomButton(
+                  text: 'Aperçu public',
+                  isOutlined: true,
+                  height: 48,
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  onPressed: () =>
+                      context.go('/service-catalogue/${user.id}'))),
+        ]),
+        const SizedBox(height: 20),
+        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          Text('Mon portfolio',
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge
+                  ?.copyWith(color: AppColors.primary)),
+          GestureDetector(
+              onTap: () => context.go('/my-services'),
+              child: const Text('Gérer',
+                  style: TextStyle(
+                      color: AppColors.accent, fontWeight: FontWeight.w700))),
+        ]),
+        const SizedBox(height: 12),
+        SizedBox(
+          height: 110,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: images.length + 1,
+            separatorBuilder: (_, __) => const SizedBox(width: 10),
+            itemBuilder: (context, index) {
+              if (index == images.length) {
+                return GestureDetector(
+                  onTap: () => context.go('/my-services'),
+                  child: Container(
+                    width: 110,
+                    decoration: BoxDecoration(
+                        color: AppColors.navyBackground,
+                        borderRadius: BorderRadius.circular(16)),
+                    child: const Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(LucideIcons.plus, color: AppColors.primary),
+                          SizedBox(height: 4),
+                          Text('Ajouter',
+                              style: TextStyle(
+                                  color: AppColors.primary, fontSize: 11)),
+                        ]),
+                  ),
+                );
+              }
+              return ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: CachedNetworkImage(
+                  imageUrl: images[index],
+                  width: 110,
+                  height: 110,
+                  fit: BoxFit.cover,
+                  errorWidget: (_, __, ___) => Container(
+                      width: 110, color: AppColors.navyBackground),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _pill(String label) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+        decoration: BoxDecoration(
+            color: AppColors.navyBackground,
+            borderRadius: BorderRadius.circular(20)),
+        child: Text(label,
+            style: const TextStyle(
+                color: AppColors.primary,
+                fontSize: 12,
+                fontWeight: FontWeight.w700)),
+      );
 }
 
 class _ProfileAvatar extends StatelessWidget {

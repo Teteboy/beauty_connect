@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_logo.dart';
+import '../../../core/utils/navigation.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
@@ -28,7 +29,7 @@ class AboutScreen extends StatelessWidget {
         title: const Text('À propos'),
         leading: IconButton(
           onPressed: () =>
-              context.canPop() ? context.pop() : context.go('/profile'),
+              context.canPop() ? safePop(context, fallback: '/profile') : context.go('/profile'),
           icon: const Icon(LucideIcons.arrowLeft),
         ),
       ),

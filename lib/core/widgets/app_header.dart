@@ -142,7 +142,7 @@ class _UserAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     final imageUrl = user.profileImage;
     return GestureDetector(
-      onTap: () {},
+      onTap: () => context.go('/profile'),
       child: CircleAvatar(
         radius: 20,
         backgroundColor: AppColors.primary.withOpacity(0.1),

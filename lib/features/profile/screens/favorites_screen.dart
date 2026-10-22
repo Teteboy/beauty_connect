@@ -10,6 +10,7 @@ import '../../../core/providers/service_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../../services/widgets/service_card.dart';
+import '../../../core/utils/navigation.dart';
 
 /// Écran « Mes favoris » (client) — liste des prestataires enregistrés.
 ///
@@ -36,7 +37,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
 
   void _goBack() {
     if (context.canPop()) {
-      context.pop();
+      safePop(context, fallback: '/profile');
     } else {
       context.go('/profile');
     }
