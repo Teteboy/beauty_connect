@@ -12,6 +12,7 @@ import '../../../core/models/service.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/status_badge.dart';
 import '../../services/widgets/service_card.dart';
+import '../widgets/reschedule_sheet.dart';
 
 class BookingDetailScreen extends StatefulWidget {
   final String bookingId;
@@ -282,6 +283,11 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                               onPressed: () =>
                                   _updateBookingStatus('completed')),
                         if (!isTechnician && active) ...[
+                          CustomButton(
+                              text: 'Reprogrammer',
+                              onPressed: () =>
+                                  RescheduleSheet.show(context, booking)),
+                          const SizedBox(height: 8),
                           CustomButton(
                               text: 'Payer l\'acompte · Concept',
                               isOutlined: true,

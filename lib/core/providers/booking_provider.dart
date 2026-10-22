@@ -129,13 +129,16 @@ class BookingProvider with ChangeNotifier {
         'notes': notes,
       });
 
-      if (response['success']) {
-        final newBooking = Booking.fromJson(response['data']);
+      // Backend returns {message, booking}
+      if (response is Map<String, dynamic> &&
+          response['booking'] is Map<String, dynamic>) {
+        final newBooking = Booking.fromJson(response['booking']);
         _customerBookings.add(newBooking);
         _bookings = _customerBookings;
         return true;
       } else {
-        _error = response['message'] ?? 'Failed to create booking';
+        _error = response is Map ? response['message'] : null ??
+            'Failed to create booking';
         return false;
       }
     } catch (e) {
@@ -197,6 +200,43 @@ class BookingProvider with ChangeNotifier {
       return false;
     } catch (e) {
       _error = 'Failed to update booking status: $e';
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> rescheduleBooking(
+      String bookingId, DateTime dateTime) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final response = await ApiService.put('/bookings/$bookingId', {
+        'dateTime': dateTime.toIso8601String(),
+      });
+
+      if (response is Map<String, dynamic> &&
+          (response['booking'] is Map<String, dynamic> ||
+              response.containsKey('message'))) {
+        final bookingData = response['booking'] ?? response;
+        final updatedBooking = Booking.fromJson(bookingData);
+        for (final list in [_customerBookings, _technicianBookings, _bookings]) {
+          final i = list.indexWhere((b) => b.id == bookingId);
+          if (i != -1) list[i] = updatedBooking;
+        }
+        _isLoading = false;
+        notifyListeners();
+        return true;
+      }
+
+      _error = 'Failed to reschedule booking';
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    } catch (e) {
+      _error = 'Failed to reschedule booking: $e';
       _isLoading = false;
       notifyListeners();
       return false;

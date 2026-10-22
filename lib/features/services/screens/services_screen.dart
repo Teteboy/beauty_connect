@@ -230,21 +230,11 @@ class _ServicesScreenState extends State<ServicesScreen> {
                       itemCount: services.length,
                       itemBuilder: (context, index) {
                         final service = services[index];
-                        return Column(
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              ServiceCard(service: service),
-                              Padding(
-                                  padding: const EdgeInsets.only(bottom: 16),
-                                  child: CustomButton(
-                                      text: 'Voir profil',
-                                      isOutlined: true,
-                                      width: 130,
-                                      height: 38,
-                                      padding: EdgeInsets.zero,
-                                      onPressed: () => context.go(
-                                          '/service-catalogue/${service.technicianId}')))
-                            ]);
+                        return ServiceCard(
+                            service: service,
+                            actionLabel: 'Voir profil',
+                            onAction: () => context.go(
+                                '/service-catalogue/${service.technicianId}'));
                       }));
         })),
       ])));

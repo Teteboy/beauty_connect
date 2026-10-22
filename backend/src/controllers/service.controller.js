@@ -75,6 +75,13 @@ exports.getServicesByTechnician = async (req, res) => {
     
     const services = await Service.findAll({
       where: { technicianId },
+      include: [
+        {
+          model: User,
+          as: 'technician',
+          attributes: ['id', 'firstName', 'lastName', 'email', 'phone', 'location', 'bio', 'specialty', 'profileImage', 'isVerified']
+        }
+      ],
       order: [['createdAt', 'DESC']]
     });
     

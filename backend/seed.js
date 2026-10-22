@@ -4,7 +4,7 @@
  */
 require('dotenv').config();
 const db = require('./src/models');
-const { User, Service, Booking, Review, Notification } = db;
+const { User, Service, Booking, Review, Notification, Message } = db;
 
 const P = 'password123';
 
@@ -129,6 +129,21 @@ async function main() {
       defaults: { message, type, isRead: false },
     });
     if (created) console.log(`notif ${title} → user ${userId}`);
+  }
+
+  const messages = [
+    [custIds['lea@beautyconnect.cm'], techIds['amina@beautyconnect.cm'], 'Bonjour Amina, je confirme mon rendez-vous de samedi à 10h.'],
+    [techIds['amina@beautyconnect.cm'], custIds['lea@beautyconnect.cm'], 'Bonjour Léa ! C\'est noté, à samedi 10h. N\'oubliez pas vos mèches.'],
+    [custIds['marc@beautyconnect.cm'], techIds['joel@beautyconnect.cm'], 'Salut Joël, possible d\'avancer ma coupe à 9h30 ?'],
+    [techIds['joel@beautyconnect.cm'], custIds['marc@beautyconnect.cm'], 'Oui Marc, 9h30 ça marche. À demain !'],
+    [custIds['elodie@beautyconnect.cm'], techIds['nadia@beautyconnect.cm'], 'Bonjour, avez-vous encore des disponibilités cette semaine ?'],
+  ];
+  for (const [senderId, receiverId, content] of messages) {
+    const exists = await Message.findOne({ where: { senderId, receiverId, content } });
+    if (!exists) {
+      await Message.create({ senderId, receiverId, content });
+      console.log(`msg ${senderId}→${receiverId}`);
+    }
   }
 
   const counts = await Promise.all([

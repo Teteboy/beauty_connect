@@ -7,6 +7,7 @@ import '../../../core/providers/booking_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../widgets/booking_card.dart';
+import '../widgets/reschedule_sheet.dart';
 
 class BookingsScreen extends StatefulWidget {
   const BookingsScreen({super.key});
@@ -156,11 +157,8 @@ class _BookingsScreenState extends State<BookingsScreen> {
                                       text: 'Reprogrammer',
                                       isOutlined: true,
                                       height: 42,
-                                      onPressed: () => ScaffoldMessenger.of(
-                                              context)
-                                          .showSnackBar(const SnackBar(
-                                              content: Text(
-                                                  'La reprogrammation sera bientôt disponible.')))))
+                                      onPressed: () => RescheduleSheet.show(
+                                          context, booking)))
                           ])),
                     ]));
           })),

@@ -10,12 +10,16 @@ class ServiceCard extends StatelessWidget {
   final bool showEditOptions;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
+  final String? actionLabel;
+  final VoidCallback? onAction;
   const ServiceCard(
       {super.key,
       required this.service,
       this.showEditOptions = false,
       this.onEdit,
-      this.onDelete});
+      this.onDelete,
+      this.actionLabel,
+      this.onAction});
 
   static String price(num value) =>
       '${NumberFormat('#,##0', 'fr').format(value).replaceAll('\u202f', ' ').replaceAll('\u00a0', ' ')} CFA';
@@ -92,11 +96,36 @@ class ServiceCard extends StatelessWidget {
                                   overflow: TextOverflow.ellipsis,
                                   style: Theme.of(context).textTheme.bodySmall),
                             const SizedBox(height: 5),
-                            Text('À partir de ${price(service.price)}',
-                                style: const TextStyle(
-                                    color: AppColors.primary,
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 13)),
+                            Row(children: [
+                              Expanded(
+                                  child: Text(
+                                      'À partir de ${price(service.price)}',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                          color: AppColors.primary,
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 13))),
+                              if (actionLabel != null) ...[
+                                const SizedBox(width: 8),
+                                GestureDetector(
+                                    onTap: onAction,
+                                    child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 14, vertical: 6),
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                            border: Border.all(
+                                                color: AppColors.primary)),
+                                        child: Text(actionLabel!,
+                                            style: const TextStyle(
+                                                color: AppColors.primary,
+                                                fontSize: 11,
+                                                fontWeight:
+                                                    FontWeight.w700))))
+                              ],
+                            ]),
                             if (!service.isAvailable)
                               const Text('Indisponible',
                                   style: TextStyle(color: AppColors.textLight)),

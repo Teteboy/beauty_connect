@@ -47,29 +47,33 @@ class _MainLayoutState extends State<MainLayout> {
 
     final items = <_NavItem>[
       _NavItem(
-        icon: isCustomer ? LucideIcons.home : LucideIcons.layoutDashboard,
-        activeIcon: isCustomer ? LucideIcons.home : LucideIcons.layoutDashboard,
+        icon: isCustomer
+            ? LucideIcons.home400
+            : LucideIcons.layoutDashboard400,
+        activeIcon: isCustomer
+            ? LucideIcons.home400
+            : LucideIcons.layoutDashboard400,
         label: isCustomer ? 'Accueil' : 'Dashboard',
       ),
       _NavItem(
-        icon: isCustomer ? LucideIcons.search : LucideIcons.scissors,
-        activeIcon: isCustomer ? LucideIcons.search : LucideIcons.scissors,
+        icon: isCustomer ? LucideIcons.search400 : LucideIcons.scissors400,
+        activeIcon: isCustomer ? LucideIcons.search400 : LucideIcons.scissors400,
         label: isCustomer ? 'Recherche' : 'Services',
       ),
       const _NavItem(
-        icon: LucideIcons.calendar,
-        activeIcon: LucideIcons.calendar,
+        icon: LucideIcons.calendar400,
+        activeIcon: LucideIcons.calendar400,
         label: 'Réservations',
       ),
       const _NavItem(
-        icon: LucideIcons.messageCircle,
-        activeIcon: LucideIcons.messageCircle,
+        icon: LucideIcons.messageCircle400,
+        activeIcon: LucideIcons.messageCircle400,
         label: 'Messages',
         isMessages: true,
       ),
       const _NavItem(
-        icon: LucideIcons.user,
-        activeIcon: LucideIcons.user,
+        icon: LucideIcons.user400,
+        activeIcon: LucideIcons.user400,
         label: 'Profil',
       ),
     ];
