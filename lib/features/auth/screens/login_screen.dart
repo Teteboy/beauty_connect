@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/providers/auth_provider.dart';
@@ -59,7 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
               IconButton(
                   tooltip: 'Retour',
                   onPressed: () => context.go('/role-selection'),
-                  icon: const Icon(Icons.arrow_back, color: AppColors.primary)),
+                  icon: const Icon(LucideIcons.arrowLeft, color: AppColors.primary)),
               const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -112,8 +113,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       : 'Masquer le mot de passe',
                   icon: Icon(
                       _obscurePassword
-                          ? Icons.visibility_off_outlined
-                          : Icons.visibility_outlined,
+                          ? LucideIcons.eyeOff
+                          : LucideIcons.eye,
                       size: 20,
                       color: AppColors.textLight),
                   onPressed: () =>
@@ -159,7 +160,7 @@ class _LoginScreenState extends State<LoginScreen> {
               Expanded(
                   child: CustomButton(
                       text: 'Apple',
-                      icon: Icons.apple,
+                      icon: LucideIcons.apple,
                       isOutlined: true,
                       height: 50,
                       onPressed: () {})),

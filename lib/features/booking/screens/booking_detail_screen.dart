@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -98,7 +99,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
         title: const Text('Votre rendez-vous'),
         leading: IconButton(
             onPressed: _navigateBack,
-            icon: const Icon(Icons.arrow_back, color: AppColors.primary)));
+            icon: const Icon(LucideIcons.arrowLeft, color: AppColors.primary)));
     if (_isLoading)
       return Scaffold(
           appBar: appBar,
@@ -110,7 +111,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
               child: Padding(
                   padding: const EdgeInsets.all(24),
                   child: Column(mainAxisSize: MainAxisSize.min, children: [
-                    const Icon(Icons.error_outline,
+                    const Icon(LucideIcons.circleAlert,
                         size: 48, color: AppColors.error),
                     const SizedBox(height: 16),
                     Text(_error ?? 'Réservation introuvable'),
@@ -156,7 +157,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                       ? NetworkImage(image)
                       : null,
                   child: image == null || image.isEmpty
-                      ? const Icon(Icons.person_outline)
+                      ? const Icon(LucideIcons.user)
                       : null),
               const SizedBox(width: 12),
               Expanded(
@@ -321,7 +322,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
                 color: reached ? AppColors.primary : Colors.white,
                 border: Border.all(color: AppColors.primary)),
             child: reached
-                ? const Icon(Icons.check, size: 16, color: Colors.white)
+                ? const Icon(LucideIcons.check, size: 16, color: Colors.white)
                 : null),
         const SizedBox(width: 12),
         Expanded(

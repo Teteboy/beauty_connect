@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_colors.dart';
@@ -173,7 +174,7 @@ class _AvailabilityScreenState extends State<AvailabilityScreen> {
         title: const Text('Espace prestataire / Agenda'),
         leading: IconButton(
           onPressed: _goBack,
-          icon: const Icon(Icons.arrow_back_rounded),
+          icon: const Icon(LucideIcons.arrowLeft),
         ),
       ),
       body: Column(

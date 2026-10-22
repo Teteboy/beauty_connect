@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/theme/app_colors.dart';
@@ -75,7 +76,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                         ? context.pop()
                         : context.go('/profile'),
                     icon:
-                        const Icon(Icons.arrow_back, color: AppColors.textDark),
+                        const Icon(LucideIcons.arrowLeft, color: AppColors.textDark),
                   ),
                   Expanded(
                     child: Column(
@@ -154,7 +155,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.support_agent,
+                    const Icon(LucideIcons.headphones,
                         color: AppColors.accent, size: 22),
                     const SizedBox(width: 10),
                     Expanded(

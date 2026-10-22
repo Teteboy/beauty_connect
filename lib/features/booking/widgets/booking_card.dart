@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:intl/intl.dart';
 import '../../../core/models/booking.dart';
 import '../../../core/theme/app_colors.dart';
@@ -43,7 +44,7 @@ class BookingCard extends StatelessWidget {
                                 ? NetworkImage(image)
                                 : null,
                             child: image == null || image.isEmpty
-                                ? const Icon(Icons.person_outline,
+                                ? const Icon(LucideIcons.user,
                                     color: AppColors.primary)
                                 : null),
                         const SizedBox(width: 12),
@@ -69,7 +70,7 @@ class BookingCard extends StatelessWidget {
                       ]),
                       const SizedBox(height: 16),
                       Row(children: [
-                        const Icon(Icons.calendar_today_outlined,
+                        const Icon(LucideIcons.calendar,
                             size: 16, color: AppColors.primary),
                         const SizedBox(width: 8),
                         Expanded(

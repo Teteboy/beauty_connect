@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/providers/auth_provider.dart';
@@ -54,7 +55,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               IconButton(
                   tooltip: 'Retour',
                   onPressed: () => context.go('/login'),
-                  icon: const Icon(Icons.arrow_back, color: AppColors.primary)),
+                  icon: const Icon(LucideIcons.arrowLeft, color: AppColors.primary)),
               Expanded(
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -84,8 +85,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         shape: BoxShape.circle),
                     child: Icon(
                         _emailSent
-                            ? Icons.mark_email_read_outlined
-                            : Icons.key_outlined,
+                            ? LucideIcons.mailCheck
+                            : LucideIcons.key,
                         color: AppColors.accent,
                         size: 52))),
             const SizedBox(height: 56),
@@ -130,7 +131,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   child: const Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(Icons.check_circle_outline,
+                        Icon(LucideIcons.circleCheck,
                             color: AppColors.primary, size: 20),
                         SizedBox(width: 12),
                         Expanded(
@@ -216,7 +217,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               IconButton(
                   tooltip: 'Retour',
                   onPressed: () => context.go('/login'),
-                  icon: const Icon(Icons.arrow_back, color: AppColors.primary)),
+                  icon: const Icon(LucideIcons.arrowLeft, color: AppColors.primary)),
               const Expanded(
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -241,7 +242,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     decoration: const BoxDecoration(
                         color: AppColors.navyBackground,
                         shape: BoxShape.circle),
-                    child: const Icon(Icons.verified_user_outlined,
+                    child: const Icon(LucideIcons.shieldCheck,
                         color: AppColors.accent, size: 52))),
             const SizedBox(height: 56),
             const Text('Un nouveau départ.',
@@ -274,8 +275,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         setState(() => _obscurePassword = !_obscurePassword),
                     icon: Icon(
                         _obscurePassword
-                            ? Icons.visibility_off_outlined
-                            : Icons.visibility_outlined,
+                            ? LucideIcons.eyeOff
+                            : LucideIcons.eye,
                         size: 20)),
                 validator: (value) => value == null ||
                         value.length < 8 ||
@@ -297,8 +298,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                         setState(() => _obscureConfirm = !_obscureConfirm),
                     icon: Icon(
                         _obscureConfirm
-                            ? Icons.visibility_off_outlined
-                            : Icons.visibility_outlined,
+                            ? LucideIcons.eyeOff
+                            : LucideIcons.eye,
                         size: 20)),
                 validator: (value) => value != _passwordController.text ||
                         (value?.isEmpty ?? true)

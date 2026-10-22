@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 import '../theme/app_colors.dart';
 
@@ -30,7 +31,7 @@ class ConceptBanner extends StatelessWidget {
     this.title = 'Concept • À venir',
     this.message =
         'Aperçu d\'une fonctionnalité future. Aucune opération réelle n\'est effectuée.',
-    this.icon = Icons.info_outline,
+    this.icon = LucideIcons.info,
   });
 
   @override
@@ -101,7 +102,7 @@ class ConceptHeader extends StatelessWidget {
             IconButton(
               onPressed: onBack ??
                   () => context.canPop() ? context.pop() : context.go('/home'),
-              icon: const Icon(Icons.arrow_back, color: AppColors.textDark),
+              icon: const Icon(LucideIcons.arrowLeft, color: AppColors.textDark),
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(),
             ),
@@ -116,7 +117,7 @@ class ConceptHeader extends StatelessWidget {
               ),
             ),
             trailing ??
-                const Icon(Icons.info_outline,
+                const Icon(LucideIcons.info,
                     color: AppColors.textLight, size: 22),
           ],
         ),

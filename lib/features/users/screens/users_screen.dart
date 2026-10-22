@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/providers/auth_provider.dart';
@@ -92,7 +93,7 @@ class _UsersScreenState extends State<UsersScreen> {
                 provider ? 'Trouver des clients' : 'Trouver des prestataires'),
             leading: IconButton(
                 onPressed: () => Navigator.of(context).maybePop(),
-                icon: const Icon(Icons.arrow_back))),
+                icon: const Icon(LucideIcons.arrowLeft))),
         body: Column(children: [
           Padding(
               padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
@@ -108,7 +109,7 @@ class _UsersScreenState extends State<UsersScreen> {
                       ? Center(
                           child:
                               Column(mainAxisSize: MainAxisSize.min, children: [
-                          const Icon(Icons.error_outline,
+                          const Icon(LucideIcons.circleAlert,
                               color: AppColors.error, size: 48),
                           const SizedBox(height: 16),
                           Text(_error!),
@@ -123,7 +124,7 @@ class _UsersScreenState extends State<UsersScreen> {
                                   child: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        const Icon(Icons.people_outline,
+                                        const Icon(LucideIcons.users,
                                             color: AppColors.primary, size: 64),
                                         const SizedBox(height: 16),
                                         Text(
@@ -205,7 +206,7 @@ class _UsersScreenState extends State<UsersScreen> {
                                                     overflow:
                                                         TextOverflow.ellipsis),
                                             ]),
-                                            trailing: const CircleAvatar(backgroundColor: AppColors.orangePale, child: Icon(Icons.chat_bubble_outline, color: AppColors.accent, size: 20))));
+                                            trailing: const CircleAvatar(backgroundColor: AppColors.orangePale, child: Icon(LucideIcons.messageCircle, color: AppColors.accent, size: 20))));
                                   }))),
         ]));
   }

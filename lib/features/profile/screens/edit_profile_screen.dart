@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -84,7 +85,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             const SizedBox(height: 24),
             Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
               _ImagePickerOption(
-                icon: Icons.photo_library_outlined,
+                icon: LucideIcons.image,
                 label: 'Galerie',
                 onTap: () {
                   Navigator.pop(sheetContext);
@@ -92,7 +93,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 },
               ),
               _ImagePickerOption(
-                icon: Icons.camera_alt_outlined,
+                icon: LucideIcons.camera,
                 label: 'Appareil photo',
                 onTap: () {
                   Navigator.pop(sheetContext);
@@ -100,7 +101,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 },
               ),
               _ImagePickerOption(
-                icon: Icons.delete_outline,
+                icon: LucideIcons.trash,
                 label: 'Supprimer',
                 onTap: () {
                   Navigator.pop(sheetContext);
@@ -141,7 +142,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Row(children: [
-        Icon(success ? Icons.check_circle : Icons.error_outline,
+        Icon(success ? LucideIcons.circleCheck : LucideIcons.circleAlert,
             color: AppColors.surface),
         const SizedBox(width: 8),
         Expanded(
@@ -173,7 +174,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       children: [
                         IconButton(
                           onPressed: _goBack,
-                          icon: const Icon(Icons.arrow_back,
+                          icon: const Icon(LucideIcons.arrowLeft,
                               color: AppColors.textDark),
                         ),
                         Expanded(
@@ -248,7 +249,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             controller: _emailController,
                             label: 'Adresse e-mail',
                             enabled: false,
-                            prefixIcon: const Icon(Icons.mail_outline,
+                            prefixIcon: const Icon(LucideIcons.mail,
                                 color: AppColors.textMedium),
                           ),
                           const SizedBox(height: 16),
@@ -257,7 +258,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             label: 'Téléphone',
                             hintText: '+237 6 77 12 34 56',
                             keyboardType: TextInputType.phone,
-                            prefixIcon: const Icon(Icons.phone_outlined,
+                            prefixIcon: const Icon(LucideIcons.phone,
                                 color: AppColors.textMedium),
                           ),
                           const SizedBox(height: 16),
@@ -265,7 +266,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             controller: _locationController,
                             label: 'Localisation',
                             hintText: 'Ex. Douala, Bonapriso',
-                            prefixIcon: const Icon(Icons.location_on_outlined,
+                            prefixIcon: const Icon(LucideIcons.mapPin,
                                 color: AppColors.textMedium),
                           ),
                           if (user.role == 'technician') ...[
@@ -274,7 +275,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               controller: _specialtyController,
                               label: 'Spécialités',
                               hintText: 'Ex. Coiffeuse, Prothésiste ongulaire',
-                              prefixIcon: const Icon(Icons.spa_outlined,
+                              prefixIcon: const Icon(LucideIcons.flower,
                                   color: AppColors.textMedium),
                             ),
                             const SizedBox(height: 16),
@@ -283,7 +284,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               label: 'Bio',
                               hintText: 'Parlez-nous de vous...',
                               maxLines: 4,
-                              prefixIcon: const Icon(Icons.edit_outlined,
+                              prefixIcon: const Icon(LucideIcons.pencil,
                                   color: AppColors.textMedium),
                               validator: (value) => value != null &&
                                       value.length > 500
@@ -302,7 +303,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Icon(Icons.shield_outlined,
+                                const Icon(LucideIcons.shieldCheck,
                                     color: AppColors.primary, size: 20),
                                 const SizedBox(width: 10),
                                 Expanded(
@@ -416,7 +417,7 @@ class _ProfilePhoto extends StatelessWidget {
       ),
       IconButton(
         onPressed: onTap,
-        icon: const Icon(Icons.photo_camera_outlined,
+        icon: const Icon(LucideIcons.camera,
             color: AppColors.accent, size: 26),
       ),
     ]);

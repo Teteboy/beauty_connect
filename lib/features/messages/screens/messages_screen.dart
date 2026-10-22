@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -85,7 +86,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                   ),
                   IconButton(
                     onPressed: () => context.go('/users'),
-                    icon: const Icon(Icons.edit_square,
+                    icon: const Icon(LucideIcons.squarePen,
                         color: AppColors.textDark, size: 22),
                   ),
                 ],
@@ -112,7 +113,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.info_outline,
+                    const Icon(LucideIcons.info,
                         color: AppColors.primary, size: 20),
                     const SizedBox(width: 10),
                     Expanded(
@@ -161,7 +162,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(Icons.error_outline,
+                          const Icon(LucideIcons.circleAlert,
                               size: 64, color: AppColors.error),
                           const SizedBox(height: 16),
                           Text('Échec du chargement des messages',
@@ -184,7 +185,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.chat_bubble_outline,
+                          Icon(LucideIcons.messageCircle,
                               size: 64,
                               color:
                                   AppColors.textLight.withValues(alpha: 0.5)),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../core/models/service.dart';
@@ -149,7 +150,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
             trailing: widget.showMyServices
                 ? IconButton(
                     onPressed: () => context.go('/add-service'),
-                    icon: const Icon(Icons.add))
+                    icon: const Icon(LucideIcons.plus))
                 : null),
         Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -192,7 +193,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
           if (provider.error != null && source.isEmpty)
             return Center(
                 child: Column(mainAxisSize: MainAxisSize.min, children: [
-              const Icon(Icons.error_outline, color: AppColors.error, size: 48),
+              const Icon(LucideIcons.circleAlert, color: AppColors.error, size: 48),
               const SizedBox(height: 16),
               const Text('Impossible de charger les services.'),
               TextButton(
@@ -206,7 +207,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
                       padding: const EdgeInsets.all(32),
                       children: [
                           const SizedBox(height: 80),
-                          const Icon(Icons.search_off,
+                          const Icon(LucideIcons.searchX,
                               size: 64, color: AppColors.primary),
                           const SizedBox(height: 24),
                           Text('Aucun résultat',
@@ -251,7 +252,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
       padding: const EdgeInsets.only(right: 8),
       child: ActionChip(
           label: Text(label),
-          avatar: Icon(Icons.keyboard_arrow_down,
+          avatar: Icon(LucideIcons.chevronDown,
               size: 16, color: selected ? Colors.white : AppColors.primary),
           backgroundColor:
               selected ? AppColors.primary : AppColors.navyBackground,

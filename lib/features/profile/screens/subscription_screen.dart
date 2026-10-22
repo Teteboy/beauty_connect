@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
@@ -109,7 +110,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         title: const Text('Espace prestataire / Offres'),
         leading: IconButton(
           onPressed: _goBack,
-          icon: const Icon(Icons.arrow_back_rounded),
+          icon: const Icon(LucideIcons.arrowLeft),
         ),
       ),
       body: Column(
@@ -135,7 +136,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                   child: const Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(Icons.info_outline,
+                      Icon(LucideIcons.info,
                           color: AppColors.accent, size: 20),
                       SizedBox(width: 10),
                       Expanded(
@@ -271,7 +272,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
                 padding: const EdgeInsets.only(bottom: 4),
                 child: Row(
                   children: [
-                    const Icon(Icons.check_rounded,
+                    const Icon(LucideIcons.check,
                         size: 16, color: AppColors.primary),
                     const SizedBox(width: 8),
                     Expanded(

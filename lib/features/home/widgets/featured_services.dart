@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/providers/service_provider.dart';
@@ -96,5 +97,5 @@ class FeaturedServices extends StatelessWidget {
       });
   Widget _placeholder() => const ColoredBox(
       color: AppColors.navyBackground,
-      child: Icon(Icons.spa_outlined, color: AppColors.primary, size: 40));
+      child: Icon(LucideIcons.flower, color: AppColors.primary, size: 40));
 }

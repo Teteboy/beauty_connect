@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
@@ -70,11 +71,11 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
           leading: IconButton(
               onPressed: () =>
                   context.canPop() ? context.pop() : context.go('/profile'),
-              icon: const Icon(Icons.arrow_back)),
+              icon: const Icon(LucideIcons.arrowLeft)),
           actions: [
             PopupMenuButton<String>(
                 initialValue: _selectedPeriod,
-                icon: const Icon(Icons.tune),
+                icon: const Icon(LucideIcons.slidersHorizontal),
                 onSelected: (value) {
                   setState(() => _selectedPeriod = value);
                   _loadAnalytics();
@@ -115,22 +116,22 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                         child: _metric(
                             'Total réservations',
                             '${bookings.length}',
-                            Icons.calendar_today,
+                            LucideIcons.calendar,
                             AppColors.primary)),
                     const SizedBox(width: 12),
                     Expanded(
                         child: _metric('Terminées', '${completed.length}',
-                            Icons.check_circle_outline, AppColors.success))
+                            LucideIcons.circleCheck, AppColors.success))
                   ]),
                   const SizedBox(height: 12),
                   Row(children: [
                     Expanded(
                         child: _metric('Revenus totaux', _money(revenue),
-                            Icons.payments_outlined, AppColors.accent)),
+                            LucideIcons.banknote, AppColors.accent)),
                     const SizedBox(width: 12),
                     Expanded(
                         child: _metric('Note moyenne', '$average / 5',
-                            Icons.star_outline, AppColors.amber))
+                            LucideIcons.star, AppColors.amber))
                   ]),
                   const SizedBox(height: 28),
                   const Text('Activité récente',
@@ -166,17 +167,17 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                                     fontWeight: FontWeight.w700)),
                             const SizedBox(height: 16),
                             _insight(
-                                Icons.trending_up,
+                                LucideIcons.trendingUp,
                                 'Évolution des réservations',
                                 data?['growth']?.toString() ??
                                     'Données indisponibles'),
                             _insight(
-                                Icons.schedule,
+                                LucideIcons.clock,
                                 'Heures de pointe',
                                 data?['peakHours']?.toString() ??
                                     'Données indisponibles'),
                             _insight(
-                                Icons.favorite_outline,
+                                LucideIcons.heart,
                                 'Service le plus populaire',
                                 data?['popularService']?.toString() ??
                                     'Données indisponibles'),

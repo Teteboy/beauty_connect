@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/custom_text_field.dart';
+import '../../../core/widgets/custom_dropdown.dart';
 
 class RegisterScreen extends StatefulWidget {
   final String? initialRole;
@@ -126,7 +128,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               IconButton(
                   tooltip: 'Retour',
                   onPressed: () => context.go('/role-selection'),
-                  icon: const Icon(Icons.arrow_back, color: AppColors.primary)),
+                  icon: const Icon(LucideIcons.arrowLeft, color: AppColors.primary)),
               const Expanded(
                   child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -209,11 +211,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       fontSize: 10,
                       fontWeight: FontWeight.w700)),
               const SizedBox(height: 10),
-              DropdownButtonFormField<String>(
-                  initialValue: _specialty,
-                  decoration: const InputDecoration(
-                      labelText: 'Spécialité',
-                      hintText: 'Choisissez votre domaine'),
+              CustomDropdown<String>(
+                  label: 'Spécialité',
+                  hintText: 'Choisissez votre domaine',
+                  value: _specialty,
                   items: const [
                     DropdownMenuItem(value: 'Coiffure', child: Text('Coiffure')),
                     DropdownMenuItem(value: 'Barbier', child: Text('Barbier')),
@@ -275,8 +276,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         setState(() => _obscurePassword = !_obscurePassword),
                     icon: Icon(
                         _obscurePassword
-                            ? Icons.visibility_off_outlined
-                            : Icons.visibility_outlined,
+                            ? LucideIcons.eyeOff
+                            : LucideIcons.eye,
                         size: 20,
                         color: AppColors.textLight)),
                 validator: (value) {
@@ -300,8 +301,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         setState(() => _obscureConfirm = !_obscureConfirm),
                     icon: Icon(
                         _obscureConfirm
-                            ? Icons.visibility_off_outlined
-                            : Icons.visibility_outlined,
+                            ? LucideIcons.eyeOff
+                            : LucideIcons.eye,
                         size: 20,
                         color: AppColors.textLight)),
                 validator: (value) => value != _passwordController.text ||

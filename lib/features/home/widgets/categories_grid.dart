@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 
@@ -6,16 +7,16 @@ class CategoriesGrid extends StatelessWidget {
   const CategoriesGrid({super.key});
 
   static const categories = [
-    ('Coiffure', 'Hair', Icons.content_cut),
-    ('Ongles', 'Nails', Icons.back_hand_outlined),
-    ('Maquillage', 'Makeup', Icons.brush_outlined),
-    ('Soins', 'Skincare', Icons.water_drop_outlined),
-    ('Tatouage', 'Tattoo', Icons.draw_outlined),
-    ('Barbier', 'Barber', Icons.face_outlined),
-    ('Bien-être', 'Wellness', Icons.spa_outlined),
-    ('Fitness', 'Fitness', Icons.fitness_center),
-    ('Cils', 'Eyelashes', Icons.visibility_outlined),
-    ('Massage', 'Massage', Icons.self_improvement),
+    ('Coiffure', 'Hair', LucideIcons.scissors),
+    ('Ongles', 'Nails', LucideIcons.hand),
+    ('Maquillage', 'Makeup', LucideIcons.brush),
+    ('Soins', 'Skincare', LucideIcons.droplet),
+    ('Tatouage', 'Tattoo', LucideIcons.penTool),
+    ('Barbier', 'Barber', LucideIcons.scissors),
+    ('Bien-être', 'Wellness', LucideIcons.flower),
+    ('Fitness', 'Fitness', LucideIcons.dumbbell),
+    ('Cils', 'Eyelashes', LucideIcons.eye),
+    ('Massage', 'Massage', LucideIcons.flower),
   ];
 
   @override

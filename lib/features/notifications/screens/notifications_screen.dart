@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../core/models/notification.dart';
@@ -94,7 +95,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   IconButton(
                     onPressed: () => context.go('/home'),
                     icon:
-                        const Icon(Icons.arrow_back, color: AppColors.textDark),
+                        const Icon(LucideIcons.arrowLeft, color: AppColors.textDark),
                   ),
                   Expanded(
                     child: Column(
@@ -131,7 +132,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                       return IconButton(
                         onPressed: _markAllAsRead,
                         tooltip: 'Tout marquer comme lu',
-                        icon: const Icon(Icons.done_all,
+                        icon: const Icon(LucideIcons.checkCheck,
                             color: AppColors.primary),
                       );
                     },
@@ -175,7 +176,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           const Icon(
-                            Icons.notifications_none,
+                            LucideIcons.bell,
                             size: 64,
                             color: AppColors.textLight,
                           ),
@@ -207,7 +208,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                       Center(
                         child: Column(
                           children: [
-                            Icon(Icons.notifications_off_outlined,
+                            Icon(LucideIcons.bellOff,
                                 color:
                                     AppColors.textLight.withValues(alpha: 0.5),
                                 size: 32),
@@ -276,19 +277,19 @@ class _NotificationCard extends StatelessWidget {
   IconData _iconForType(String type) {
     switch (type) {
       case 'booking':
-        return Icons.calendar_today;
+        return LucideIcons.calendar;
       case 'message':
-        return Icons.chat_bubble_outline;
+        return LucideIcons.messageCircle;
       case 'payment':
-        return Icons.credit_card;
+        return LucideIcons.creditCard;
       case 'review':
-        return Icons.star_outline;
+        return LucideIcons.star;
       case 'service':
-        return Icons.spa;
+        return LucideIcons.flower;
       case 'offer':
-        return Icons.local_offer_outlined;
+        return LucideIcons.tag;
       default:
-        return Icons.notifications_none;
+        return LucideIcons.bell;
     }
   }
 
@@ -308,7 +309,7 @@ class _NotificationCard extends StatelessWidget {
           color: AppColors.error,
           borderRadius: BorderRadius.circular(16),
         ),
-        child: const Icon(Icons.delete, color: Colors.white),
+        child: const Icon(LucideIcons.trash, color: Colors.white),
       ),
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),

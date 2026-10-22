@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/theme/app_colors.dart';
@@ -28,7 +29,7 @@ class AboutScreen extends StatelessWidget {
         leading: IconButton(
           onPressed: () =>
               context.canPop() ? context.pop() : context.go('/profile'),
-          icon: const Icon(Icons.arrow_back),
+          icon: const Icon(LucideIcons.arrowLeft),
         ),
       ),
       body: SingleChildScrollView(
@@ -101,28 +102,28 @@ class AboutScreen extends StatelessWidget {
               child: Column(
                 children: [
                   _FeatureItem(
-                    icon: Icons.search,
+                    icon: LucideIcons.search,
                     title: 'Découvrir des services',
                     description:
                         'Parcourez et recherchez des services de beauté près de chez vous',
                   ),
                   _FeatureItem(
-                    icon: Icons.calendar_today,
+                    icon: LucideIcons.calendar,
                     title: 'Réservation facile',
                     description: 'Réservez en quelques touches',
                   ),
                   _FeatureItem(
-                    icon: Icons.chat,
+                    icon: LucideIcons.messageCircle,
                     title: 'Communication directe',
                     description: 'Discutez directement avec les prestataires',
                   ),
                   _FeatureItem(
-                    icon: Icons.star,
+                    icon: LucideIcons.star,
                     title: 'Avis et évaluations',
                     description: 'Lisez les avis et notez vos expériences',
                   ),
                   _FeatureItem(
-                    icon: Icons.payment,
+                    icon: LucideIcons.creditCard,
                     title: 'Paiements sécurisés',
                     description: 'Un traitement des paiements sûr et sécurisé',
                     isLast: true,
@@ -149,19 +150,19 @@ class AboutScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   _ContactItem(
-                    icon: Icons.email,
+                    icon: LucideIcons.mail,
                     title: 'Email',
                     value: 'support@beautyconnect.com',
                     onTap: () => _launchEmail('support@beautyconnect.com'),
                   ),
                   _ContactItem(
-                    icon: Icons.phone,
+                    icon: LucideIcons.phone,
                     title: 'Téléphone',
                     value: '+1 (555) 123-4567',
                     onTap: () => _launchPhone('+15551234567'),
                   ),
                   _ContactItem(
-                    icon: Icons.language,
+                    icon: LucideIcons.globe,
                     title: 'Site web',
                     value: 'www.beautyconnect.com',
                     onTap: () =>
@@ -189,31 +190,31 @@ class AboutScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   ListTile(
-                    leading: const Icon(Icons.description,
+                    leading: const Icon(LucideIcons.fileText,
                         color: AppColors.primaryLight),
                     title: const Text('Conditions d\'utilisation',
                         style: TextStyle(color: AppColors.textDark)),
-                    trailing: const Icon(Icons.arrow_forward_ios,
+                    trailing: const Icon(LucideIcons.chevronRight,
                         size: 16, color: AppColors.textLight),
                     onTap: () => context.go('/terms'),
                     contentPadding: EdgeInsets.zero,
                   ),
                   ListTile(
-                    leading: const Icon(Icons.privacy_tip,
+                    leading: const Icon(LucideIcons.shieldCheck,
                         color: AppColors.primaryLight),
                     title: const Text('Politique de confidentialité',
                         style: TextStyle(color: AppColors.textDark)),
-                    trailing: const Icon(Icons.arrow_forward_ios,
+                    trailing: const Icon(LucideIcons.chevronRight,
                         size: 16, color: AppColors.textLight),
                     onTap: () => context.go('/privacy'),
                     contentPadding: EdgeInsets.zero,
                   ),
                   ListTile(
                     leading:
-                        const Icon(Icons.gavel, color: AppColors.primaryLight),
+                        const Icon(LucideIcons.gavel, color: AppColors.primaryLight),
                     title: const Text('Licences',
                         style: TextStyle(color: AppColors.textDark)),
-                    trailing: const Icon(Icons.arrow_forward_ios,
+                    trailing: const Icon(LucideIcons.chevronRight,
                         size: 16, color: AppColors.textLight),
                     onTap: () => _showLicensePage(context),
                     contentPadding: EdgeInsets.zero,
@@ -382,7 +383,7 @@ class _ContactItem extends StatelessWidget {
               ],
             ),
             const Spacer(),
-            const Icon(Icons.launch, size: 16, color: AppColors.textLight),
+            const Icon(LucideIcons.externalLink, size: 16, color: AppColors.textLight),
           ],
         ),
       ),

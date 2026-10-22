@@ -152,6 +152,8 @@ exports.createBooking = async (req, res) => {
     // Get technician ID from service
     const technicianId = service.technicianId;
     
+    const autoApprove = process.env.AUTO_APPROVE_BOOKINGS !== 'false';
+
     // Create booking
     const booking = await Booking.create({
       customerId,
@@ -160,14 +162,16 @@ exports.createBooking = async (req, res) => {
       dateTime,
       notes,
       price: service.price,
-      status: 'pending'
+      status: autoApprove ? 'confirmed' : 'pending'
     });
-    
+
     // Create notification for technician
     await Notification.create({
       userId: technicianId,
-      title: 'New Booking',
-      message: `You have a new booking request for ${service.name}`,
+      title: autoApprove ? 'New Booking Confirmed' : 'New Booking',
+      message: autoApprove
+        ? `A booking for ${service.name} was automatically confirmed`
+        : `You have a new booking request for ${service.name}`,
       type: 'booking',
       relatedId: booking.id
     });

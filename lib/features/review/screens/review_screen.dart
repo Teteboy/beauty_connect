@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/providers/review_provider.dart';
@@ -62,7 +63,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
                           const CircleAvatar(
                             radius: 26,
                             backgroundColor: AppColors.orangePale,
-                            child: Icon(Icons.person_outline,
+                            child: Icon(LucideIcons.user,
                                 color: AppColors.accent),
                           ),
                           const SizedBox(width: 12),
@@ -115,8 +116,8 @@ class _ReviewScreenState extends State<ReviewScreen> {
                                   const EdgeInsets.symmetric(horizontal: 6),
                               child: Icon(
                                 selected
-                                    ? Icons.star_rounded
-                                    : Icons.star_outline_rounded,
+                                    ? LucideIcons.star
+                                    : LucideIcons.star,
                                 size: 44,
                                 color: selected
                                     ? AppColors.amber
@@ -212,7 +213,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Icon(Icons.verified_outlined,
+                            const Icon(LucideIcons.badgeCheck,
                                 color: AppColors.primary, size: 22),
                             const SizedBox(width: 10),
                             Expanded(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -66,7 +67,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         title: const Text('Changer le mot de passe'),
         leading: IconButton(
           onPressed: _goBack,
-          icon: const Icon(Icons.arrow_back_rounded),
+          icon: const Icon(LucideIcons.arrowLeft),
         ),
       ),
       body: Consumer<AuthProvider>(
@@ -95,12 +96,12 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                         controller: _currentPasswordController,
                         label: 'Mot de passe actuel',
                         obscureText: _obscureCurrentPassword,
-                        prefixIcon: const Icon(Icons.lock_outline,
+                        prefixIcon: const Icon(LucideIcons.lock,
                             color: AppColors.textMedium),
                         suffixIcon: IconButton(
                           icon: Icon(_obscureCurrentPassword
-                              ? Icons.visibility_outlined
-                              : Icons.visibility_off_outlined),
+                              ? LucideIcons.eye
+                              : LucideIcons.eyeOff),
                           onPressed: () => setState(() =>
                               _obscureCurrentPassword =
                                   !_obscureCurrentPassword),
@@ -114,12 +115,12 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                         controller: _newPasswordController,
                         label: 'Nouveau mot de passe',
                         obscureText: _obscureNewPassword,
-                        prefixIcon: const Icon(Icons.lock_outline,
+                        prefixIcon: const Icon(LucideIcons.lock,
                             color: AppColors.textMedium),
                         suffixIcon: IconButton(
                           icon: Icon(_obscureNewPassword
-                              ? Icons.visibility_outlined
-                              : Icons.visibility_off_outlined),
+                              ? LucideIcons.eye
+                              : LucideIcons.eyeOff),
                           onPressed: () => setState(
                               () => _obscureNewPassword = !_obscureNewPassword),
                         ),
@@ -138,12 +139,12 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                         controller: _confirmPasswordController,
                         label: 'Confirmer le nouveau mot de passe',
                         obscureText: _obscureConfirmPassword,
-                        prefixIcon: const Icon(Icons.lock_outline,
+                        prefixIcon: const Icon(LucideIcons.lock,
                             color: AppColors.textMedium),
                         suffixIcon: IconButton(
                           icon: Icon(_obscureConfirmPassword
-                              ? Icons.visibility_outlined
-                              : Icons.visibility_off_outlined),
+                              ? LucideIcons.eye
+                              : LucideIcons.eyeOff),
                           onPressed: () => setState(() =>
                               _obscureConfirmPassword =
                                   !_obscureConfirmPassword),
@@ -193,7 +194,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         padding: const EdgeInsets.only(bottom: 10),
         child: Row(
           children: [
-            const Icon(Icons.check_circle_outline,
+            const Icon(LucideIcons.circleCheck,
                 size: 18, color: AppColors.primary),
             const SizedBox(width: 10),
             Expanded(

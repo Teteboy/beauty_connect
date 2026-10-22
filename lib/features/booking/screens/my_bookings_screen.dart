@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/providers/booking_provider.dart';
@@ -85,7 +86,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.error_outline, size: 64, color: Colors.grey),
+                  const Icon(LucideIcons.circleAlert, size: 64, color: Colors.grey),
                   const SizedBox(height: 16),
                   Text(bookingProvider.error!),
                   const SizedBox(height: 16),
@@ -132,7 +133,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.calendar_today_outlined,
+              LucideIcons.calendar,
               size: 64,
               color: Colors.grey[400],
             ),

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/concept_banner.dart';
@@ -77,7 +78,7 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
       children: [
         const ConceptHeader(
           title: 'Consultation vidéo',
-          trailing: Icon(Icons.more_horiz, color: AppColors.textDark, size: 22),
+          trailing: Icon(LucideIcons.ellipsis, color: AppColors.textDark, size: 22),
         ),
         const SizedBox(height: 16),
         const ConceptBanner(
@@ -115,7 +116,7 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             _ToggleButton(
-              icon: _micOn ? Icons.mic_outlined : Icons.mic_off_outlined,
+              icon: _micOn ? LucideIcons.mic : LucideIcons.micOff,
               label: 'Micro',
               active: _micOn,
               onTap: () => setState(() => _micOn = !_micOn),
@@ -123,8 +124,8 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
             const SizedBox(width: 20),
             _ToggleButton(
               icon: _camOn
-                  ? Icons.videocam_outlined
-                  : Icons.videocam_off_outlined,
+                  ? LucideIcons.video
+                  : LucideIcons.videoOff,
               label: 'Caméra',
               active: _camOn,
               onTap: () => setState(() => _camOn = !_camOn),
@@ -159,7 +160,7 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
               const Spacer(),
               IconButton(
                 onPressed: () {},
-                icon: const Icon(Icons.more_horiz, color: Colors.white),
+                icon: const Icon(LucideIcons.ellipsis, color: Colors.white),
               ),
             ],
           ),
@@ -236,8 +237,8 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
                     ),
                     child: Icon(
                       _camOn
-                          ? Icons.person_outline
-                          : Icons.videocam_off_outlined,
+                          ? LucideIcons.user
+                          : LucideIcons.videoOff,
                       color: Colors.white,
                       size: 32,
                     ),
@@ -253,21 +254,21 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             _CallControl(
-              icon: _micOn ? Icons.mic : Icons.mic_off,
+              icon: _micOn ? LucideIcons.mic : LucideIcons.micOff,
               background: AppColors.navyBackground,
               color: AppColors.primary,
               onTap: () => setState(() => _micOn = !_micOn),
             ),
             const SizedBox(width: 20),
             _CallControl(
-              icon: _camOn ? Icons.videocam : Icons.videocam_off,
+              icon: _camOn ? LucideIcons.video : LucideIcons.videoOff,
               background: AppColors.navyBackground,
               color: AppColors.primary,
               onTap: () => setState(() => _camOn = !_camOn),
             ),
             const SizedBox(width: 20),
             _CallControl(
-              icon: Icons.call_end,
+              icon: LucideIcons.phoneOff,
               background: AppColors.error,
               color: Colors.white,
               size: 68,

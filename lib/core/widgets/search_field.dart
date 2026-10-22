@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import '../theme/app_colors.dart';
 
 class SearchField extends StatelessWidget {
@@ -36,7 +37,7 @@ class SearchField extends StatelessWidget {
                 color: AppColors.textLight,
               ),
           prefixIcon: const Icon(
-            Icons.search,
+            LucideIcons.search,
             color: AppColors.textMedium,
           ),
           suffixIcon: showFilterButton
@@ -49,7 +50,7 @@ class SearchField extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Icon(
-                      Icons.tune_rounded,
+                      LucideIcons.slidersHorizontal,
                       color: Colors.white,
                       size: 20,
                     ),

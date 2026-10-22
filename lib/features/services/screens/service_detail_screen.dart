@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -108,7 +109,7 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
               child: Padding(
                   padding: const EdgeInsets.all(24),
                   child: Column(mainAxisSize: MainAxisSize.min, children: [
-                    const Icon(Icons.error_outline,
+                    const Icon(LucideIcons.circleAlert,
                         size: 48, color: AppColors.error),
                     const SizedBox(height: 16),
                     Text(_error ?? 'Service introuvable'),
@@ -124,7 +125,7 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
           leading: IconButton(
               onPressed: () =>
                   context.canPop() ? context.pop() : context.go('/services'),
-              icon: const Icon(Icons.arrow_back, color: AppColors.primary)),
+              icon: const Icon(LucideIcons.arrowLeft, color: AppColors.primary)),
           title: const Text('Demande de réservation')),
       body: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
@@ -144,10 +145,10 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                           ? Image.network(service.imageUrl!,
                               fit: BoxFit.cover,
                               errorBuilder: (_, __, ___) =>
-                                  const Icon(Icons.spa_outlined))
+                                  const Icon(LucideIcons.flower))
                           : const ColoredBox(
                               color: AppColors.navyBackground,
-                              child: Icon(Icons.spa_outlined,
+                              child: Icon(LucideIcons.flower,
                                   color: AppColors.primary)))),
               const SizedBox(width: 12),
               Expanded(

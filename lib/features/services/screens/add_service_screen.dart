@@ -1,11 +1,13 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/custom_text_field.dart';
+import '../../../core/widgets/custom_dropdown.dart';
 import '../../../core/providers/service_provider.dart';
 
 class AddServiceScreen extends StatefulWidget {
@@ -53,11 +55,11 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
         builder: (context) => SafeArea(
                 child: Column(mainAxisSize: MainAxisSize.min, children: [
               ListTile(
-                  leading: const Icon(Icons.photo_library_outlined),
+                  leading: const Icon(LucideIcons.image),
                   title: const Text('Choisir dans la galerie'),
                   onTap: () => Navigator.pop(context, ImageSource.gallery)),
               ListTile(
-                  leading: const Icon(Icons.camera_alt_outlined),
+                  leading: const Icon(LucideIcons.camera),
                   title: const Text('Prendre une photo'),
                   onTap: () => Navigator.pop(context, ImageSource.camera)),
             ])));
@@ -127,7 +129,7 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
         appBar: AppBar(
             title: const Text('Nouveau service'),
             leading: IconButton(
-                icon: const Icon(Icons.arrow_back),
+                icon: const Icon(LucideIcons.arrowLeft),
                 onPressed: () => context.pop())),
         bottomNavigationBar: SafeArea(
             child: Padding(
@@ -162,7 +164,7 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
                               child: Image.file(_selectedImage!,
                                   width: 60, height: 60, fit: BoxFit.cover))
                         else
-                          const Icon(Icons.add_a_photo_outlined,
+                          const Icon(LucideIcons.imagePlus,
                               color: AppColors.accent),
                         const SizedBox(width: 16),
                         const Expanded(
@@ -179,7 +181,7 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
                                       fontSize: 11,
                                       color: AppColors.textLight)),
                             ])),
-                        const Icon(Icons.add, color: AppColors.primary),
+                        const Icon(LucideIcons.plus, color: AppColors.primary),
                       ]))),
               const SizedBox(height: 20),
               CustomTextField(
@@ -188,9 +190,10 @@ class _AddServiceScreenState extends State<AddServiceScreen> {
                   hintText: 'Ex. Soin du visage hydratant',
                   validator: _required),
               const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                  initialValue: _selectedCategory,
-                  decoration: const InputDecoration(labelText: 'Catégorie'),
+              CustomDropdown<String>(
+                  label: 'Catégorie',
+                  hintText: 'Choisissez une catégorie',
+                  value: _selectedCategory,
                   items: _categories.entries
                       .map((e) =>
                           DropdownMenuItem(value: e.key, child: Text(e.value)))

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../theme/app_colors.dart';
@@ -46,29 +47,29 @@ class _MainLayoutState extends State<MainLayout> {
 
     final items = <_NavItem>[
       _NavItem(
-        icon: isCustomer ? Icons.home_outlined : Icons.dashboard_outlined,
-        activeIcon: isCustomer ? Icons.home : Icons.dashboard,
+        icon: isCustomer ? LucideIcons.home : LucideIcons.layoutDashboard,
+        activeIcon: isCustomer ? LucideIcons.home : LucideIcons.layoutDashboard,
         label: isCustomer ? 'Accueil' : 'Dashboard',
       ),
       _NavItem(
-        icon: isCustomer ? Icons.search : Icons.content_cut_outlined,
-        activeIcon: isCustomer ? Icons.search : Icons.content_cut,
+        icon: isCustomer ? LucideIcons.search : LucideIcons.scissors,
+        activeIcon: isCustomer ? LucideIcons.search : LucideIcons.scissors,
         label: isCustomer ? 'Recherche' : 'Services',
       ),
       const _NavItem(
-        icon: Icons.calendar_today_outlined,
-        activeIcon: Icons.calendar_today,
+        icon: LucideIcons.calendar,
+        activeIcon: LucideIcons.calendar,
         label: 'Réservations',
       ),
       const _NavItem(
-        icon: Icons.chat_bubble_outline,
-        activeIcon: Icons.chat_bubble,
+        icon: LucideIcons.messageCircle,
+        activeIcon: LucideIcons.messageCircle,
         label: 'Messages',
         isMessages: true,
       ),
       const _NavItem(
-        icon: Icons.person_outline,
-        activeIcon: Icons.person,
+        icon: LucideIcons.user,
+        activeIcon: LucideIcons.user,
         label: 'Profil',
       ),
     ];
@@ -111,8 +112,10 @@ class _MainLayoutState extends State<MainLayout> {
                         const SizedBox(height: 4),
                         Text(
                           item.label,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            fontSize: 11,
+                            fontSize: 10,
                             fontWeight:
                                 active ? FontWeight.w700 : FontWeight.w500,
                             color:
@@ -187,7 +190,7 @@ class _MessageIcon extends StatelessWidget {
         .watch<MessageProvider>()
         .conversations
         .fold<int>(0, (sum, conv) => sum + conv.unreadCount);
-    final icon = active ? Icons.chat_bubble : Icons.chat_bubble_outline;
+    final icon = active ? LucideIcons.messageCircle : LucideIcons.messageCircle;
 
     final iconWidget = Icon(
       icon,

@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
@@ -8,6 +9,7 @@ import '../../../core/providers/service_provider.dart';
 import '../../../core/models/service.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/custom_text_field.dart';
+import '../../../core/widgets/custom_dropdown.dart';
 
 class EditServiceScreen extends StatefulWidget {
   final String serviceId;
@@ -100,16 +102,16 @@ class _EditServiceScreenState extends State<EditServiceScreen> {
         builder: (context) => SafeArea(
                 child: Column(mainAxisSize: MainAxisSize.min, children: [
               ListTile(
-                  leading: const Icon(Icons.photo_library_outlined),
+                  leading: const Icon(LucideIcons.image),
                   title: const Text('Choisir dans la galerie'),
                   onTap: () => Navigator.pop(context, 'gallery')),
               ListTile(
-                  leading: const Icon(Icons.camera_alt_outlined),
+                  leading: const Icon(LucideIcons.camera),
                   title: const Text('Prendre une photo'),
                   onTap: () => Navigator.pop(context, 'camera')),
               if (_selectedImage != null || _currentImageUrl != null)
                 ListTile(
-                    leading: const Icon(Icons.delete_outline,
+                    leading: const Icon(LucideIcons.trash,
                         color: AppColors.error),
                     title: const Text('Supprimer la photo'),
                     onTap: () => Navigator.pop(context, 'remove')),
@@ -188,7 +190,7 @@ class _EditServiceScreenState extends State<EditServiceScreen> {
       appBar: AppBar(
           title: const Text('Modifier le service'),
           leading:
-              IconButton(icon: const Icon(Icons.arrow_back), onPressed: _back)),
+              IconButton(icon: const Icon(LucideIcons.arrowLeft), onPressed: _back)),
       bottomNavigationBar: _isLoading
           ? null
           : SafeArea(
@@ -238,7 +240,7 @@ class _EditServiceScreenState extends State<EditServiceScreen> {
                                                           .add_a_photo_outlined,
                                                       color: AppColors.accent))
                                           : const Icon(
-                                              Icons.add_a_photo_outlined,
+                                              LucideIcons.imagePlus,
                                               color: AppColors.accent))),
                           const SizedBox(width: 12),
                           const Expanded(
@@ -255,7 +257,7 @@ class _EditServiceScreenState extends State<EditServiceScreen> {
                                         fontSize: 11,
                                         color: AppColors.textLight)),
                               ])),
-                          const Icon(Icons.add, color: AppColors.primary),
+                          const Icon(LucideIcons.plus, color: AppColors.primary),
                         ]))),
                 const SizedBox(height: 20),
                 CustomTextField(
@@ -263,9 +265,10 @@ class _EditServiceScreenState extends State<EditServiceScreen> {
                     label: 'Nom du service',
                     validator: _required),
                 const SizedBox(height: 16),
-                DropdownButtonFormField<String>(
-                    initialValue: _selectedCategory,
-                    decoration: const InputDecoration(labelText: 'Catégorie'),
+                CustomDropdown<String>(
+                    label: 'Catégorie',
+                    hintText: 'Choisissez une catégorie',
+                    value: _selectedCategory,
                     items: categories.entries
                         .map((e) => DropdownMenuItem(
                             value: e.key, child: Text(e.value)))

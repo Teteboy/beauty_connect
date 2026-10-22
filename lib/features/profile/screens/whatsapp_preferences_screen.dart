@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_colors.dart';
@@ -102,7 +103,7 @@ class _WhatsappPreferencesScreenState extends State<WhatsappPreferencesScreen> {
         title: const Text('Mon compte / Notifications'),
         leading: IconButton(
           onPressed: _goBack,
-          icon: const Icon(Icons.arrow_back_rounded),
+          icon: const Icon(LucideIcons.arrowLeft),
         ),
       ),
       body: Column(
@@ -128,7 +129,7 @@ class _WhatsappPreferencesScreenState extends State<WhatsappPreferencesScreen> {
                   child: const Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(Icons.info_outline,
+                      Icon(LucideIcons.info,
                           color: AppColors.accent, size: 20),
                       SizedBox(width: 10),
                       Expanded(
@@ -162,7 +163,7 @@ class _WhatsappPreferencesScreenState extends State<WhatsappPreferencesScreen> {
                   label: 'Numéro WhatsApp',
                   hintText: '+237 6 99 41 20 30',
                   keyboardType: TextInputType.phone,
-                  prefixIcon: const Icon(Icons.phone_iphone_rounded,
+                  prefixIcon: const Icon(LucideIcons.smartphone,
                       color: AppColors.primary),
                 ),
                 const SizedBox(height: 16),
@@ -220,7 +221,7 @@ class _WhatsappPreferencesScreenState extends State<WhatsappPreferencesScreen> {
                     children: [
                       Row(
                         children: [
-                          const Icon(Icons.notifications_outlined,
+                          const Icon(LucideIcons.bell,
                               color: AppColors.primary),
                           const SizedBox(width: 8),
                           Expanded(

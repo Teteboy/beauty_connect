@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../core/models/booking.dart';
@@ -114,7 +115,7 @@ class _BookingsScreenState extends State<BookingsScreen> {
                         Padding(
                             padding: const EdgeInsets.symmetric(vertical: 64),
                             child: Column(children: [
-                              const Icon(Icons.calendar_today_outlined,
+                              const Icon(LucideIcons.calendar,
                                   size: 56, color: AppColors.primary),
                               const SizedBox(height: 20),
                               Text(

@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -48,19 +49,19 @@ class _VerificationScreenState extends State<VerificationScreen> {
       key: 'cni',
       title: 'CNI / Passeport',
       subtitle: 'Recto et verso · PDF, JPG · 10 Mo max.',
-      icon: Icons.badge_outlined,
+      icon: LucideIcons.badgeCheck,
     ),
     _DocSlot(
       key: 'selfie',
       title: 'Selfie de vérification',
       subtitle: 'Visage net, sans filtre · JPG, PNG.',
-      icon: Icons.face_outlined,
+      icon: LucideIcons.user,
     ),
     _DocSlot(
       key: 'certificat',
       title: 'Certificat / Portfolio',
       subtitle: 'Diplôme ou réalisations · PDF, JPG.',
-      icon: Icons.workspace_premium_outlined,
+      icon: LucideIcons.crown,
     ),
   ];
 
@@ -177,7 +178,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
         title: const Text('Espace prestataire / Vérification'),
         leading: IconButton(
           onPressed: _goBack,
-          icon: const Icon(Icons.arrow_back_rounded),
+          icon: const Icon(LucideIcons.arrowLeft),
         ),
       ),
       body: Column(
@@ -266,7 +267,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                 if (step.done)
                   const Padding(
                     padding: EdgeInsets.only(right: 4),
-                    child: Icon(Icons.check_rounded,
+                    child: Icon(LucideIcons.check,
                         size: 14, color: AppColors.primary),
                   ),
                 Flexible(
@@ -299,7 +300,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
       child: const Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.error_outline, color: AppColors.error),
+          Icon(LucideIcons.circleAlert, color: AppColors.error),
           SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -456,7 +457,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Icon(Icons.verified_user_outlined,
+        const Icon(LucideIcons.shieldCheck,
             size: 18, color: AppColors.primary),
         const SizedBox(width: 8),
         Expanded(

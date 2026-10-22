@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -40,7 +41,7 @@ class _NotificationSettingsScreenState
         title: const Text('Notifications'),
         leading: IconButton(
           onPressed: _goBack,
-          icon: const Icon(Icons.arrow_back_rounded),
+          icon: const Icon(LucideIcons.arrowLeft),
         ),
       ),
       body: Consumer<NotificationProvider>(
@@ -64,7 +65,7 @@ class _NotificationSettingsScreenState
                 _settingTile(
                   title: 'Rendez-vous',
                   subtitle: 'Soyez informé des mises à jour de réservation',
-                  icon: Icons.calendar_today_outlined,
+                  icon: LucideIcons.calendar,
                   value: settings.bookingNotifications,
                   onChanged: (value) => _updateSetting(
                     settings.copyWith(bookingNotifications: value),
@@ -73,7 +74,7 @@ class _NotificationSettingsScreenState
                 _settingTile(
                   title: 'Messages',
                   subtitle: 'Soyez informé des nouveaux messages',
-                  icon: Icons.message_outlined,
+                  icon: LucideIcons.messageSquare,
                   value: settings.messageNotifications,
                   onChanged: (value) => _updateSetting(
                     settings.copyWith(messageNotifications: value),
@@ -82,7 +83,7 @@ class _NotificationSettingsScreenState
                 _settingTile(
                   title: 'Rappels',
                   subtitle: 'Rappels de vos rendez-vous à venir',
-                  icon: Icons.alarm_outlined,
+                  icon: LucideIcons.alarmClock,
                   value: settings.reminderNotifications,
                   onChanged: (value) => _updateSetting(
                     settings.copyWith(reminderNotifications: value),
@@ -91,7 +92,7 @@ class _NotificationSettingsScreenState
                 _settingTile(
                   title: 'Conseils et nouveautés',
                   subtitle: 'Recevoir les nouvelles de BeautyConnect',
-                  icon: Icons.campaign_outlined,
+                  icon: LucideIcons.megaphone,
                   value: settings.marketingNotifications,
                   onChanged: (value) => _updateSetting(
                     settings.copyWith(marketingNotifications: value),
@@ -104,11 +105,11 @@ class _NotificationSettingsScreenState
               const SizedBox(height: 12),
               _settingsCard([
                 ListTile(
-                  leading: const Icon(Icons.clear_all_rounded,
+                  leading: const Icon(LucideIcons.listX,
                       color: AppColors.primary),
                   title: const Text('Effacer toutes les notifications'),
                   subtitle: const Text('Supprimer tout l\'historique'),
-                  trailing: const Icon(Icons.chevron_right_rounded,
+                  trailing: const Icon(LucideIcons.chevronRight,
                       color: AppColors.textLight),
                   onTap: _showClearNotificationsDialog,
                 ),
@@ -122,7 +123,7 @@ class _NotificationSettingsScreenState
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Row(children: [
-                    const Icon(Icons.error_outline, color: AppColors.error),
+                    const Icon(LucideIcons.circleAlert, color: AppColors.error),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(provider.error!,

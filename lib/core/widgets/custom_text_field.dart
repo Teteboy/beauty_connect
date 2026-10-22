@@ -39,7 +39,16 @@ class CustomTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label,
+            style: const TextStyle(
+                color: AppColors.primaryDark,
+                fontSize: 13,
+                fontWeight: FontWeight.w700)),
+        const SizedBox(height: 8),
+        TextFormField(
       controller: controller,
       keyboardType: keyboardType,
       obscureText: obscureText,
@@ -53,7 +62,6 @@ class CustomTextField extends StatelessWidget {
       textInputAction: textInputAction,
       style: const TextStyle(color: AppColors.textDark, fontSize: 15),
       decoration: InputDecoration(
-        labelText: label,
         hintText: hintText,
         prefixIcon: prefixIcon != null
             ? Padding(
@@ -94,6 +102,8 @@ class CustomTextField extends StatelessWidget {
         filled: true,
         fillColor: AppColors.inputFill,
       ),
+        ),
+      ],
     );
   }
 }

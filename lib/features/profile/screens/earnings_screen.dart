@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -192,7 +193,7 @@ class _EarningsScreenState extends State<EarningsScreen> {
                           .textTheme
                           .bodySmall
                           ?.copyWith(color: AppColors.textMedium)),
-                  trailing: const Icon(Icons.chevron_right,
+                  trailing: const Icon(LucideIcons.chevronRight,
                       color: AppColors.textLight),
                 )),
             const Divider(color: AppColors.divider),
@@ -218,7 +219,7 @@ class _EarningsScreenState extends State<EarningsScreen> {
                           .textTheme
                           .bodySmall
                           ?.copyWith(color: AppColors.textMedium)),
-                  trailing: const Icon(Icons.schedule_outlined,
+                  trailing: const Icon(LucideIcons.clock,
                       color: AppColors.textLight),
                 )),
             const SizedBox(height: 16),

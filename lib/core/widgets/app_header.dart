@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../theme/app_colors.dart';
@@ -38,7 +39,7 @@ class AppHeader extends StatelessWidget {
           if (showBack)
             IconButton(
               onPressed: onBack ?? () => Navigator.of(context).maybePop(),
-              icon: const Icon(Icons.arrow_back, color: AppColors.textDark),
+              icon: const Icon(LucideIcons.arrowLeft, color: AppColors.textDark),
               style: IconButton.styleFrom(
                 backgroundColor: AppColors.chipBackground,
                 shape: RoundedRectangleBorder(
@@ -91,7 +92,7 @@ class AppHeader extends StatelessWidget {
               children: [
                 IconButton(
                   onPressed: () => context.go('/notifications'),
-                  icon: const Icon(Icons.notifications_outlined,
+                  icon: const Icon(LucideIcons.bell,
                       color: AppColors.textDark),
                   style: IconButton.styleFrom(
                     backgroundColor: AppColors.chipBackground,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_colors.dart';
@@ -141,7 +142,7 @@ class _RecommendationsScreenState extends State<RecommendationsScreen> {
                                   fontWeight: FontWeight.w700,
                                   color: AppColors.textDark)),
                     ),
-                    const Icon(Icons.tune, color: AppColors.textDark, size: 20),
+                    const Icon(LucideIcons.slidersHorizontal, color: AppColors.textDark, size: 20),
                   ],
                 ),
               ),
@@ -212,7 +213,7 @@ class _ProviderCard extends StatelessWidget {
                   color: AppColors.orangePale,
                   borderRadius: BorderRadius.circular(14),
                 ),
-                child: const Icon(Icons.person_outline,
+                child: const Icon(LucideIcons.user,
                     color: AppColors.accent, size: 36),
               ),
               const SizedBox(width: 12),
@@ -234,7 +235,7 @@ class _ProviderCard extends StatelessWidget {
                         GestureDetector(
                           onTap: onFavorite,
                           child: Icon(
-                            isFavorite ? Icons.favorite : Icons.favorite_border,
+                            isFavorite ? LucideIcons.heart : LucideIcons.heart,
                             color: AppColors.accent,
                             size: 20,
                           ),
@@ -249,17 +250,21 @@ class _ProviderCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        const Icon(Icons.star,
+                        const Icon(LucideIcons.star,
                             color: AppColors.amber, size: 14),
                         const SizedBox(width: 4),
-                        Text(
-                          '${reco.rating.toStringAsFixed(1).replaceAll('.', ',')} '
-                          '(${reco.reviews} avis) · '
-                          '${reco.distanceKm.toStringAsFixed(1).replaceAll('.', ',')} km',
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodySmall
-                              ?.copyWith(color: AppColors.textMedium),
+                        Expanded(
+                          child: Text(
+                            '${reco.rating.toStringAsFixed(1).replaceAll('.', ',')} '
+                            '(${reco.reviews} avis) · '
+                            '${reco.distanceKm.toStringAsFixed(1).replaceAll('.', ',')} km',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodySmall
+                                ?.copyWith(color: AppColors.textMedium),
+                          ),
                         ),
                       ],
                     ),

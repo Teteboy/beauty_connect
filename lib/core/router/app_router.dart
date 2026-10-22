@@ -1,5 +1,6 @@
 import 'package:beauty_connect/features/users/screens/users_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -346,7 +347,7 @@ class AppRouter {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Icon(
-              Icons.error_outline,
+              LucideIcons.circleAlert,
               size: 64,
               color: Colors.grey,
             ),

@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -122,7 +123,7 @@ class _ChatScreenState extends State<ChatScreen> {
           padding: const EdgeInsets.only(left: 8),
           child: IconButton(
             onPressed: () => context.go('/messages'),
-            icon: const Icon(Icons.arrow_back, color: AppColors.textDark),
+            icon: const Icon(LucideIcons.arrowLeft, color: AppColors.textDark),
           ),
         ),
         title: Row(
@@ -137,7 +138,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           ? CachedNetworkImageProvider(_otherUserAvatar!)
                           : null,
                   child: _otherUserAvatar == null || _otherUserAvatar!.isEmpty
-                      ? const Icon(Icons.person, color: AppColors.textLight)
+                      ? const Icon(LucideIcons.user, color: AppColors.textLight)
                       : null,
                 ),
                 if (_isOnline)
@@ -187,7 +188,7 @@ class _ChatScreenState extends State<ChatScreen> {
         actions: [
           IconButton(
             onPressed: () {},
-            icon: const Icon(Icons.call_outlined, color: AppColors.textDark),
+            icon: const Icon(LucideIcons.phone, color: AppColors.textDark),
           ),
           IconButton(
             onPressed: () => context.push(
@@ -195,7 +196,7 @@ class _ChatScreenState extends State<ChatScreen> {
               extra: _otherUserName,
             ),
             icon:
-                const Icon(Icons.videocam_outlined, color: AppColors.textDark),
+                const Icon(LucideIcons.video, color: AppColors.textDark),
           ),
         ],
       ),
@@ -217,7 +218,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.chat_bubble_outline,
+                        Icon(LucideIcons.messageCircle,
                             size: 64,
                             color: AppColors.textLight.withValues(alpha: 0.5)),
                         const SizedBox(height: 16),
@@ -275,7 +276,7 @@ class _ChatScreenState extends State<ChatScreen> {
           children: [
             IconButton(
               onPressed: () {},
-              icon: const Icon(Icons.attach_file, color: AppColors.primary),
+              icon: const Icon(LucideIcons.paperclip, color: AppColors.primary),
             ),
             const SizedBox(width: 4),
             Expanded(
@@ -318,7 +319,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           strokeWidth: 2,
                         ),
                       )
-                    : const Icon(Icons.send_rounded, color: Colors.white),
+                    : const Icon(LucideIcons.send, color: Colors.white),
               ),
             ),
           ],

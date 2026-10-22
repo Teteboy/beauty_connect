@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -94,7 +95,7 @@ class _ServiceCatalogueScreenState extends State<ServiceCatalogueScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.error_outline,
+                const Icon(LucideIcons.circleAlert,
                     size: 56, color: AppColors.error),
                 const SizedBox(height: 16),
                 Text(
@@ -167,7 +168,7 @@ class _ServiceCatalogueScreenState extends State<ServiceCatalogueScreen> {
                 actions: [
                   IconButton(
                     onPressed: () {},
-                    icon: const Icon(Icons.share, color: Colors.white),
+                    icon: const Icon(LucideIcons.share, color: Colors.white),
                   ),
                 ],
               ),
@@ -198,7 +199,7 @@ class _ServiceCatalogueScreenState extends State<ServiceCatalogueScreen> {
                                   : null,
                               child: tech.profileImage == null ||
                                       tech.profileImage!.isEmpty
-                                  ? const Icon(Icons.person,
+                                  ? const Icon(LucideIcons.user,
                                       color: AppColors.textLight, size: 32)
                                   : null,
                             ),
@@ -222,7 +223,7 @@ class _ServiceCatalogueScreenState extends State<ServiceCatalogueScreen> {
                                         ),
                                       ),
                                       if (tech.isVerified)
-                                        const Icon(Icons.verified,
+                                        const Icon(LucideIcons.badgeCheck,
                                             color: AppColors.primaryLight,
                                             size: 18),
                                     ],
@@ -241,7 +242,7 @@ class _ServiceCatalogueScreenState extends State<ServiceCatalogueScreen> {
                                   const SizedBox(height: 4),
                                   Row(
                                     children: [
-                                      const Icon(Icons.star,
+                                      const Icon(LucideIcons.star,
                                           color: AppColors.warning, size: 16),
                                       const SizedBox(width: 4),
                                       Text(
@@ -267,8 +268,8 @@ class _ServiceCatalogueScreenState extends State<ServiceCatalogueScreen> {
                                       favorites.toggle(widget.serviceId),
                                   icon: Icon(
                                     _isFavorite
-                                        ? Icons.favorite
-                                        : Icons.favorite_border,
+                                        ? LucideIcons.heart
+                                        : LucideIcons.heart,
                                     color: _isFavorite
                                         ? AppColors.accent
                                         : AppColors.primaryLight,
@@ -327,7 +328,7 @@ class _ServiceCatalogueScreenState extends State<ServiceCatalogueScreen> {
                                       errorWidget: (_, __, ___) => Container(
                                         width: 140,
                                         color: AppColors.chipBackground,
-                                        child: const Icon(Icons.broken_image),
+                                        child: const Icon(LucideIcons.imageOff),
                                       ),
                                     ),
                                   );
@@ -390,7 +391,7 @@ class _ServiceCatalogueScreenState extends State<ServiceCatalogueScreen> {
                       ),
                       child: IconButton(
                         onPressed: () => context.go('/chat/${tech.id}'),
-                        icon: const Icon(Icons.chat_bubble_outline,
+                        icon: const Icon(LucideIcons.messageCircle,
                             color: AppColors.textDark),
                       ),
                     ),
@@ -419,7 +420,7 @@ class _ServiceCatalogueScreenState extends State<ServiceCatalogueScreen> {
     return Container(
       color: AppColors.primaryDark,
       child: const Icon(
-        Icons.spa,
+        LucideIcons.flower,
         color: Colors.white54,
         size: 64,
       ),
@@ -431,7 +432,7 @@ class _ServiceCatalogueScreenState extends State<ServiceCatalogueScreen> {
       padding: const EdgeInsets.only(left: 8),
       child: IconButton(
         onPressed: () => context.pop(),
-        icon: const Icon(Icons.arrow_back, color: Colors.white),
+        icon: const Icon(LucideIcons.arrowLeft, color: Colors.white),
         style: IconButton.styleFrom(
           backgroundColor: Colors.black.withOpacity(0.3),
           shape: const CircleBorder(),
@@ -505,7 +506,7 @@ class _ServiceCard extends StatelessWidget {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    const Icon(Icons.access_time,
+                    const Icon(LucideIcons.clock,
                         color: AppColors.textLight, size: 14),
                     const SizedBox(width: 4),
                     Text(
@@ -513,7 +514,7 @@ class _ServiceCard extends StatelessWidget {
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                     const SizedBox(width: 12),
-                    const Icon(Icons.payments,
+                    const Icon(LucideIcons.banknote,
                         color: AppColors.textLight, size: 14),
                     const SizedBox(width: 4),
                     Text(
@@ -535,7 +536,7 @@ class _ServiceCard extends StatelessWidget {
             ),
             child: IconButton(
               onPressed: () => context.go('/service/${service.id}'),
-              icon: const Icon(Icons.add, color: Colors.white, size: 22),
+              icon: const Icon(LucideIcons.plus, color: Colors.white, size: 22),
             ),
           ),
         ],

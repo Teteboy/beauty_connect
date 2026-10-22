@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
@@ -30,11 +31,11 @@ class _DepositPaymentScreenState extends State<DepositPaymentScreen> {
         'orange_money',
         'Orange Money',
         '+237 6 77 •• •• 56 · Compte de démonstration',
-        Icons.smartphone_outlined),
+        LucideIcons.smartphone),
     _PayMethod('mtn_momo', 'MTN Mobile Money', 'Ajouter un numéro · Concept',
-        Icons.smartphone_outlined),
+        LucideIcons.smartphone),
     _PayMethod('card', 'Carte bancaire', 'Disponible selon le futur partenaire',
-        Icons.credit_card_outlined),
+        LucideIcons.creditCard),
   ];
 
   String _selectedMethod = 'orange_money';
@@ -86,7 +87,7 @@ class _DepositPaymentScreenState extends State<DepositPaymentScreen> {
                   const CircleAvatar(
                     radius: 24,
                     backgroundColor: AppColors.orangePale,
-                    child: Icon(Icons.person_outline, color: AppColors.accent),
+                    child: Icon(LucideIcons.user, color: AppColors.accent),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -190,8 +191,8 @@ class _DepositPaymentScreenState extends State<DepositPaymentScreen> {
                         ),
                         Icon(
                           selected
-                              ? Icons.radio_button_checked
-                              : Icons.radio_button_off,
+                              ? LucideIcons.circleDot
+                              : LucideIcons.circle,
                           color:
                               selected ? AppColors.accent : AppColors.textLight,
                         ),
@@ -237,7 +238,7 @@ class _DepositPaymentScreenState extends State<DepositPaymentScreen> {
               color: AppColors.orangePale,
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.check_circle_outline,
+            child: const Icon(LucideIcons.circleCheck,
                 color: AppColors.success, size: 48),
           ),
           const SizedBox(height: 24),

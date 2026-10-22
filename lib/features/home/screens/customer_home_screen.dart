@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../core/providers/auth_provider.dart';
@@ -62,7 +63,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                                     fontWeight: FontWeight.w800)),
                         const SizedBox(height: 6),
                         Row(children: [
-                          const Icon(Icons.location_on_outlined,
+                          const Icon(LucideIcons.mapPin,
                               size: 16, color: Colors.white),
                           const SizedBox(width: 4),
                           Expanded(
@@ -75,7 +76,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                     IconButton(
                         tooltip: 'Notifications',
                         onPressed: () => context.go('/notifications'),
-                        icon: const Icon(Icons.notifications_outlined,
+                        icon: const Icon(LucideIcons.bell,
                             color: Colors.white)),
                     if (context.watch<NotificationProvider>().unreadCount > 0)
                       const Positioned(
@@ -92,7 +93,7 @@ class _CustomerHomeScreenState extends State<CustomerHomeScreen> {
                               ? NetworkImage(user!.profileImage!)
                               : null,
                           child: user?.profileImage == null
-                              ? const Icon(Icons.person_outline,
+                              ? const Icon(LucideIcons.user,
                                   color: AppColors.primary)
                               : null)),
                 ]),

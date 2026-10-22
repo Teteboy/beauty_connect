@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 
 class AppNotification {
   final String id;
@@ -54,17 +55,17 @@ class AppNotification {
   IconData get icon {
     switch (type) {
       case 'booking':
-        return Icons.calendar_today;
+        return LucideIcons.calendar;
       case 'message':
-        return Icons.message;
+        return LucideIcons.messageSquare;
       case 'payment':
-        return Icons.payment;
+        return LucideIcons.creditCard;
       case 'review':
-        return Icons.star;
+        return LucideIcons.star;
       case 'service':
-        return Icons.spa;
+        return LucideIcons.flower;
       default:
-        return Icons.notifications;
+        return LucideIcons.bell;
     }
   }
 

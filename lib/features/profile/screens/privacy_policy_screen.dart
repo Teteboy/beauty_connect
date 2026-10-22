@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../core/providers/notification_provider.dart';
@@ -37,7 +38,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
                         ? context.pop()
                         : context.go('/profile'),
                     icon:
-                        const Icon(Icons.arrow_back, color: AppColors.textDark),
+                        const Icon(LucideIcons.arrowLeft, color: AppColors.textDark),
                   ),
                   Expanded(
                     child: Column(
@@ -80,7 +81,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.shield_outlined,
+                    const Icon(LucideIcons.shieldCheck,
                         color: AppColors.primary, size: 22),
                     const SizedBox(width: 10),
                     Expanded(
@@ -176,7 +177,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
                 title: 'Supprimer mon compte',
                 subtitle: 'Une confirmation sera nécessaire.',
                 isDestructive: true,
-                trailing: const Icon(Icons.delete_outline,
+                trailing: const Icon(LucideIcons.trash,
                     color: AppColors.error, size: 20),
                 onTap: () => _showDeleteDialog(context),
               ),
@@ -359,7 +360,7 @@ class _NavRow extends StatelessWidget {
                   ),
                 ),
                 trailing ??
-                    const Icon(Icons.chevron_right_rounded,
+                    const Icon(LucideIcons.chevronRight,
                         color: AppColors.textDark, size: 22),
               ],
             ),

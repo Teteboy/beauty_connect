@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:go_router/go_router.dart';
@@ -76,7 +77,7 @@ class _TechnicianBookingsScreenState extends State<TechnicianBookingsScreen> {
                 child: const Text('Tout voir')),
             IconButton(
                 tooltip: 'Choisir une date',
-                icon: const Icon(Icons.calendar_month_outlined,
+                icon: const Icon(LucideIcons.calendarDays,
                     color: AppColors.primary),
                 onPressed: () async {
                   final date = await showDatePicker(
@@ -349,7 +350,7 @@ class _TechnicianBookingCard extends StatelessWidget {
                     Row(
                       children: [
                         const Icon(
-                          Icons.calendar_today_outlined,
+                          LucideIcons.calendar,
                           color: AppColors.accentPink,
                           size: 15,
                         ),
@@ -429,7 +430,7 @@ class _TechnicianBookingCard extends StatelessWidget {
 
   Widget _imagePlaceholder() => Container(
         color: AppColors.chipBackground,
-        child: const Icon(Icons.spa_outlined, color: AppColors.primaryLight),
+        child: const Icon(LucideIcons.flower, color: AppColors.primaryLight),
       );
 }
 
@@ -487,7 +488,7 @@ class _EmptyState extends StatelessWidget {
       child: Column(
         children: [
           const Icon(
-            Icons.calendar_today_outlined,
+            LucideIcons.calendar,
             size: 48,
             color: AppColors.textLight,
           ),
@@ -513,7 +514,7 @@ class _ErrorState extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.error_outline, size: 48, color: AppColors.error),
+            const Icon(LucideIcons.circleAlert, size: 48, color: AppColors.error),
             const SizedBox(height: 12),
             Text(message, textAlign: TextAlign.center),
             const SizedBox(height: 16),

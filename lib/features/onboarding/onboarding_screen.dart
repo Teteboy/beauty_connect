@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/services/storage_service.dart';
 import '../../core/theme/app_colors.dart';
@@ -145,7 +146,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       ),
       child: index == 1
           ? Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const Icon(Icons.event_available_outlined,
+              const Icon(LucideIcons.calendarCheck,
                   color: Colors.white, size: 44),
               const Spacer(),
               Container(
@@ -182,14 +183,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   children: [
                   Icon(
                       index == 0
-                          ? Icons.content_cut
-                          : Icons.face_retouching_natural,
+                          ? LucideIcons.scissors
+                          : LucideIcons.sparkles,
                       size: 82,
                       color: Colors.white),
                   Icon(
                       index == 0
-                          ? Icons.location_on_outlined
-                          : Icons.spa_outlined,
+                          ? LucideIcons.mapPin
+                          : LucideIcons.flower,
                       size: 82,
                       color: AppColors.amber),
                 ])),

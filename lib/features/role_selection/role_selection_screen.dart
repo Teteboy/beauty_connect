@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/app_logo.dart';
@@ -47,11 +48,11 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
           Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Expanded(
                 child: _roleCard('customer', 'Je cherche des services',
-                    'Découvrir et réserver', Icons.person_outline)),
+                    'Découvrir et réserver', LucideIcons.user)),
             const SizedBox(width: 12),
             Expanded(
                 child: _roleCard('technician', 'Je suis un prestataire',
-                    'Partager mon savoir-faire', Icons.content_cut)),
+                    'Partager mon savoir-faire', LucideIcons.scissors)),
           ]),
           const SizedBox(height: 18),
           const Text('Deux rôles, une même connexion.',

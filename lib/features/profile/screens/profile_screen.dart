@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -210,7 +211,7 @@ class ProfileScreen extends StatelessWidget {
                         _MenuItem(
                           title: 'Se déconnecter',
                           isDestructive: true,
-                          trailing: const Icon(Icons.logout_rounded,
+                          trailing: const Icon(LucideIcons.logOut,
                               color: AppColors.error, size: 20),
                           onTap: () async {
                             await authProvider.logout();
@@ -290,7 +291,7 @@ class _ProfileAvatar extends StatelessWidget {
                   width: 28,
                   height: 28,
                   child:
-                      Icon(Icons.edit_outlined, color: Colors.white, size: 15),
+                      Icon(LucideIcons.pencil, color: Colors.white, size: 15),
                 ),
               ),
             ),
@@ -385,7 +386,7 @@ class _MenuItem extends StatelessWidget {
                 ),
                 trailing ??
                     const Icon(
-                      Icons.chevron_right_rounded,
+                      LucideIcons.chevronRight,
                       color: AppColors.textDark,
                       size: 22,
                     ),

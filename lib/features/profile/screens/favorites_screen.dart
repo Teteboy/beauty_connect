@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -72,7 +73,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                         children: [
                           IconButton(
                             onPressed: _goBack,
-                            icon: const Icon(Icons.arrow_back_rounded,
+                            icon: const Icon(LucideIcons.arrowLeft,
                                 color: AppColors.primary),
                             padding: EdgeInsets.zero,
                             constraints: const BoxConstraints(),
@@ -193,7 +194,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.favorite_border_rounded,
+            const Icon(LucideIcons.heart,
                 size: 64, color: AppColors.accent),
             const SizedBox(height: 16),
             Text(
@@ -323,7 +324,7 @@ class _FavoriteCard extends StatelessWidget {
               ),
               IconButton(
                 onPressed: onRemove,
-                icon: const Icon(Icons.favorite, color: AppColors.accent),
+                icon: const Icon(LucideIcons.heart, color: AppColors.accent),
                 tooltip: 'Retirer des favoris',
               ),
             ],
@@ -342,6 +343,6 @@ class _FavoriteCard extends StatelessWidget {
 
   Widget _placeholder() => const ColoredBox(
         color: AppColors.navyBackground,
-        child: Icon(Icons.person_outline, color: AppColors.primary),
+        child: Icon(LucideIcons.user, color: AppColors.primary),
       );
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:intl/intl.dart';
 import '../../../core/models/message.dart';
 import '../../../core/theme/app_colors.dart';
@@ -63,7 +64,7 @@ class MessageBubble extends StatelessWidget {
                       if (isMe) ...[
                         const SizedBox(width: 4),
                         Icon(
-                          message.isRead ? Icons.done_all : Icons.done,
+                          message.isRead ? LucideIcons.checkCheck : LucideIcons.check,
                           size: 16,
                           color: message.isRead
                               ? Colors.white

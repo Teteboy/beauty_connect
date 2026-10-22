@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../core/providers/auth_provider.dart';
@@ -153,13 +154,13 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
                                   Expanded(child: _stat('—', 'Taux de réponse'))
                                 ]),
                                 const SizedBox(height: 20),
-                                _link(Icons.content_cut, 'Mes Services',
+                                _link(LucideIcons.scissors, 'Mes Services',
                                     '/my-services'),
-                                _link(Icons.calendar_month_outlined,
+                                _link(LucideIcons.calendarDays,
                                     'Mes Réservations', '/technician-bookings'),
-                                _link(Icons.chat_bubble_outline, 'Mes Messages',
+                                _link(LucideIcons.messageCircle, 'Mes Messages',
                                     '/messages'),
-                                _link(Icons.account_balance_wallet_outlined,
+                                _link(LucideIcons.wallet,
                                     'Gains', '/analytics'),
                                 const SizedBox(height: 16),
                                 SectionHeader(
@@ -193,7 +194,7 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
                                           onTap: () => context.go(
                                               '/booking-detail/${upcoming.first.id}'),
                                           leading: const Icon(
-                                              Icons.event_available_outlined,
+                                              LucideIcons.calendarCheck,
                                               color: AppColors.primary),
                                           title: Text(
                                               '${upcoming.first.customerName} · ${upcoming.first.serviceName}',
@@ -245,5 +246,5 @@ class _TechnicianHomeScreenState extends State<TechnicianHomeScreen> {
                       color: AppColors.primaryDark,
                       fontWeight: FontWeight.w600)),
               trailing:
-                  const Icon(Icons.chevron_right, color: AppColors.primary))));
+                  const Icon(LucideIcons.chevronRight, color: AppColors.primary))));
 }

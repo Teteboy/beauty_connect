@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -58,7 +59,7 @@ class _MyServicesScreenState extends State<MyServicesScreen> {
     return Scaffold(
       floatingActionButton: FloatingActionButton.extended(
           onPressed: () => context.go('/add-service'),
-          icon: const Icon(Icons.add),
+          icon: const Icon(LucideIcons.plus),
           label: const Text('Ajouter un service')),
       body: SafeArea(
           child: Column(children: [
@@ -71,7 +72,7 @@ class _MyServicesScreenState extends State<MyServicesScreen> {
                     ? Center(
                         child:
                             Column(mainAxisSize: MainAxisSize.min, children: [
-                        const Icon(Icons.error_outline,
+                        const Icon(LucideIcons.circleAlert,
                             color: AppColors.error, size: 48),
                         const SizedBox(height: 16),
                         const Text('Impossible de charger vos services.'),
@@ -157,11 +158,11 @@ class _MyServicesScreenState extends State<MyServicesScreen> {
                                 imageUrl: service.imageUrl!,
                                 fit: BoxFit.cover,
                                 errorWidget: (_, __, ___) => const Icon(
-                                    Icons.spa_outlined,
+                                    LucideIcons.flower,
                                     color: AppColors.primary))
                             : const ColoredBox(
                                 color: AppColors.navyBackground,
-                                child: Icon(Icons.spa_outlined,
+                                child: Icon(LucideIcons.flower,
                                     color: AppColors.primary)))),
             const SizedBox(width: 12),
             Expanded(
@@ -185,7 +186,7 @@ class _MyServicesScreenState extends State<MyServicesScreen> {
                           fontWeight: FontWeight.w700)),
                 ])),
             Column(children: [
-              const Icon(Icons.edit_outlined,
+              const Icon(LucideIcons.pencil,
                   size: 18, color: AppColors.primary),
               Row(mainAxisSize: MainAxisSize.min, children: [
                 Text(service.isAvailable ? 'Actif' : 'Inactif',

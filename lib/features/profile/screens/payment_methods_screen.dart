@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/theme/app_colors.dart';
@@ -143,11 +144,11 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
   IconData _iconFor(String type) {
     switch (type) {
       case 'card':
-        return Icons.credit_card_outlined;
+        return LucideIcons.creditCard;
       case 'mtn_momo':
       case 'orange_money':
       default:
-        return Icons.smartphone_outlined;
+        return LucideIcons.smartphone;
     }
   }
 
@@ -197,7 +198,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                   _AddMethodTile(
                     label: 'MTN Mobile Money',
                     subtitle: 'Ajouter un numéro · Concept',
-                    icon: Icons.smartphone_outlined,
+                    icon: LucideIcons.smartphone,
                     onTap: _openAddSheet,
                   ),
 
@@ -234,7 +235,7 @@ class _PaymentMethodsScreenState extends State<PaymentMethodsScreen> {
                       ),
                       IconButton(
                         onPressed: _openAddSheet,
-                        icon: const Icon(Icons.credit_card_outlined,
+                        icon: const Icon(LucideIcons.creditCard,
                             color: AppColors.textDark),
                       ),
                     ],
@@ -352,10 +353,10 @@ class _MethodTile extends StatelessWidget {
             ),
           ),
           if (method.isDefault)
-            const Icon(Icons.check_circle_outline, color: AppColors.accent)
+            const Icon(LucideIcons.circleCheck, color: AppColors.accent)
           else
             PopupMenuButton<String>(
-              icon: const Icon(Icons.more_vert, color: AppColors.textLight),
+              icon: const Icon(LucideIcons.ellipsisVertical, color: AppColors.textLight),
               onSelected: (value) {
                 if (value == 'default') onSetDefault();
                 if (value == 'delete') onDelete();
@@ -432,7 +433,7 @@ class _AddMethodTile extends StatelessWidget {
                 ],
               ),
             ),
-            const Icon(Icons.add_circle_outline, color: AppColors.accent),
+            const Icon(LucideIcons.circlePlus, color: AppColors.accent),
           ],
         ),
       ),
