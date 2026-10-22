@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/providers/auth_provider.dart';
 import '../../core/services/storage_service.dart';
+import '../../core/theme/app_colors.dart';
+import '../../core/widgets/app_logo.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -20,24 +22,26 @@ class _SplashScreenState extends State<SplashScreen> {
 
   void _checkAuthAndNavigate() async {
     await Future.delayed(const Duration(seconds: 3));
-    
+
     if (!mounted) return;
 
     final authProvider = context.read<AuthProvider>();
     final storageService = StorageService();
-    
-    // Check if user has seen onboarding
-    final hasSeenOnboarding = await storageService.getBool('has_seen_onboarding') ?? false;
-    
+
+    final hasSeenOnboarding =
+        await storageService.getBool('has_seen_onboarding') ?? false;
+
+    if (!mounted) return;
+
     if (!hasSeenOnboarding) {
       context.go('/onboarding');
       return;
     }
 
-    // Initialize auth provider
     await authProvider.initialize();
 
-    // Check if user is logged in
+    if (!mounted) return;
+
     if (authProvider.isAuthenticated) {
       context.go('/home');
     } else {
@@ -48,38 +52,49 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).primaryColor,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.spa,
-              size: 100,
-              color: Colors.white,
-            ),
-            const SizedBox(height: 24),
-            const Text(
-              'Beauty Connect',
-              style: TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+      body: Container(
+        decoration: const BoxDecoration(
+          color: AppColors.primaryDark,
+        ),
+        child: SafeArea(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Spacer(),
+              const Text('BEAUTÉ · BIEN-ÊTRE · PROXIMITÉ',
+                  style: TextStyle(color: Colors.white, fontSize: 10)),
+              const SizedBox(height: 28),
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 39),
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(28)),
+                child: const AppLogo(size: 184, full: true),
               ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Connect with beauty professionals',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.white.withOpacity(0.8),
+              const SizedBox(height: 24),
+              Container(
+                  width: 48,
+                  height: 4,
+                  decoration: BoxDecoration(
+                      color: AppColors.accent,
+                      borderRadius: BorderRadius.circular(2))),
+              const SizedBox(height: 28),
+              const Text('Votre beauté, notre connexion',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontStyle: FontStyle.italic)),
+              const Spacer(),
+              Text(
+                'DOUALA · YAOUNDÉ · ET TOUT PRÈS DE VOUS',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Colors.white.withOpacity(0.7),
+                    ),
               ),
-            ),
-            const SizedBox(height: 48),
-            const CircularProgressIndicator(
-              color: Colors.white,
-            ),
-          ],
+              const SizedBox(height: 48),
+            ],
+          ),
         ),
       ),
     );

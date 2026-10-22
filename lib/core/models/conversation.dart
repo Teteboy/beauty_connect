@@ -15,8 +15,8 @@ class Conversation {
   factory Conversation.fromJson(Map<String, dynamic> json) {
     return Conversation(
       user: User.fromJson(json['user']),
-      lastMessage: json['lastMessage'] != null 
-          ? Message.fromJson(json['lastMessage']) 
+      lastMessage: json['lastMessage'] != null
+          ? Message.fromJson(json['lastMessage'])
           : null,
       unreadCount: json['unreadCount'] ?? 0,
     );
@@ -31,4 +31,10 @@ class Conversation {
   }
 
   String get conversationId => user.id.toString();
+
+  DateTime? get lastMessageTime => lastMessage?.timestamp;
+
+  String? get lastMessageContent => lastMessage?.content;
+
+  bool get isOnline => false;
 }

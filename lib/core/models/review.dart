@@ -36,9 +36,12 @@ class Review {
       technicianId: json['technicianId'],
       rating: json['rating'],
       comment: json['comment'],
-      customer: json['customer'] != null ? User.fromJson(json['customer']) : null,
-      technician: json['technician'] != null ? User.fromJson(json['technician']) : null,
-      booking: json['booking'] != null ? Booking.fromJson(json['booking']) : null,
+      customer:
+          json['customer'] != null ? User.fromJson(json['customer']) : null,
+      technician:
+          json['technician'] != null ? User.fromJson(json['technician']) : null,
+      booking:
+          json['booking'] != null ? Booking.fromJson(json['booking']) : null,
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
     );

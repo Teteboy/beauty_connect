@@ -2,18 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import '../../../core/theme/app_colors.dart';
 import '../../../core/providers/booking_provider.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/models/booking.dart';
 import '../../../core/models/user.dart';
 import '../../../core/models/service.dart';
 import '../../../core/widgets/custom_button.dart';
+import '../../../core/widgets/status_badge.dart';
+import '../../services/widgets/service_card.dart';
 
 class BookingDetailScreen extends StatefulWidget {
   final String bookingId;
-
   const BookingDetailScreen({super.key, required this.bookingId});
-
   @override
   State<BookingDetailScreen> createState() => _BookingDetailScreenState();
 }
@@ -22,7 +23,6 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
   Booking? _booking;
   bool _isLoading = true;
   String? _error;
-
   @override
   void initState() {
     super.initState();
@@ -31,735 +31,338 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
 
   void _loadBooking() async {
     try {
-      final bookingProvider = context.read<BookingProvider>();
-      final booking = await bookingProvider.fetchBookingById(widget.bookingId);
-      
-      if (mounted) {
+      final booking = await context
+          .read<BookingProvider>()
+          .fetchBookingById(widget.bookingId);
+      if (mounted)
         setState(() {
           _booking = booking;
           _isLoading = false;
-          _error = booking == null ? 'Booking not found' : null;
+          _error = booking == null ? 'Réservation introuvable' : null;
         });
-      }
-    } catch (e) {
-      if (mounted) {
+    } catch (_) {
+      if (mounted)
         setState(() {
-          _error = 'Failed to load booking: $e';
+          _error = 'Impossible de charger la réservation';
           _isLoading = false;
         });
-      }
     }
   }
 
   void _updateBookingStatus(String status) async {
     if (_booking == null) return;
-    
-    final bookingProvider = context.read<BookingProvider>();
-    final success = await bookingProvider.updateBookingStatus(_booking!.id, status);
-    
-    if (mounted) {
-      if (success) {
-        setState(() {
-          _booking = _booking!.copyWith(status: status);
-        });
-        
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                Icon(Icons.check_circle, color: Colors.white),
-                SizedBox(width: 8),
-                Text('Booking ${status.toLowerCase()} successfully'),
-              ],
-            ),
-            backgroundColor: Colors.green,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          ),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                Icon(Icons.error, color: Colors.white),
-                SizedBox(width: 8),
-                Expanded(child: Text(bookingProvider.error ?? 'Failed to update booking')),
-              ],
-            ),
-            backgroundColor: Colors.red,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          ),
-        );
-      }
-    }
+    final success = await context
+        .read<BookingProvider>()
+        .updateBookingStatus(_booking!.id, status);
+    if (!mounted) return;
+    if (success) setState(() => _booking = _booking!.copyWith(status: status));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(success
+            ? 'Réservation mise à jour.'
+            : 'Impossible de modifier la réservation. Réessayez.'),
+        backgroundColor: success ? AppColors.success : AppColors.error));
   }
 
   void _navigateBack() {
     if (Navigator.of(context).canPop()) {
       context.pop();
     } else {
-      final currentUser = context.read<AuthProvider>().user;
-      final isTechnician = currentUser?.role == 'technician';
-      if (isTechnician) {
-        context.go('/technician-bookings');
-      } else {
-        context.go('/bookings');
-      }
+      context.go(context.read<AuthProvider>().user?.role == 'technician'
+          ? '/technician-bookings'
+          : '/bookings');
     }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (_isLoading) {
-      return Scaffold(
-        appBar: AppBar(title: const Text('Booking Details')),
-        body: const Center(child: CircularProgressIndicator()),
-      );
-    }
-
-    if (_error != null || _booking == null) {
-      return Scaffold(
-        appBar: AppBar(title: const Text('Booking Details')),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.error_outline,
-                size: 64,
-                color: Colors.grey[400],
-              ),
-              const SizedBox(height: 16),
-              Text(
-                _error ?? 'Booking not found',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey[600],
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 24),
-              CustomButton(
-                text: 'Try Again',
-                onPressed: () {
-                  setState(() {
-                    _isLoading = true;
-                    _error = null;
-                  });
-                  _loadBooking();
-                },
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    final currentUser = context.read<AuthProvider>().user;
-    final isTechnician = currentUser?.role == 'technician';
-    final dateFormat = DateFormat('EEEE, MMMM dd, yyyy');
-    final timeFormat = DateFormat('hh:mm a');
-
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        leading: Container(
-          margin: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: IconButton(
-            onPressed: _navigateBack,
-            icon: Icon(
-              Icons.arrow_back_ios_new,
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
-          ),
-        ),
-        title: Text(
-          'Booking Details',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Theme.of(context).colorScheme.onSurface,
-          ),
-        ),
-        centerTitle: true,
-        actions: [
-          if (_booking!.status == 'completed' && !isTechnician)
-            Container(
-              margin: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: IconButton(
-                onPressed: () => context.go('/review/${_booking!.id}'),
-                icon: Icon(
-                  Icons.rate_review,
-                  color: Theme.of(context).primaryColor,
-                ),
-                tooltip: 'Write Review',
-              ),
-            ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Status Card
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    _getStatusColor().withOpacity(0.1),
-                    _getStatusColor().withOpacity(0.05),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: _getStatusColor().withOpacity(0.3)),
-                boxShadow: [
-                  BoxShadow(
-                    color: _getStatusColor().withOpacity(0.1),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: _getStatusColor().withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Icon(
-                      _getStatusIcon(),
-                      color: _getStatusColor(),
-                      size: 28,
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          _booking!.status.toUpperCase(),
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: _getStatusColor(),
-                          ),
-                        ),
-                        Text(
-                          _getStatusDescription(),
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 24),
-
-            // Service Information
-            _buildSection(
-              'Service Information',
-              [
-                _buildInfoRow('Service', _booking!.service?.name ?? 'Unknown'),
-                _buildInfoRow('Category', _booking!.service?.category ?? 'Unknown'),
-                _buildInfoRow('Duration', _booking!.service?.formattedDuration ?? 'Unknown'),
-                _buildInfoRow('Price', '\$${_booking!.price!.toStringAsFixed(2)}'),
-              ],
-            ),
-
-            // Date & Time
-            _buildSection(
-              'Date & Time',
-              [
-                _buildInfoRow('Date', dateFormat.format(_booking!.dateTime)),
-                _buildInfoRow('Time', timeFormat.format(_booking!.dateTime)),
-              ],
-            ),
-
-            // Customer/Technician Information
-            if (isTechnician && _booking!.customer != null)
-              _buildSection(
-                'Customer Information',
-                [
-                  _buildInfoRow('Name', _booking!.customer!.fullName),
-                  if (_booking!.customer!.phone != null)
-                    _buildInfoRow('Phone', _booking!.customer!.phone!),
-                  _buildInfoRow('Email', _booking!.customer!.email),
-                ],
-              ),
-
-            if (!isTechnician && _booking!.technician != null)
-              _buildSection(
-                'Technician Information',
-                [
-                  _buildInfoRow('Name', _booking!.technician!.fullName),
-                  if (_booking!.technician!.phone != null)
-                    _buildInfoRow('Phone', _booking!.technician!.phone!),
-                  if (_booking!.technician!.specialty != null)
-                    _buildInfoRow('Specialty', _booking!.technician!.specialty!),
-                ],
-              ),
-
-            // Notes
-            if (_booking!.notes != null && _booking!.notes!.isNotEmpty)
-              _buildSection(
-                'Notes',
-                [
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(_booking!.notes!),
-                  ),
-                ],
-              ),
-
-            const SizedBox(height: 32),
-
-            // Action Buttons
-            Consumer<BookingProvider>(
-              builder: (context, bookingProvider, _) {
-                return Column(
-                  children: [
-                    if (isTechnician && _booking!.status == 'pending') ...[
-                      Container(
-                        width: double.infinity,
-                        height: 56,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [Colors.green, Colors.green.shade600],
-                          ),
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.green.withOpacity(0.3),
-                              blurRadius: 12,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: ElevatedButton(
-                          onPressed: bookingProvider.isLoading 
-                              ? null 
-                              : () => _updateBookingStatus('confirmed'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.transparent,
-                            shadowColor: Colors.transparent,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                          ),
-                          child: bookingProvider.isLoading
-                              ? const SizedBox(
-                                  height: 20,
-                                  width: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                  ),
-                                )
-                              : const Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(Icons.check_circle, color: Colors.white),
-                                    SizedBox(width: 8),
-                                    Text(
-                                      'Confirm Booking',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      Container(
-                        width: double.infinity,
-                        height: 56,
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.red.withOpacity(0.3)),
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: ElevatedButton(
-                          onPressed: bookingProvider.isLoading 
-                              ? null 
-                              : () => _showCancelConfirmation('cancelled'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.transparent,
-                            shadowColor: Colors.transparent,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                          ),
-                          child: const Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.cancel, color: Colors.red),
-                              SizedBox(width: 8),
-                              Text(
-                                'Decline Booking',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.red,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-
-                    if (isTechnician && _booking!.status == 'confirmed')
-                      CustomButton(
-                        text: 'Mark as Completed',
-                        isLoading: bookingProvider.isLoading,
-                        onPressed: () => _updateBookingStatus('completed'),
-                      ),
-
-                    if (!isTechnician && 
-                        (_booking!.status == 'pending' || _booking!.status == 'confirmed'))
-                      CustomButton(
-                        text: 'Cancel Booking',
-                        backgroundColor: Colors.red,
-                        isLoading: bookingProvider.isLoading,
-                        onPressed: () => _showCancelConfirmation('cancelled'),
-                      ),
-                  ],
-                );
-              },
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   void _showCancelConfirmation(String status) {
     showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Cancel Booking'),
-        content: const Text('Are you sure you want to cancel this booking? This action cannot be undone.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Keep Booking'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              _updateBookingStatus(status);
-            },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Cancel Booking'),
-          ),
-        ],
-      ),
-    );
+        context: context,
+        builder: (context) => AlertDialog(
+                title: const Text('Annuler la réservation ?'),
+                content: const Text('Cette action est définitive.'),
+                actions: [
+                  TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: const Text('Conserver')),
+                  TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        _updateBookingStatus(status);
+                      },
+                      child: const Text('Annuler'))
+                ]));
   }
 
-  Widget _buildSection(String title, List<Widget> children) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+  @override
+  Widget build(BuildContext context) {
+    final appBar = AppBar(
+        title: const Text('Votre rendez-vous'),
+        leading: IconButton(
+            onPressed: _navigateBack,
+            icon: const Icon(Icons.arrow_back, color: AppColors.primary)));
+    if (_isLoading)
+      return Scaffold(
+          appBar: appBar,
+          body: const Center(child: CircularProgressIndicator()));
+    if (_error != null || _booking == null)
+      return Scaffold(
+          appBar: appBar,
+          body: Center(
+              child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(mainAxisSize: MainAxisSize.min, children: [
+                    const Icon(Icons.error_outline,
+                        size: 48, color: AppColors.error),
+                    const SizedBox(height: 16),
+                    Text(_error ?? 'Réservation introuvable'),
+                    const SizedBox(height: 20),
+                    CustomButton(
+                        text: 'Réessayer',
+                        onPressed: () {
+                          setState(() {
+                            _isLoading = true;
+                            _error = null;
+                          });
+                          _loadBooking();
+                        })
+                  ]))));
+    final booking = _booking!;
+    final isTechnician =
+        context.read<AuthProvider>().user?.role == 'technician';
+    final person = isTechnician ? booking.customer : booking.technician;
+    final active = const ['pending', 'confirmed'].contains(booking.status);
+    final image = person?.profileImage;
+    final completed = booking.status == 'completed';
+    final confirmed = const ['confirmed', 'in_progress', 'completed']
+        .contains(booking.status);
+    return Scaffold(
+      appBar: appBar,
+      body: ListView(padding: const EdgeInsets.all(16), children: [
+        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          Flexible(
+              child: Text('RÉSERVATION BC-${booking.id}',
+                  style: Theme.of(context).textTheme.bodySmall)),
+          StatusBadge(status: booking.status)
+        ]),
         const SizedBox(height: 16),
         Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.08),
-                spreadRadius: 0,
-                blurRadius: 20,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: children,
-          ),
-        ),
-        const SizedBox(height: 24),
-      ],
-    );
-  }
-
-  Widget _buildInfoRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 100,
-            child: Text(
-              label,
-              style: TextStyle(
-                color: Colors.grey[600],
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Text(
-              value,
-              style: const TextStyle(fontWeight: FontWeight.w600),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Color _getStatusColor() {
-    switch (_booking!.status) {
-      case 'pending':
-        return Colors.orange;
-      case 'confirmed':
-        return Colors.blue;
-      case 'completed':
-        return Colors.green;
-      case 'cancelled':
-        return Colors.red;
-      default:
-        return Colors.grey;
-    }
-  }
-
-  IconData _getStatusIcon() {
-    switch (_booking!.status) {
-      case 'pending':
-        return Icons.schedule;
-      case 'confirmed':
-        return Icons.check_circle;
-      case 'completed':
-        return Icons.done_all;
-      case 'cancelled':
-        return Icons.cancel;
-      default:
-        return Icons.help;
-    }
-  }
-
-  String _getStatusDescription() {
-    switch (_booking!.status) {
-      case 'pending':
-        return 'Waiting for technician confirmation';
-      case 'confirmed':
-        return 'Appointment confirmed and scheduled';
-      case 'completed':
-        return 'Service completed successfully';
-      case 'cancelled':
-        return 'Booking has been cancelled';
-      default:
-        return 'Status unknown';
-    }
-  }
-}
-
-// Extension to add copyWith method to Booking
-extension BookingExtension on Booking {
-  Booking copyWith({
-    String? id,
-    int? customerId,
-    int? technicianId,
-    int? serviceId,
-    DateTime? dateTime,
-    String? status,
-    String? notes,
-    double? price,
-    User? customer,
-    User? technician,
-    Service? service,
-    DateTime? createdAt,
-    DateTime? updatedAt,
-  }) {
-    return Booking(
-      id: id ?? this.id,
-      customerId: customerId ?? this.customerId,
-      technicianId: technicianId ?? this.technicianId,
-      serviceId: serviceId ?? this.serviceId,
-      dateTime: dateTime ?? this.dateTime,
-      status: status ?? this.status,
-      notes: notes ?? this.notes,
-      price: price ?? this.price,
-      customer: customer ?? this.customer,
-      technician: technician ?? this.technician,
-      service: service ?? this.service,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
-    );
-  }
-}
-
-class _InfoItem extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-  final Color color;
-
-  const _InfoItem({
-    required this.icon,
-    required this.label,
-    required this.value,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: color.withOpacity(0.3),
-        ),
-      ),
-      child: Column(
-        children: [
-          Icon(
-            icon,
-            color: color,
-            size: 24,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 12,
-              color: theme.colorScheme.onSurface.withOpacity(0.6),
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            value,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: theme.colorScheme.onSurface,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _DetailRow extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-  final bool isMultiline;
-
-  const _DetailRow({
-    required this.icon,
-    required this.label,
-    required this.value,
-    this.isMultiline = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    
-    return Row(
-      crossAxisAlignment: isMultiline ? CrossAxisAlignment.start : CrossAxisAlignment.center,
-      children: [
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+                color: AppColors.navyBackground,
+                borderRadius: BorderRadius.circular(16)),
+            child: Row(children: [
+              CircleAvatar(
+                  radius: 26,
+                  backgroundImage: image != null && image.isNotEmpty
+                      ? NetworkImage(image)
+                      : null,
+                  child: image == null || image.isEmpty
+                      ? const Icon(Icons.person_outline)
+                      : null),
+              const SizedBox(width: 12),
+              Expanded(
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                    Text(
+                        person?.fullName ??
+                            (isTechnician ? 'Client' : booking.technicianName),
+                        style: const TextStyle(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 16)),
+                    if (person?.specialty != null)
+                      Text(person!.specialty!,
+                          style: Theme.of(context).textTheme.bodySmall),
+                    if (person?.location != null)
+                      Text(person!.location!,
+                          style: Theme.of(context).textTheme.bodySmall)
+                  ]))
+            ])),
+        const SizedBox(height: 16),
         Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: theme.colorScheme.primary.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(
-            icon,
-            size: 20,
-            color: theme.colorScheme.primary,
-          ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: AppColors.divider),
+                boxShadow: AppColors.cardShadow),
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(booking.serviceName,
+                  style: Theme.of(context)
+                      .textTheme
+                      .headlineSmall
+                      ?.copyWith(color: AppColors.primary)),
+              const SizedBox(height: 12),
               Text(
-                label,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: theme.colorScheme.onSurface.withOpacity(0.6),
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                value,
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: theme.colorScheme.onSurface,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
+                  '${DateFormat('dd/MM/yyyy').format(booking.dateTime)} · ${DateFormat('HH:mm').format(booking.dateTime)}'),
+              const SizedBox(height: 16),
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                Text('Service · ${booking.service?.durationMinutes ?? 0} min'),
+                Text(ServiceCard.price(booking.price),
+                    style: const TextStyle(
+                        fontWeight: FontWeight.w700, color: AppColors.primary))
+              ]),
+              const SizedBox(height: 12),
+              const Text('Aucun paiement effectué dans l’application.',
+                  style: TextStyle(color: AppColors.textLight, fontSize: 11)),
+            ])),
+        const SizedBox(height: 24),
+        Text('Suivi de la réservation',
+            style: Theme.of(context)
+                .textTheme
+                .titleLarge
+                ?.copyWith(color: AppColors.primary)),
+        const SizedBox(height: 20),
+        _step('Demandée',
+            DateFormat('dd/MM/yyyy · HH:mm').format(booking.createdAt), true),
+        _step(
+            'Confirmée',
+            confirmed
+                ? 'Votre rendez-vous est confirmé'
+                : 'En attente du prestataire',
+            confirmed),
+        _step(
+            booking.status == 'cancelled' ? 'Annulée' : 'Terminée',
+            booking.status == 'cancelled'
+                ? 'Cette réservation a été annulée'
+                : completed
+                    ? 'Prestation terminée'
+                    : 'Après la prestation',
+            completed || booking.status == 'cancelled'),
+        if (booking.notes?.isNotEmpty == true) ...[
+          const SizedBox(height: 16),
+          Text('Notes pour le prestataire',
+              style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: 8),
+          Text(booking.notes!)
+        ],
+        if (isTechnician && person != null) ...[
+          const SizedBox(height: 16),
+          if (person.phone != null) Text('Téléphone : ${person.phone}'),
+          Text('E-mail : ${person.email}')
+        ],
+        if (completed && !isTechnician)
+          Padding(
+              padding: const EdgeInsets.only(top: 16),
+              child: CustomButton(
+                  text: 'Donner un avis',
+                  isOutlined: true,
+                  onPressed: () => context.go('/review/${booking.id}'))),
+      ]),
+      bottomNavigationBar: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: const BoxDecoration(
+              color: Colors.white,
+              border: Border(top: BorderSide(color: AppColors.divider))),
+          child: SafeArea(
+              top: false,
+              child: Consumer<BookingProvider>(
+                  builder: (context, provider, _) =>
+                      Column(mainAxisSize: MainAxisSize.min, children: [
+                        if (isTechnician && booking.status == 'pending') ...[
+                          CustomButton(
+                              text: 'Confirmer la réservation',
+                              isLoading: provider.isLoading,
+                              onPressed: () =>
+                                  _updateBookingStatus('confirmed')),
+                          const SizedBox(height: 8),
+                          CustomButton(
+                              text: 'Refuser la demande',
+                              isOutlined: true,
+                              isLoading: provider.isLoading,
+                              onPressed: () =>
+                                  _showCancelConfirmation('cancelled'))
+                        ],
+                        if (isTechnician && booking.status == 'confirmed')
+                          CustomButton(
+                              text: 'Marquer comme terminée',
+                              isLoading: provider.isLoading,
+                              onPressed: () =>
+                                  _updateBookingStatus('completed')),
+                        if (!isTechnician && active) ...[
+                          CustomButton(
+                              text: 'Payer l\'acompte · Concept',
+                              isOutlined: true,
+                              onPressed: () =>
+                                  context.push('/deposit/${booking.id}')),
+                          const SizedBox(height: 8)
+                        ],
+                        if (!isTechnician)
+                          Row(children: [
+                            if (active) ...[
+                              Expanded(
+                                  child: CustomButton(
+                                      text: 'Annuler',
+                                      isOutlined: true,
+                                      isLoading: provider.isLoading,
+                                      onPressed: () => _showCancelConfirmation(
+                                          'cancelled'))),
+                              const SizedBox(width: 12)
+                            ],
+                            Expanded(
+                                child: CustomButton(
+                                    text: 'Contacter',
+                                    onPressed: () => context
+                                        .go('/chat/${booking.technicianId}')))
+                          ]),
+                      ])))),
     );
   }
+
+  Widget _step(String title, String subtitle, bool reached) => Padding(
+      padding: const EdgeInsets.only(bottom: 24),
+      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Container(
+            width: 28,
+            height: 28,
+            decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: reached ? AppColors.primary : Colors.white,
+                border: Border.all(color: AppColors.primary)),
+            child: reached
+                ? const Icon(Icons.check, size: 16, color: Colors.white)
+                : null),
+        const SizedBox(width: 12),
+        Expanded(
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(title,
+              style: const TextStyle(
+                  color: AppColors.primary, fontWeight: FontWeight.w700)),
+          const SizedBox(height: 4),
+          Text(subtitle, style: Theme.of(context).textTheme.bodySmall)
+        ]))
+      ]));
 }
 
-
-
-
-
-
-
-
-
-
+extension BookingExtension on Booking {
+  Booking copyWith(
+          {String? id,
+          int? customerId,
+          int? technicianId,
+          int? serviceId,
+          DateTime? dateTime,
+          String? status,
+          String? notes,
+          double? price,
+          User? customer,
+          User? technician,
+          Service? service,
+          DateTime? createdAt,
+          DateTime? updatedAt}) =>
+      Booking(
+          id: id ?? this.id,
+          customerId: customerId ?? this.customerId,
+          technicianId: technicianId ?? this.technicianId,
+          serviceId: serviceId ?? this.serviceId,
+          dateTime: dateTime ?? this.dateTime,
+          status: status ?? this.status,
+          notes: notes ?? this.notes,
+          price: price ?? this.price,
+          customer: customer ?? this.customer,
+          technician: technician ?? this.technician,
+          service: service ?? this.service,
+          createdAt: createdAt ?? this.createdAt,
+          updatedAt: updatedAt ?? this.updatedAt);
+}

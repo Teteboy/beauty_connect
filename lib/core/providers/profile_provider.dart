@@ -33,7 +33,7 @@ class ProfileProvider with ChangeNotifier {
         maxHeight: 1024,
         imageQuality: 80,
       );
-      
+
       if (image != null) {
         _selectedImage = File(image.path);
         notifyListeners();
@@ -53,7 +53,7 @@ class ProfileProvider with ChangeNotifier {
         maxHeight: 1024,
         imageQuality: 80,
       );
-      
+
       if (image != null) {
         _selectedImage = File(image.path);
         notifyListeners();
@@ -96,14 +96,14 @@ class ProfileProvider with ChangeNotifier {
       print('Sending update data: $updateData');
       final response = await ApiService.put('/auth/profile', updateData);
       print('Update response: $response');
-      
+
       // Check if response has success field or user field
       if (response['success'] == true || response['user'] != null) {
         // Update the user in AuthProvider
         final userData = response['user'] ?? response;
         final updatedUser = User.fromJson(userData);
         authProvider.updateUser(updatedUser);
-        
+
         _selectedImage = null;
         _error = null;
         notifyListeners();
@@ -125,13 +125,7 @@ class ProfileProvider with ChangeNotifier {
 
   Future<String?> _uploadProfileImage(File imageFile) async {
     try {
-      // This would typically upload to a cloud storage service
-      // For now, we'll simulate the upload
-      await Future.delayed(const Duration(seconds: 1));
-      
-      // In a real app, you'd upload to AWS S3, Firebase Storage, etc.
-      // and return the URL
-      return 'https://example.com/profile-images/${DateTime.now().millisecondsSinceEpoch}.jpg';
+      return await ApiService.uploadImage(imageFile);
     } catch (e) {
       _error = 'Failed to upload image: $e';
       return null;
@@ -148,7 +142,7 @@ class ProfileProvider with ChangeNotifier {
         'currentPassword': currentPassword,
         'newPassword': newPassword,
       });
-      
+
       _error = null;
       notifyListeners();
       return true;
@@ -165,7 +159,7 @@ class ProfileProvider with ChangeNotifier {
     _setLoading(true);
     try {
       await ApiService.delete('/auth/account');
-      
+
       _error = null;
       notifyListeners();
       return true;

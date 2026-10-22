@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/custom_text_field.dart';
 
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
-
+  final String? initialRole;
+  const RegisterScreen({super.key, this.initialRole});
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
 }
@@ -17,324 +18,335 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
   final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
   final _phoneController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmController = TextEditingController();
   final _locationController = TextEditingController();
   final _bioController = TextEditingController();
-  final _specialtyController = TextEditingController();
-  
-  String _selectedRole = 'customer';
+  final _customSpecialtyController = TextEditingController();
+  String? _specialty;
+  late String _selectedRole;
   bool _obscurePassword = true;
+  bool _obscureConfirm = true;
+  bool _agreedToTerms = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedRole = widget.initialRole ?? 'customer';
+  }
 
   @override
   void dispose() {
-    _firstNameController.dispose();
-    _lastNameController.dispose();
-    _emailController.dispose();
-    _passwordController.dispose();
-    _phoneController.dispose();
-    _locationController.dispose();
-    _bioController.dispose();
-    _specialtyController.dispose();
+    for (final controller in [
+      _firstNameController,
+      _lastNameController,
+      _emailController,
+      _phoneController,
+      _passwordController,
+      _confirmController,
+      _locationController,
+      _bioController,
+      _customSpecialtyController
+    ]) {
+      controller.dispose();
+    }
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Form(
-            key: _formKey,
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // Back Button
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: IconButton(
-                      onPressed: () => context.pop(),
-                      icon: const Icon(Icons.arrow_back),
-                      style: IconButton.styleFrom(
-                        backgroundColor: Colors.grey[100],
-                        padding: const EdgeInsets.all(12),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  
-                  // Logo
-                  const Icon(
-                    Icons.spa,
-                    size: 80,
-                    color: Color(0xFF6B46C1),
-                  ),
-                  const SizedBox(height: 24),
-                  
-                  // Welcome Text
-                  Text(
-                    'Create Account',
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Join BeautyConnect today',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey[600],
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 32),
-                  
-                  // First Name Field
-                  CustomTextField(
-                    controller: _firstNameController,
-                    label: 'First Name',
-                    prefixIcon: const Icon(Icons.person_outlined),
-                    validator: (value) {
-                      if (value?.isEmpty ?? true) {
-                        return 'Please enter your first name';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  
-                  // Last Name Field
-                  CustomTextField(
-                    controller: _lastNameController,
-                    label: 'Last Name',
-                    prefixIcon: const Icon(Icons.person_outlined),
-                    validator: (value) {
-                      if (value?.isEmpty ?? true) {
-                        return 'Please enter your last name';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  
-                  // Email Field
-                  CustomTextField(
-                    controller: _emailController,
-                    label: 'Email',
-                    keyboardType: TextInputType.emailAddress,
-                    prefixIcon: const Icon(Icons.email_outlined),
-                    validator: (value) {
-                      if (value?.isEmpty ?? true) {
-                        return 'Please enter your email';
-                      }
-                      if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value!)) {
-                        return 'Please enter a valid email';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  
-                  // Password Field
-                  CustomTextField(
-                    controller: _passwordController,
-                    label: 'Password',
-                    obscureText: _obscurePassword,
-                    prefixIcon: const Icon(Icons.lock_outlined),
-                    suffixIcon: IconButton(
-                      icon: Icon(_obscurePassword ? Icons.visibility : Icons.visibility_off),
-                      onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-                    ),
-                    validator: (value) {
-                      if (value?.isEmpty ?? true) {
-                        return 'Please enter your password';
-                      }
-                      if (value!.length < 6) {
-                        return 'Password must be at least 6 characters';
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 16),
-                  
-                  // Phone Field
-                  CustomTextField(
-                    controller: _phoneController,
-                    label: 'Phone (Optional)',
-                    keyboardType: TextInputType.phone,
-                    prefixIcon: const Icon(Icons.phone_outlined),
-                  ),
-                  const SizedBox(height: 16),
-                  
-                  // Location Field
-                  CustomTextField(
-                    controller: _locationController,
-                    label: 'Location (Optional)',
-                    prefixIcon: const Icon(Icons.location_on_outlined),
-                  ),
-                  const SizedBox(height: 16),
-                  
-                  // Bio Field
-                  CustomTextField(
-                    controller: _bioController,
-                    label: 'Bio (Optional)',
-                    prefixIcon: const Icon(Icons.info_outlined),
-                    maxLines: 3,
-                    validator: null,
-                  ),
-                  const SizedBox(height: 16),
-                  
-                  // Role Selection
-                  Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey[300]!),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: DropdownButtonFormField<String>(
-                      value: _selectedRole,
-                      decoration: const InputDecoration(
-                        labelText: 'I am a',
-                        prefixIcon: Icon(Icons.work_outlined),
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                      ),
-                      items: const [
-                        DropdownMenuItem(value: 'customer', child: Text('Customer')),
-                        DropdownMenuItem(value: 'technician', child: Text('Beauty Technician')),
-                      ],
-                      onChanged: (value) => setState(() => _selectedRole = value!),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  
-                  // Specialty Field (only for technicians)
-                  if (_selectedRole == 'technician') ...[
-                    CustomTextField(
-                      controller: _specialtyController,
-                      label: 'Specialty (Optional)',
-                      prefixIcon: const Icon(Icons.star_outlined),
-                      hintText: 'e.g., Hair Styling, Nail Art, Makeup',
-                      validator: null,
-                    ),
-                    const SizedBox(height: 16),
-                  ],
-                  
-                  // Register Button
-                  Consumer<AuthProvider>(
-                    builder: (context, authProvider, _) {
-                      if (authProvider.error != null) {
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(authProvider.error!),
-                              backgroundColor: Colors.red,
-                              behavior: SnackBarBehavior.floating,
-                            ),
-                          );
-                          authProvider.clearError();
-                        });
-                      }
-
-                      return CustomButton(
-                        text: 'Create Account',
-                        isLoading: authProvider.isLoading,
-                        onPressed: () => _handleRegister(authProvider),
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 24),
-                  
-                  // Divider
-                  Row(
-                    children: [
-                      const Expanded(child: Divider()),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Text(
-                          'OR',
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                      const Expanded(child: Divider()),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  
-                  // Login Link
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Already have an account? ",
-                        style: TextStyle(color: Colors.grey[600]),
-                      ),
-                      GestureDetector(
-                        onTap: () => context.go('/login'),
-                        child: Text(
-                          'Sign In',
-                          style: TextStyle(
-                            color: Theme.of(context).primaryColor,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Future<void> _handleRegister(AuthProvider authProvider) async {
-    if (!_formKey.currentState!.validate()) return;
-
+  Future<void> _handleRegister() async {
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+    if (!_agreedToTerms) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text(
+              'Veuillez accepter les conditions d’utilisation et la politique de confidentialité.'),
+          backgroundColor: AppColors.error));
+      return;
+    }
+    if (_selectedRole == 'technician') {
+      if (_specialty == null) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('Veuillez choisir votre spécialité.'),
+            backgroundColor: AppColors.error));
+        return;
+      }
+      if (_locationController.text.trim().isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('Veuillez indiquer votre zone d’activité.'),
+            backgroundColor: AppColors.error));
+        return;
+      }
+    }
+    final authProvider = context.read<AuthProvider>();
     final success = await authProvider.register(
       firstName: _firstNameController.text.trim(),
       lastName: _lastNameController.text.trim(),
       email: _emailController.text.trim(),
       password: _passwordController.text,
-      phone: _phoneController.text.trim().isEmpty ? '' : _phoneController.text.trim(),
+      phone: _phoneController.text.trim(),
       role: _selectedRole,
-      location: _locationController.text.trim().isEmpty ? null : _locationController.text.trim(),
-      bio: _bioController.text.trim().isEmpty ? null : _bioController.text.trim(),
-      specialty: (_selectedRole == 'technician' && _specialtyController.text.trim().isNotEmpty) 
-          ? _specialtyController.text.trim() 
+      location: _locationController.text.trim().isEmpty
+          ? null
+          : _locationController.text.trim(),
+      bio: _bioController.text.trim().isEmpty
+          ? null
+          : _bioController.text.trim(),
+      specialty: _selectedRole == 'technician'
+          ? (_specialty == 'Autre'
+              ? _customSpecialtyController.text.trim()
+              : _specialty)
           : null,
     );
-
-    if (success && mounted) {
-      final user = authProvider.user;
-      if (user != null) {
-        // Navigate based on user role
-        switch (user.role) {
-          case 'customer':
-            context.go('/home');
-            break;
-          case 'technician':
-            context.go('/technician-home');
-            break;
-          case 'admin':
-            context.go('/admin-dashboard');
-            break;
-          default:
-            context.go('/home');
-        }
+    if (!mounted) return;
+    if (success) {
+      if (authProvider.user?.role == 'technician') {
+        context.go('/technician-home');
       } else {
         context.go('/home');
       }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(authProvider.error ?? 'L’inscription a échoué.'),
+          backgroundColor: AppColors.error));
     }
   }
+
+  @override
+  Widget build(BuildContext context) {
+    final authProvider = context.watch<AuthProvider>();
+    return Scaffold(
+        body: SafeArea(
+            child: SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Form(
+          key: _formKey,
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            Row(children: [
+              IconButton(
+                  tooltip: 'Retour',
+                  onPressed: () => context.go('/role-selection'),
+                  icon: const Icon(Icons.arrow_back, color: AppColors.primary)),
+              const Expanded(
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                    Text('BIENVENUE',
+                        style: TextStyle(
+                            color: AppColors.accent,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w700)),
+                    Text('Créer un compte',
+                        style: TextStyle(
+                            color: AppColors.primaryDark,
+                            fontSize: 22,
+                            fontWeight: FontWeight.w700)),
+                  ])),
+            ]),
+            const SizedBox(height: 24),
+            const Text('La beauté commence par une rencontre.'),
+            const SizedBox(height: 16),
+            Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                    color: AppColors.navyBackground,
+                    borderRadius: BorderRadius.circular(12)),
+                child: Row(children: [
+                  Expanded(child: _roleTab('customer', 'Client')),
+                  Expanded(child: _roleTab('technician', 'Prestataire')),
+                ])),
+            const SizedBox(height: 20),
+            Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Expanded(
+                  child: CustomTextField(
+                      controller: _firstNameController,
+                      label: 'Prénom',
+                      hintText: 'Léa',
+                      textInputAction: TextInputAction.next,
+                      validator: (value) => (value?.trim().isEmpty ?? true)
+                          ? 'Veuillez saisir votre prénom.'
+                          : null)),
+              const SizedBox(width: 12),
+              Expanded(
+                  child: CustomTextField(
+                      controller: _lastNameController,
+                      label: 'Nom',
+                      hintText: 'Mballa',
+                      textInputAction: TextInputAction.next,
+                      validator: (value) => (value?.trim().isEmpty ?? true)
+                          ? 'Veuillez saisir votre nom.'
+                          : null)),
+            ]),
+            const SizedBox(height: 16),
+            CustomTextField(
+                controller: _emailController,
+                label: 'Adresse e-mail',
+                hintText: 'lea.mballa@gmail.com',
+                keyboardType: TextInputType.emailAddress,
+                textInputAction: TextInputAction.next,
+                validator: (value) {
+                  if (value?.isEmpty ?? true)
+                    return 'Veuillez saisir votre adresse e-mail.';
+                  if (!RegExp(r'^\S+@\S+\.\S+').hasMatch(value!))
+                    return 'Veuillez saisir une adresse e-mail valide.';
+                  return null;
+                }),
+            const SizedBox(height: 16),
+            CustomTextField(
+                controller: _phoneController,
+                label: 'Téléphone',
+                hintText: '+237 6 77 12 34 56',
+                keyboardType: TextInputType.phone,
+                textInputAction: TextInputAction.next,
+                validator: (value) => (value?.isEmpty ?? true)
+                    ? 'Veuillez saisir votre numéro de téléphone.'
+                    : null),
+            if (_selectedRole == 'technician') ...[
+              const SizedBox(height: 24),
+              const Text('VOTRE ACTIVITÉ',
+                  style: TextStyle(
+                      color: AppColors.accent,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700)),
+              const SizedBox(height: 10),
+              DropdownButtonFormField<String>(
+                  initialValue: _specialty,
+                  decoration: const InputDecoration(
+                      labelText: 'Spécialité',
+                      hintText: 'Choisissez votre domaine'),
+                  items: const [
+                    DropdownMenuItem(value: 'Coiffure', child: Text('Coiffure')),
+                    DropdownMenuItem(value: 'Barbier', child: Text('Barbier')),
+                    DropdownMenuItem(value: 'Ongles', child: Text('Ongles')),
+                    DropdownMenuItem(
+                        value: 'Maquillage', child: Text('Maquillage')),
+                    DropdownMenuItem(
+                        value: 'Esthétique', child: Text('Esthétique')),
+                    DropdownMenuItem(
+                        value: 'Massage & bien-être',
+                        child: Text('Massage & bien-être')),
+                    DropdownMenuItem(value: 'Fitness', child: Text('Fitness')),
+                    DropdownMenuItem(
+                        value: 'Tatouage', child: Text('Tatouage')),
+                    DropdownMenuItem(value: 'Autre', child: Text('Autre')),
+                  ],
+                  onChanged: (value) => setState(() => _specialty = value),
+                  validator: (value) =>
+                      value == null ? 'Veuillez choisir votre spécialité.' : null),
+              if (_specialty == 'Autre') ...[
+                const SizedBox(height: 16),
+                CustomTextField(
+                    controller: _customSpecialtyController,
+                    label: 'Précisez votre spécialité',
+                    hintText: 'Ex. : Tresses, Dreadlocks, Soins capillaires…',
+                    textInputAction: TextInputAction.next,
+                    validator: (value) => (value?.trim().isEmpty ?? true)
+                        ? 'Veuillez préciser votre spécialité.'
+                        : null),
+              ],
+              const SizedBox(height: 16),
+              CustomTextField(
+                  controller: _locationController,
+                  label: 'Zone d’activité',
+                  hintText: 'Douala, Bonapriso',
+                  textInputAction: TextInputAction.next,
+                  validator: (value) => (value?.trim().isEmpty ?? true)
+                      ? 'Veuillez indiquer votre zone d’activité.'
+                      : null),
+              const SizedBox(height: 16),
+              CustomTextField(
+                  controller: _bioController,
+                  label: 'Présentation (facultatif)',
+                  hintText: 'Parlez de votre expérience et de vos services…',
+                  maxLines: 3),
+            ],
+            const SizedBox(height: 16),
+            CustomTextField(
+                controller: _passwordController,
+                label: 'Mot de passe',
+                hintText: '6 caractères minimum',
+                obscureText: _obscurePassword,
+                textInputAction: TextInputAction.next,
+                suffixIcon: IconButton(
+                    tooltip: _obscurePassword
+                        ? 'Afficher le mot de passe'
+                        : 'Masquer le mot de passe',
+                    onPressed: () =>
+                        setState(() => _obscurePassword = !_obscurePassword),
+                    icon: Icon(
+                        _obscurePassword
+                            ? Icons.visibility_off_outlined
+                            : Icons.visibility_outlined,
+                        size: 20,
+                        color: AppColors.textLight)),
+                validator: (value) {
+                  if (value?.isEmpty ?? true)
+                    return 'Veuillez saisir votre mot de passe.';
+                  if (value!.length < 6)
+                    return 'Le mot de passe doit contenir au moins 6 caractères.';
+                  return null;
+                }),
+            const SizedBox(height: 16),
+            CustomTextField(
+                controller: _confirmController,
+                label: 'Confirmer le mot de passe',
+                hintText: 'Saisir à nouveau',
+                obscureText: _obscureConfirm,
+                suffixIcon: IconButton(
+                    tooltip: _obscureConfirm
+                        ? 'Afficher la confirmation'
+                        : 'Masquer la confirmation',
+                    onPressed: () =>
+                        setState(() => _obscureConfirm = !_obscureConfirm),
+                    icon: Icon(
+                        _obscureConfirm
+                            ? Icons.visibility_off_outlined
+                            : Icons.visibility_outlined,
+                        size: 20,
+                        color: AppColors.textLight)),
+                validator: (value) => value != _passwordController.text ||
+                        (value?.isEmpty ?? true)
+                    ? 'Les mots de passe ne correspondent pas.'
+                    : null),
+            const SizedBox(height: 12),
+            Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Checkbox(
+                  value: _agreedToTerms,
+                  activeColor: AppColors.accent,
+                  onChanged: (value) =>
+                      setState(() => _agreedToTerms = value ?? false)),
+              const Expanded(
+                  child: Padding(
+                      padding: EdgeInsets.only(top: 12),
+                      child: Text(
+                          'J’accepte les conditions d’utilisation et la politique de confidentialité.',
+                          style: TextStyle(fontSize: 12)))),
+            ]),
+            TextButton(
+                onPressed: () => context.go('/login'),
+                child: const Text('Déjà un compte ? Se connecter')),
+            const SizedBox(height: 24),
+            CustomButton(
+                text: 'S’inscrire',
+                isLoading: authProvider.isLoading,
+                onPressed: _handleRegister),
+          ])),
+    )));
+  }
+
+  Widget _roleTab(String role, String label) {
+    final selected = _selectedRole == role;
+    return Semantics(
+        selected: selected,
+        child: TextButton(
+          onPressed: () => setState(() => _selectedRole = role),
+          style: TextButton.styleFrom(
+              backgroundColor:
+                  selected ? AppColors.primary : Colors.transparent,
+              foregroundColor: selected ? Colors.white : AppColors.primary,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10))),
+          child: Text(label),
+        ));
+  }
 }
-
-

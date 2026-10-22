@@ -12,7 +12,7 @@ class MainScreen extends StatelessWidget {
     return Consumer<AuthProvider>(
       builder: (context, authProvider, _) {
         final user = authProvider.user;
-        
+
         if (user == null) {
           return const Center(
             child: CircularProgressIndicator(),

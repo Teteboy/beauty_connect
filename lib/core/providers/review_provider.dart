@@ -17,10 +17,10 @@ class ReviewProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final endpoint = technicianId != null 
+      final endpoint = technicianId != null
           ? '/reviews/technician/$technicianId'
           : '/reviews';
-      
+
       final response = await ApiService.get(endpoint);
       if (response['success']) {
         _reviews = (response['data'] as List)
@@ -104,7 +104,7 @@ class ReviewProvider with ChangeNotifier {
   Future<bool> deleteReview(String reviewId) async {
     try {
       final response = await ApiService.delete('/reviews/$reviewId');
-      
+
       if (response['success']) {
         _reviews.removeWhere((r) => r.id == reviewId);
         notifyListeners();
@@ -126,5 +126,3 @@ class ReviewProvider with ChangeNotifier {
     notifyListeners();
   }
 }
-
-

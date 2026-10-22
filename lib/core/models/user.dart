@@ -1,3 +1,5 @@
+import '../utils/asset_url.dart';
+
 class User {
   final int id;
   final String firstName;
@@ -40,13 +42,13 @@ class User {
         role: json['role'] as String? ?? '',
         location: json['location'] as String?,
         bio: json['bio'] as String?,
-        profileImage: json['profileImage'] as String?,
+        profileImage: resolveAssetUrl(json['profileImage'] as String?),
         specialty: json['specialty'] as String?,
         isVerified: json['isVerified'] as bool? ?? false,
-        createdAt: json['createdAt'] != null 
+        createdAt: json['createdAt'] != null
             ? DateTime.parse(json['createdAt'] as String)
             : DateTime.now(),
-        updatedAt: json['updatedAt'] != null 
+        updatedAt: json['updatedAt'] != null
             ? DateTime.parse(json['updatedAt'] as String)
             : DateTime.now(),
       );
@@ -84,7 +86,8 @@ class User {
   String get fullName => '$firstName $lastName';
 
   String get initials {
-    String firstInitial = firstName.isNotEmpty ? firstName[0].toUpperCase() : '';
+    String firstInitial =
+        firstName.isNotEmpty ? firstName[0].toUpperCase() : '';
     String lastInitial = lastName.isNotEmpty ? lastName[0].toUpperCase() : '';
     return '$firstInitial$lastInitial';
   }
@@ -125,8 +128,3 @@ class User {
     );
   }
 }
-
-
-
-
-

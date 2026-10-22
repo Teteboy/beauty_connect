@@ -5,6 +5,7 @@ import '../../../core/providers/booking_provider.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/models/booking.dart';
 import '../widgets/booking_card.dart';
+import '../../../core/theme/app_colors.dart';
 
 class MyBookingsScreen extends StatefulWidget {
   final bool isTechnician;
@@ -25,8 +26,9 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
-    
+    _tabController =
+        TabController(length: widget.isTechnician ? 4 : 3, vsync: this);
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadBookings();
     });
@@ -41,7 +43,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
   void _loadBookings() {
     final bookingProvider = context.read<BookingProvider>();
     final authProvider = context.read<AuthProvider>();
-    
+
     if (widget.isTechnician && authProvider.user != null) {
       bookingProvider.fetchTechnicianBookings(authProvider.user!.id);
     } else {
@@ -58,14 +60,17 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.isTechnician ? 'My Appointments' : 'My Bookings'),
+        title:
+            Text(widget.isTechnician ? 'Mes rendez-vous' : 'Mes Réservations'),
         bottom: TabBar(
           controller: _tabController,
-          tabs: const [
-            Tab(text: 'Pending'),
-            Tab(text: 'Confirmed'),
-            Tab(text: 'Completed'),
-            Tab(text: 'Cancelled'),
+          labelColor: AppColors.primary,
+          indicatorColor: AppColors.accent,
+          tabs: [
+            if (widget.isTechnician) const Tab(text: 'En attente'),
+            Tab(text: widget.isTechnician ? 'Confirmées' : 'À venir'),
+            const Tab(text: 'Terminées'),
+            const Tab(text: 'Annulées'),
           ],
         ),
       ),
@@ -86,7 +91,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: _loadBookings,
-                    child: const Text('Retry'),
+                    child: const Text('Réessayer'),
                   ),
                 ],
               ),
@@ -100,8 +105,17 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
           return TabBarView(
             controller: _tabController,
             children: [
-              _buildBookingsList(_getBookingsByStatus('pending', bookings)),
-              _buildBookingsList(_getBookingsByStatus('confirmed', bookings)),
+              if (widget.isTechnician)
+                _buildBookingsList(_getBookingsByStatus('pending', bookings)),
+              _buildBookingsList(widget.isTechnician
+                  ? _getBookingsByStatus('confirmed', bookings)
+                  : bookings
+                      .where((b) => const [
+                            'pending',
+                            'confirmed',
+                            'in_progress'
+                          ].contains(b.status))
+                      .toList()),
               _buildBookingsList(_getBookingsByStatus('completed', bookings)),
               _buildBookingsList(_getBookingsByStatus('cancelled', bookings)),
             ],
@@ -124,10 +138,10 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
             ),
             const SizedBox(height: 16),
             Text(
-              'No bookings found',
+              'Aucune réservation pour le moment',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: Colors.grey[600],
-              ),
+                    color: Colors.grey[600],
+                  ),
             ),
           ],
         ),
@@ -144,7 +158,7 @@ class _MyBookingsScreenState extends State<MyBookingsScreen>
           return BookingCard(
             booking: booking,
             isTechnician: widget.isTechnician,
-            onTap: () => context.go('/booking/${booking.id}'),
+            onTap: () => context.go('/booking-detail/${booking.id}'),
           );
         },
       ),

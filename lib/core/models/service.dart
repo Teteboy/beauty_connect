@@ -1,5 +1,6 @@
 import 'user.dart';
 import '../models/service_image.dart';
+import '../utils/asset_url.dart';
 
 class Service {
   final int id;
@@ -41,19 +42,20 @@ class Service {
         price: _parseDouble(json['price']),
         durationMinutes: json['durationMinutes'] as int? ?? 0,
         category: json['category']?.toString() ?? '',
-        imageUrl: json['imageUrl']?.toString(),
+        imageUrl: resolveAssetUrl(json['imageUrl']?.toString()),
         isAvailable: json['isAvailable'] as bool? ?? true,
         technicianId: json['technicianId'] as int,
-        technician: json['technician'] != null 
+        technician: json['technician'] != null
             ? User.fromJson(json['technician'] as Map<String, dynamic>)
             : null,
-        images: json['images'] != null 
-            ? List<ServiceImage>.from(json['images'].map((x) => ServiceImage.fromJson(x)))
+        images: json['images'] != null
+            ? List<ServiceImage>.from(
+                json['images'].map((x) => ServiceImage.fromJson(x)))
             : [],
-        createdAt: json['createdAt'] != null 
+        createdAt: json['createdAt'] != null
             ? DateTime.parse(json['createdAt'].toString())
             : DateTime.now(),
-        updatedAt: json['updatedAt'] != null 
+        updatedAt: json['updatedAt'] != null
             ? DateTime.parse(json['updatedAt'].toString())
             : DateTime.now(),
       );
@@ -136,16 +138,3 @@ class Service {
     );
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/widgets/app_logo.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/custom_text_field.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
-
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
@@ -25,190 +26,150 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // Logo
-                const Icon(
-                  Icons.spa,
-                  size: 80,
-                  color: Color(0xFF6B46C1),
-                ),
-                const SizedBox(height: 24),
-                
-                // Welcome Text
-                Text(
-                  'Welcome Back',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Sign in to continue to BeautyConnect',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.grey[600],
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 48),
-                
-                // Email Field
-                CustomTextField(
-                  controller: _emailController,
-                  label: 'Email',
-                  keyboardType: TextInputType.emailAddress,
-                  prefixIcon: const Icon(Icons.email_outlined),
-                  validator: (value) {
-                    if (value?.isEmpty ?? true) {
-                      return 'Please enter your email';
-                    }
-                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value!)) {
-                      return 'Please enter a valid email';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                
-                // Password Field
-                CustomTextField(
-                  controller: _passwordController,
-                  label: 'Password',
-                  obscureText: _obscurePassword,
-                  prefixIcon: const Icon(Icons.lock_outlined),
-                  suffixIcon: IconButton(
-                    icon: Icon(_obscurePassword ? Icons.visibility : Icons.visibility_off),
-                    onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-                  ),
-                  validator: (value) {
-                    if (value?.isEmpty ?? true) {
-                      return 'Please enter your password';
-                    }
-                    if (value!.length < 6) {
-                      return 'Password must be at least 6 characters';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                
-                // Forgot Password Link
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: () => context.go('/forgot-password'),
-                    child: Text(
-                      'Forgot Password?',
-                      style: TextStyle(
-                        color: Theme.of(context).primaryColor,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                
-                // Login Button
-                Consumer<AuthProvider>(
-                  builder: (context, authProvider, _) {
-                    if (authProvider.error != null) {
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(authProvider.error!),
-                            backgroundColor: Colors.red,
-                            behavior: SnackBarBehavior.floating,
-                          ),
-                        );
-                        authProvider.clearError();
-                      });
-                    }
-
-                    return CustomButton(
-                      text: 'Sign In',
-                      isLoading: authProvider.isLoading,
-                      onPressed: () => _handleLogin(authProvider),
-                    );
-                  },
-                ),
-                const SizedBox(height: 24),
-                
-                // Divider
-                Row(
-                  children: [
-                    const Expanded(child: Divider()),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        'OR',
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                    const Expanded(child: Divider()),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                
-                // Register Link
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Don't have an account? ",
-                      style: TextStyle(color: Colors.grey[600]),
-                    ),
-                    GestureDetector(
-                      onTap: () => context.go('/register'),
-                      child: Text(
-                        'Sign Up',
-                        style: TextStyle(
-                          color: Theme.of(context).primaryColor,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Future<void> _handleLogin(AuthProvider authProvider) async {
-    if (!_formKey.currentState!.validate()) return;
-
+  Future<void> _login() async {
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+    final authProvider = context.read<AuthProvider>();
     final success = await authProvider.login(
       email: _emailController.text.trim(),
       password: _passwordController.text,
     );
-
-    if (success && mounted) {
-      // Let the router handle navigation based on authentication state
-      // The router will redirect to appropriate route based on user role
+    if (!mounted) return;
+    if (success) {
       context.go('/home');
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(authProvider.error ?? 'La connexion a échoué.'),
+        backgroundColor: AppColors.error,
+      ));
     }
   }
+
+  @override
+  Widget build(BuildContext context) {
+    final authProvider = context.watch<AuthProvider>();
+    return Scaffold(
+        body: SafeArea(
+            child: SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Form(
+          key: _formKey,
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            Row(children: [
+              IconButton(
+                  tooltip: 'Retour',
+                  onPressed: () => context.go('/role-selection'),
+                  icon: const Icon(Icons.arrow_back, color: AppColors.primary)),
+              const Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('BIENVENUE',
+                        style: TextStyle(
+                            color: AppColors.accent,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w700)),
+                    Text('Connexion',
+                        style: TextStyle(
+                            color: AppColors.primaryDark,
+                            fontSize: 22,
+                            fontWeight: FontWeight.w700)),
+                  ]),
+            ]),
+            const SizedBox(height: 36),
+            const Align(
+                alignment: Alignment.centerLeft,
+                child: AppLogo(size: 64, full: true)),
+            const SizedBox(height: 20),
+            const Text('Bon retour !',
+                style: TextStyle(
+                    color: AppColors.primaryDark,
+                    fontSize: 32,
+                    fontWeight: FontWeight.w800)),
+            const SizedBox(height: 16),
+            const Text('Vos experts préférés n’attendent que vous.'),
+            const SizedBox(height: 32),
+            CustomTextField(
+                controller: _emailController,
+                label: 'Adresse e-mail',
+                hintText: 'lea.mballa@gmail.com',
+                keyboardType: TextInputType.emailAddress,
+                textInputAction: TextInputAction.next,
+                validator: (value) {
+                  if (value?.isEmpty ?? true)
+                    return 'Veuillez saisir votre adresse e-mail.';
+                  if (!RegExp(r'^\S+@\S+\.\S+').hasMatch(value!))
+                    return 'Veuillez saisir une adresse e-mail valide.';
+                  return null;
+                }),
+            const SizedBox(height: 20),
+            CustomTextField(
+                controller: _passwordController,
+                label: 'Mot de passe',
+                obscureText: _obscurePassword,
+                suffixIcon: IconButton(
+                  tooltip: _obscurePassword
+                      ? 'Afficher le mot de passe'
+                      : 'Masquer le mot de passe',
+                  icon: Icon(
+                      _obscurePassword
+                          ? Icons.visibility_off_outlined
+                          : Icons.visibility_outlined,
+                      size: 20,
+                      color: AppColors.textLight),
+                  onPressed: () =>
+                      setState(() => _obscurePassword = !_obscurePassword),
+                ),
+                validator: (value) {
+                  if (value?.isEmpty ?? true)
+                    return 'Veuillez saisir votre mot de passe.';
+                  if (value!.length < 6)
+                    return 'Le mot de passe doit contenir au moins 6 caractères.';
+                  return null;
+                }),
+            Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton(
+                    onPressed: () => context.go('/forgot-password'),
+                    child: const Text('Mot de passe oublié ?'))),
+            CustomButton(
+                text: 'Se connecter',
+                backgroundColor: AppColors.primary,
+                isLoading: authProvider.isLoading,
+                onPressed: _login),
+            const SizedBox(height: 32),
+            const Row(children: [
+              Expanded(child: Divider()),
+              Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12),
+                  child: Text('ou continuer avec',
+                      style:
+                          TextStyle(fontSize: 12, color: AppColors.textLight))),
+              Expanded(child: Divider())
+            ]),
+            const SizedBox(height: 24),
+            Row(children: [
+              Expanded(
+                  child: CustomButton(
+                      text: 'Google',
+                      icon: Icons.g_mobiledata,
+                      isOutlined: true,
+                      height: 50,
+                      onPressed: () {})),
+              const SizedBox(width: 12),
+              Expanded(
+                  child: CustomButton(
+                      text: 'Apple',
+                      icon: Icons.apple,
+                      isOutlined: true,
+                      height: 50,
+                      onPressed: () {})),
+            ]),
+            const SizedBox(height: 32),
+            const Text('Pas encore de compte ?', textAlign: TextAlign.center),
+            TextButton(
+                onPressed: () => context.go('/role-selection'),
+                child: const Text('S’inscrire')),
+          ])),
+    )));
+  }
 }
-
-
-
-
-

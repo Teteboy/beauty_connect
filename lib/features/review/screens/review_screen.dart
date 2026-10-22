@@ -3,6 +3,10 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/providers/review_provider.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/widgets/concept_banner.dart';
+import '../../../core/widgets/custom_button.dart';
+import '../../../core/widgets/custom_text_field.dart';
 
 class ReviewScreen extends StatefulWidget {
   final String bookingId;
@@ -20,6 +24,10 @@ class _ReviewScreenState extends State<ReviewScreen> {
   final _formKey = GlobalKey<FormState>();
   final _commentController = TextEditingController();
   int _rating = 0;
+  final Set<String> _selectedTags = {};
+
+  // Quick-impression tags from the "Votre avis compte" Figma frame.
+  static const _tags = ['À l\'écoute', 'Travail soigné', 'Ponctuelle'];
 
   @override
   void dispose() {
@@ -29,216 +37,234 @@ class _ReviewScreenState extends State<ReviewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Write Review'),
-        elevation: 0,
-        backgroundColor: theme.scaffoldBackgroundColor,
-        leading: IconButton(
-          onPressed: () => _navigateBack(),
-          icon: const Icon(Icons.arrow_back),
-        ),
-      ),
+      backgroundColor: AppColors.scaffoldBackground,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header
-                const Text(
-                  'How was your experience?',
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Your feedback helps us improve our services',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey[600],
-                    height: 1.4,
-                  ),
-                ),
-                
-                const SizedBox(height: 40),
-                
-                // Rating Section
-                const Text(
-                  'Rating',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                
-                Center(
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+                child: Form(
+                  key: _formKey,
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      ConceptHeader(
+                          title: 'Votre avis compte', onBack: _navigateBack),
+                      const SizedBox(height: 16),
+                      const ConceptBanner(),
+                      const SizedBox(height: 20),
+
+                      // Booking context card
+                      Row(
+                        children: [
+                          const CircleAvatar(
+                            radius: 26,
+                            backgroundColor: AppColors.orangePale,
+                            child: Icon(Icons.person_outline,
+                                color: AppColors.accent),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Votre soin avec Amina',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleSmall
+                                        ?.copyWith(
+                                            fontWeight: FontWeight.w700)),
+                                Text(
+                                  'Soin hydratant · Jeu. 15 octobre\n'
+                                  'Réservation terminée',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodySmall
+                                      ?.copyWith(
+                                          color: AppColors.textMedium,
+                                          height: 1.4),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+
+                      Text('Comment s\'est passée votre\nvisite ?',
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineMedium
+                              ?.copyWith(
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.w800,
+                                  height: 1.15)),
+                      const SizedBox(height: 20),
+
+                      // Stars
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: List.generate(5, (index) {
+                          final selected = index < _rating;
                           return GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _rating = index + 1;
-                              });
-                            },
-                            child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 200),
-                              padding: const EdgeInsets.all(8),
+                            onTap: () => setState(() => _rating = index + 1),
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 6),
                               child: Icon(
-                                Icons.star,
-                                size: 45,
-                                color: index < _rating 
-                                    ? Colors.amber 
-                                    : Colors.grey[300],
+                                selected
+                                    ? Icons.star_rounded
+                                    : Icons.star_outline_rounded,
+                                size: 44,
+                                color: selected
+                                    ? AppColors.amber
+                                    : AppColors.amber.withValues(alpha: 0.5),
                               ),
                             ),
                           );
                         }),
                       ),
-                      
-                      if (_rating > 0) ...[
-                        const SizedBox(height: 12),
-                        AnimatedOpacity(
-                          opacity: _rating > 0 ? 1.0 : 0.0,
-                          duration: const Duration(milliseconds: 300),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
-                            ),
-                            decoration: BoxDecoration(
-                              color: _getRatingColor(_rating).withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                color: _getRatingColor(_rating).withOpacity(0.3),
-                              ),
-                            ),
-                            child: Text(
-                              _getRatingText(_rating),
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: _getRatingColor(_rating),
-                              ),
-                            ),
-                          ),
+                      const SizedBox(height: 12),
+                      Center(
+                        child: Text(
+                          _rating == 0
+                              ? 'Touchez une étoile pour noter'
+                              : '$_rating / 5 · ${_getRatingText(_rating)}',
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleSmall
+                              ?.copyWith(
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.w700),
                         ),
-                      ],
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Quick tags
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: _tags.map((tag) {
+                          final selected = _selectedTags.contains(tag);
+                          return ChoiceChip(
+                            label: Text(tag),
+                            selected: selected,
+                            showCheckmark: false,
+                            onSelected: (_) => setState(() {
+                              selected
+                                  ? _selectedTags.remove(tag)
+                                  : _selectedTags.add(tag);
+                            }),
+                            selectedColor: AppColors.accent,
+                            backgroundColor: AppColors.navyBackground,
+                            labelStyle: TextStyle(
+                              color:
+                                  selected ? Colors.white : AppColors.primary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              side: BorderSide.none,
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                      const SizedBox(height: 24),
+
+                      Text('Votre commentaire',
+                          style: Theme.of(context)
+                              .textTheme
+                              .labelLarge
+                              ?.copyWith(
+                                  color: AppColors.textMedium,
+                                  fontWeight: FontWeight.w600)),
+                      const SizedBox(height: 8),
+                      CustomTextField(
+                        controller: _commentController,
+                        label: 'Racontez votre expérience (facultatif)',
+                        maxLines: 5,
+                        textInputAction: TextInputAction.done,
+                        onChanged: (_) => setState(() {}),
+                      ),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          '${_commentController.text.length}/500',
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: _commentController.text.length > 500
+                                        ? AppColors.error
+                                        : AppColors.textLight,
+                                  ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Trust note
+                      Container(
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: AppColors.navyBackground,
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Icon(Icons.verified_outlined,
+                                color: AppColors.primary, size: 22),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Des avis utiles et authentiques',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleSmall
+                                          ?.copyWith(
+                                              fontWeight: FontWeight.w700)),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    'Seuls les clients d\'une prestation '
+                                    'terminée pourront laisser un avis. '
+                                    'Votre prénom sera visible.',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall
+                                        ?.copyWith(
+                                            color: AppColors.textMedium,
+                                            height: 1.35),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
-                
-                const SizedBox(height: 40),
-                
-                // Comment Section
-                const Text(
-                  'Comment (Optional)',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                
-                TextFormField(
-                  controller: _commentController,
-                  maxLines: 5,
-                  maxLength: 500,
-                  decoration: InputDecoration(
-                    hintText: 'Tell us about your experience...',
-                    hintStyle: TextStyle(color: Colors.grey[400]),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(
-                        color: theme.primaryColor,
-                        width: 2,
-                      ),
-                    ),
-                    alignLabelWithHint: true,
-                    contentPadding: const EdgeInsets.all(16),
-                  ),
-                ),
-                
-                const SizedBox(height: 40),
-                
-                // Submit Button
-                Consumer<ReviewProvider>(
-                  builder: (context, reviewProvider, _) {
-                    return SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: _rating > 0 && !reviewProvider.isLoading 
-                            ? _submitReview 
-                            : null,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: theme.primaryColor,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          elevation: 2,
-                        ),
-                        child: reviewProvider.isLoading
-                            ? const SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                ),
-                              )
-                            : const Text(
-                                'Submit Review',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                      ),
-                    );
-                  },
-                ),
-                
-                const SizedBox(height: 16),
-                
-                // Skip Button
-                Center(
-                  child: TextButton(
-                    onPressed: () => _navigateBack(),
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 12,
-                      ),
-                    ),
-                    child: Text(
-                      'Skip for now',
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                ),
-                
-                const SizedBox(height: 20),
-              ],
+              ),
             ),
-          ),
+
+            // Submit CTA
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+              child: Consumer<ReviewProvider>(
+                builder: (context, reviewProvider, _) {
+                  return CustomButton(
+                    text: 'Publier l\'avis',
+                    isLoading: reviewProvider.isLoading,
+                    onPressed: _rating > 0 && !reviewProvider.isLoading
+                        ? _submitReview
+                        : null,
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -257,142 +283,71 @@ class _ReviewScreenState extends State<ReviewScreen> {
   String _getRatingText(int rating) {
     switch (rating) {
       case 1:
-        return 'Poor';
+        return 'Une expérience décevante';
       case 2:
-        return 'Fair';
+        return 'Une expérience mitigée';
       case 3:
-        return 'Good';
+        return 'Une bonne expérience';
       case 4:
-        return 'Very Good';
+        return 'Une très bonne expérience';
       case 5:
-        return 'Excellent';
+        return 'Une excellente expérience';
       default:
         return '';
     }
   }
 
-  Color _getRatingColor(int rating) {
-    switch (rating) {
-      case 1:
-        return Colors.red;
-      case 2:
-        return Colors.orange;
-      case 3:
-        return Colors.amber;
-      case 4:
-        return Colors.lightGreen;
-      case 5:
-        return Colors.green;
-      default:
-        return Colors.grey;
-    }
-  }
-
   void _submitReview() async {
-    if (_rating == 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Row(
-            children: [
-              Icon(Icons.warning, color: Colors.white),
-              SizedBox(width: 8),
-              Text('Please provide a rating'),
-            ],
-          ),
-          backgroundColor: Colors.orange,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
-        ),
-      );
+    if (_commentController.text.length > 500) {
+      _showSnack(
+          'Le commentaire doit faire moins de 500 caractères', AppColors.error);
       return;
     }
 
     final reviewProvider = context.read<ReviewProvider>();
-    
-    // Show loading state
     FocusScope.of(context).unfocus();
-    
+
+    // Append selected quick tags to the comment for context.
+    var comment = _commentController.text.trim();
+    if (_selectedTags.isNotEmpty) {
+      final tags = _selectedTags.join(' · ');
+      comment = comment.isEmpty ? tags : '$comment\n$tags';
+    }
+
     try {
       final success = await reviewProvider.createReview(
         bookingId: widget.bookingId,
         rating: _rating,
-        comment: _commentController.text.trim().isEmpty 
-            ? '' 
-            : _commentController.text.trim(),
+        comment: comment,
       );
 
       if (mounted) {
         if (success) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Row(
-                children: [
-                  Icon(Icons.check_circle, color: Colors.white),
-                  SizedBox(width: 8),
-                  Text('Review submitted successfully!'),
-                ],
-              ),
-              backgroundColor: Colors.green,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-          );
-          
-          // Navigate back after a short delay
+          _showSnack('Avis publié avec succès !', AppColors.success);
           await Future.delayed(const Duration(milliseconds: 500));
-          if (mounted) {
-            _navigateBack();
-          }
+          if (mounted) _navigateBack();
         } else {
-          // Show error message
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Row(
-                children: [
-                  const Icon(Icons.error, color: Colors.white),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(reviewProvider.error ?? 'Failed to submit review'),
-                  ),
-                ],
-              ),
-              backgroundColor: Colors.red,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-          );
+          _showSnack(reviewProvider.error ?? 'Échec de la publication',
+              AppColors.error);
         }
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                const Icon(Icons.error, color: Colors.white),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text('Error: ${e.toString()}'),
-                ),
-              ],
-            ),
-            backgroundColor: Colors.red,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-        );
+        _showSnack('Erreur : ${e.toString()}', AppColors.error);
       }
     }
   }
+
+  void _showSnack(String message, Color color) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: color,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+    );
+  }
 }
-
-
-

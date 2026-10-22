@@ -26,12 +26,15 @@ class ServiceProvider with ChangeNotifier {
       final response = await ApiService.get('/services');
       print('Services response type: ${response.runtimeType}');
       print('Services response: $response');
-      
+
       if (response is List) {
-        _services = response.map((json) => Service.fromJson(json as Map<String, dynamic>)).toList();
+        _services = response
+            .map((json) => Service.fromJson(json as Map<String, dynamic>))
+            .toList();
         print('Parsed ${_services.length} services');
       } else {
-        print('Invalid response format - expected List, got ${response.runtimeType}');
+        print(
+            'Invalid response format - expected List, got ${response.runtimeType}');
         _error = 'Invalid response format';
         _services = [];
       }
@@ -49,17 +52,20 @@ class ServiceProvider with ChangeNotifier {
     _isLoading = true;
     _error = null;
     notifyListeners();
-    
+
     try {
       final response = await ApiService.get('/services/my-services');
       print('My services response type: ${response.runtimeType}');
       print('My services response: $response');
-      
+
       if (response is List) {
-        _myServices = response.map((json) => Service.fromJson(json as Map<String, dynamic>)).toList();
+        _myServices = response
+            .map((json) => Service.fromJson(json as Map<String, dynamic>))
+            .toList();
         print('Parsed ${_myServices.length} my services');
       } else {
-        print('Invalid response format - expected List, got ${response.runtimeType}');
+        print(
+            'Invalid response format - expected List, got ${response.runtimeType}');
         _myServices = [];
         _error = 'Invalid response format';
       }
@@ -79,9 +85,12 @@ class ServiceProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await ApiService.get('/services/technician/$technicianId');
+      final response =
+          await ApiService.get('/services/technician/$technicianId');
       if (response is List) {
-        _technicianServices = (response as List).map((json) => Service.fromJson(json as Map<String, dynamic>)).toList();
+        _technicianServices = response
+            .map((json) => Service.fromJson(json as Map<String, dynamic>))
+            .toList();
       } else {
         _error = 'Invalid response format';
         _technicianServices = [];
@@ -110,7 +119,7 @@ class ServiceProvider with ChangeNotifier {
 
     try {
       String? finalImageUrl = imageUrl;
-      
+
       // If imageFile is provided, upload it first to get URL
       if (imageFile != null) {
         finalImageUrl = await _uploadImage(imageFile);
@@ -135,11 +144,11 @@ class ServiceProvider with ChangeNotifier {
 
       final response = await ApiService.post('/services', serviceData);
       final newService = Service.fromJson(response);
-      
+
       // Add to relevant lists
       _myServices.add(newService);
       _services.add(newService);
-      
+
       return true;
     } catch (e) {
       _error = 'Failed to create service: $e';
@@ -167,7 +176,7 @@ class ServiceProvider with ChangeNotifier {
 
     try {
       String? finalImageUrl = imageUrl;
-      
+
       // If imageFile is provided, upload it first to get URL
       if (imageFile != null) {
         finalImageUrl = await _uploadImage(imageFile);
@@ -178,11 +187,12 @@ class ServiceProvider with ChangeNotifier {
       }
 
       Map<String, dynamic> updateData = {};
-      
+
       if (name != null) updateData['name'] = name;
       if (description != null) updateData['description'] = description;
       if (price != null) updateData['price'] = price;
-      if (durationMinutes != null) updateData['durationMinutes'] = durationMinutes;
+      if (durationMinutes != null)
+        updateData['durationMinutes'] = durationMinutes;
       if (category != null) updateData['category'] = category;
       if (finalImageUrl != null) updateData['imageUrl'] = finalImageUrl;
       if (isAvailable != null) updateData['isAvailable'] = isAvailable;
@@ -191,18 +201,20 @@ class ServiceProvider with ChangeNotifier {
 
       if (response is Map<String, dynamic>) {
         final updatedService = Service.fromJson(response);
-        
+
         // Update in all relevant lists
-        final myIndex = _myServices.indexWhere((s) => s.id.toString() == serviceId);
+        final myIndex =
+            _myServices.indexWhere((s) => s.id.toString() == serviceId);
         if (myIndex != -1) {
           _myServices[myIndex] = updatedService;
         }
-        
-        final servicesIndex = _services.indexWhere((s) => s.id.toString() == serviceId);
+
+        final servicesIndex =
+            _services.indexWhere((s) => s.id.toString() == serviceId);
         if (servicesIndex != -1) {
           _services[servicesIndex] = updatedService;
         }
-        
+
         return true;
       }
       return false;
@@ -227,7 +239,7 @@ class ServiceProvider with ChangeNotifier {
       _myServices.removeWhere((s) => s.id.toString() == serviceId);
       _services.removeWhere((s) => s.id.toString() == serviceId);
       _technicianServices.removeWhere((s) => s.id.toString() == serviceId);
-      
+
       return true;
     } catch (e) {
       _error = 'Failed to delete service: $e';
@@ -242,7 +254,7 @@ class ServiceProvider with ChangeNotifier {
     try {
       final response = await ApiService.get('/services/$serviceId');
       print('Service by ID response: $response');
-      
+
       if (response is Map<String, dynamic>) {
         return Service.fromJson(response);
       }
@@ -258,25 +270,7 @@ class ServiceProvider with ChangeNotifier {
   // Upload image file and return URL
   Future<String?> _uploadImage(File imageFile) async {
     try {
-      // For now, we'll simulate image upload by returning a placeholder URL
-      // In a real app, you would upload to a cloud storage service like AWS S3, Firebase Storage, etc.
-      await Future.delayed(const Duration(seconds: 1)); // Simulate upload time
-      
-      // Generate a unique filename
-      final timestamp = DateTime.now().millisecondsSinceEpoch;
-      final extension = imageFile.path.split('.').last;
-      final filename = 'service_$timestamp.$extension';
-      
-      // Return a placeholder URL - replace with actual upload logic
-      return 'https://via.placeholder.com/400x300.png?text=Service+Image';
-      
-      // TODO: Implement actual image upload to your preferred cloud storage
-      // Example for Firebase Storage:
-      // final ref = FirebaseStorage.instance.ref().child('service_images/$filename');
-      // final uploadTask = ref.putFile(imageFile);
-      // final snapshot = await uploadTask;
-      // return await snapshot.ref.getDownloadURL();
-      
+      return await ApiService.uploadImage(imageFile);
     } catch (e) {
       print('Error uploading image: $e');
       return null;
@@ -293,8 +287,7 @@ class ServiceProvider with ChangeNotifier {
     try {
       final response = await ApiService.get('/services/$serviceId/images');
       return List<ServiceImage>.from(
-        response.map((x) => ServiceImage.fromJson(x))
-      );
+          response.map((x) => ServiceImage.fromJson(x)));
     } catch (e) {
       _error = 'Failed to load service images: $e';
       notifyListeners();
@@ -303,17 +296,20 @@ class ServiceProvider with ChangeNotifier {
   }
 
   // Add image to service
-  Future<bool> addServiceImage(int serviceId, File imageFile, {String? caption}) async {
+  Future<bool> addServiceImage(int serviceId, File imageFile,
+      {String? caption}) async {
     try {
-      // This would typically upload the image and create a service image record
-      // For now, we'll just return true as the backend implementation would handle this
-      final formData = {
-        'serviceId': serviceId,
-        'caption': caption,
-        // Image file would be uploaded here
-      };
-      
-      final response = await ApiService.post('/services/$serviceId/images', formData);
+      final imageUrl = await _uploadImage(imageFile);
+      if (imageUrl == null) {
+        _error = 'Failed to upload image';
+        notifyListeners();
+        return false;
+      }
+
+      await ApiService.post('/services/$serviceId/images', {
+        'imageUrl': imageUrl,
+        if (caption != null) 'caption': caption,
+      });
       return true;
     } catch (e) {
       print('Error adding service image: $e');
@@ -333,23 +329,3 @@ class ServiceProvider with ChangeNotifier {
     }
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

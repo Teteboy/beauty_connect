@@ -1,8 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+
 import '../../../core/providers/auth_provider.dart';
+import '../../../core/theme/app_colors.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -10,348 +12,389 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profile'),
-        elevation: 0,
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      ),
-      body: Consumer<AuthProvider>(
-        builder: (context, authProvider, _) {
-          final user = authProvider.user;
-          
-          if (user == null) {
-            return const Center(
-              child: Text('Please log in to view profile'),
-            );
-          }
+      backgroundColor: AppColors.scaffoldBackground,
+      body: SafeArea(
+        child: Consumer<AuthProvider>(
+          builder: (context, authProvider, _) {
+            final user = authProvider.user;
 
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
+            if (user == null) {
+              return Center(
+                child: Text(
+                  'Veuillez vous connecter pour voir votre profil',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+              );
+            }
+
+            final imageUrl = user.profileImage;
+            final initials =
+                '${user.firstName.isNotEmpty ? user.firstName[0] : ''}'
+                '${user.lastName.isNotEmpty ? user.lastName[0] : ''}';
+            final roleLabel =
+                user.role == 'technician' ? 'Prestataire' : 'Client';
+            final location =
+                (user.location != null && user.location!.isNotEmpty)
+                    ? ' · ${user.location}'
+                    : '';
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Profile Header
-                Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Profile Image
-                      CircleAvatar(
-                        radius: 50,
-                        backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
-                        backgroundImage: user.profileImage != null
-                            ? CachedNetworkImageProvider(user.profileImage!)
-                            : null,
-                        child: user.profileImage == null
-                            ? Text(
-                                '${user.firstName[0]}${user.lastName[0]}',
-                                style: TextStyle(
-                                  fontSize: 32,
-                                  fontWeight: FontWeight.bold,
-                                  color: Theme.of(context).primaryColor,
-                                ),
-                              )
-                            : null,
-                      ),
-                      const SizedBox(height: 16),
-                      
-                      // Name
                       Text(
-                        '${user.firstName} ${user.lastName}',
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        'MON ESPACE · ${user.role == 'technician' ? 'PRESTATAIRE' : 'CLIENT'}',
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                              color: AppColors.accent,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 1.2,
+                            ),
                       ),
                       const SizedBox(height: 4),
-                      
-                      // Email
                       Text(
-                        user.email,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey[600],
-                        ),
+                        'Mon espace',
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineMedium
+                            ?.copyWith(
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.w800,
+                            ),
                       ),
-                      const SizedBox(height: 8),
-                      
-                      // Role Badge
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).primaryColor,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          user.role.toUpperCase(),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      
-                      // Specialty (for technicians)
-                      if (user.specialty != null) ...[
-                        const SizedBox(height: 8),
-                        Text(
-                          user.specialty!,
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            fontSize: 16,
-                          ),
-                        ),
-                      ],
-                      
-                      // Location
-                      if (user.location != null) ...[
-                        const SizedBox(height: 8),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.location_on,
-                              size: 16,
-                              color: Colors.grey[600],
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              user.location!,
-                              style: TextStyle(
-                                color: Colors.grey[600],
-                                fontSize: 14,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                      
-                      // Phone
-                      if (user.phone != null && user.phone!.isNotEmpty) ...[
-                        const SizedBox(height: 8),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.phone,
-                              size: 16,
-                              color: Colors.grey[600],
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              user.phone!,
-                              style: TextStyle(
-                                color: Colors.grey[600],
-                                fontSize: 14,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                      
-                      // Bio
-                      if (user.bio != null && user.bio!.isNotEmpty) ...[
-                        const SizedBox(height: 16),
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.7),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            user.bio!,
-                            style: TextStyle(
-                              color: Colors.grey[700],
-                              fontSize: 14,
-                              height: 1.4,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ],
                     ],
                   ),
                 ),
-
-                const SizedBox(height: 32),
-
-                // Menu Items
-                _ProfileMenuItem(
-                  icon: Icons.edit,
-                  title: 'Edit Profile',
-                  onTap: () => context.go('/edit-profile'),
-                ),
-                _ProfileMenuItem(
-                  icon: Icons.lock,
-                  title: 'Change Password',
-                  onTap: () => context.go('/change-password'),
-                ),
-                _ProfileMenuItem(
-                  icon: Icons.notifications,
-                  title: 'Notifications',
-                  onTap: () => context.go('/notifications'),
-                ),
-                
-                // Role-specific menu items
-                if (user.role == 'technician') ...[
-                  _ProfileMenuItem(
-                    icon: Icons.spa,
-                    title: 'My Services',
-                    onTap: () => context.go('/my-services'),
-                  ),
-                  _ProfileMenuItem(
-                    icon: Icons.calendar_today,
-                    title: 'My Bookings',
-                    onTap: () => context.go('/technician-bookings'),
-                  ),
-                  _ProfileMenuItem(
-                    icon: Icons.analytics,
-                    title: 'Analytics',
-                    onTap: () => context.go('/analytics'),
-                  ),
-                ] else ...[
-                  _ProfileMenuItem(
-                    icon: Icons.history,
-                    title: 'Booking History',
-                    onTap: () => context.go('/booking-history'),
-                  ),
-                  _ProfileMenuItem(
-                    icon: Icons.favorite,
-                    title: 'Favorites',
-                    onTap: () => context.go('/favorites'),
-                  ),
-                ],
-                
-                _ProfileMenuItem(
-                  icon: Icons.help,
-                  title: 'Help & Support',
-                  onTap: () => context.go('/help'),
-                ),
-                _ProfileMenuItem(
-                  icon: Icons.info,
-                  title: 'About',
-                  onTap: () => context.go('/about'),
-                ),
-                _ProfileMenuItem(
-                  icon: Icons.privacy_tip,
-                  title: 'Privacy Policy',
-                  onTap: () => context.go('/privacy'),
-                ),
-
-                const SizedBox(height: 32),
-
-                // Logout Button
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: () async {
-                      final confirmed = await showDialog<bool>(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text('Logout'),
-                          content: const Text('Are you sure you want to logout?'),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.of(context).pop(false),
-                              child: const Text('Cancel'),
-                            ),
-                            TextButton(
-                              onPressed: () => Navigator.of(context).pop(true),
-                              style: TextButton.styleFrom(foregroundColor: Colors.red),
-                              child: const Text('Logout'),
-                            ),
-                          ],
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+                    child: Column(
+                      children: [
+                        // Navy profile card
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            gradient: AppColors.primaryGradient,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: AppColors.cardShadow,
+                          ),
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  _ProfileAvatar(
+                                    imageUrl: imageUrl,
+                                    initials: initials.isEmpty ? 'U' : initials,
+                                    onEdit: () => context.go('/edit-profile'),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          '${user.firstName} ${user.lastName}'
+                                              .trim(),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleLarge
+                                              ?.copyWith(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.w800,
+                                              ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          '$roleLabel$location',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium
+                                              ?.copyWith(
+                                                color: Colors.white
+                                                    .withValues(alpha: 0.85),
+                                              ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 20),
+                              const Row(
+                                children: [
+                                  Expanded(
+                                    child: _Stat(
+                                        number: '4',
+                                        label: 'réservations effectuées'),
+                                  ),
+                                  SizedBox(width: 16),
+                                  Expanded(
+                                    child: _Stat(
+                                        number: '8',
+                                        label: 'prestataires favoris'),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
-                      );
+                        const SizedBox(height: 24),
 
-                      if (confirmed == true) {
-                        await authProvider.logout();
-                        if (context.mounted) {
-                          context.go('/login');
-                        }
-                      }
-                    },
-                    icon: const Icon(Icons.logout),
-                    label: const Text('Logout'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
+                        // Menu list
+                        _MenuItem(
+                          title: 'Modifier le profil',
+                          onTap: () => context.go('/edit-profile'),
+                        ),
+                        if (user.isCustomer)
+                          _MenuItem(
+                            title: 'Mes favoris',
+                            subtitle: 'Vos talents à retrouver',
+                            onTap: () => context.push('/favorites'),
+                          ),
+                        if (user.isTechnician) ...[
+                          _MenuItem(
+                            title: 'Mes disponibilités',
+                            subtitle: 'Horaires chaque semaine',
+                            onTap: () => context.push('/availability'),
+                          ),
+                          _MenuItem(
+                            title: 'Vérification du profil',
+                            subtitle: 'Dossier de vérification',
+                            onTap: () => context.push('/verification'),
+                          ),
+                          _MenuItem(
+                            title: 'Abonnement et visibilité',
+                            subtitle: 'Développer mon activité',
+                            onTap: () => context.push('/subscription'),
+                          ),
+                        ],
+                        _MenuItem(
+                          title: 'Méthodes de paiement',
+                          subtitle: 'Concept · À venir',
+                          onTap: () => context.push('/payment-methods'),
+                        ),
+                        if (user.role == 'technician')
+                          _MenuItem(
+                            title: 'Gains et reversements',
+                            subtitle: 'Concept · À venir',
+                            onTap: () => context.push('/earnings'),
+                          )
+                        else
+                          _MenuItem(
+                            title: 'Pensé pour vous',
+                            subtitle: 'Recommandations · Concept',
+                            onTap: () => context.push('/recommendations'),
+                          ),
+                        _MenuItem(
+                          title: 'Notifications',
+                          onTap: () => context.go('/notification-settings'),
+                        ),
+                        _MenuItem(
+                          title: 'Préférences WhatsApp',
+                          subtitle: 'Numéro et consentements',
+                          onTap: () => context.push('/whatsapp-preferences'),
+                        ),
+                        _MenuItem(
+                          title: 'Confidentialité et sécurité',
+                          onTap: () => context.go('/privacy'),
+                        ),
+                        _MenuItem(
+                          title: 'Aide & Support',
+                          onTap: () => context.go('/help'),
+                        ),
+                        _MenuItem(
+                          title: 'Se déconnecter',
+                          isDestructive: true,
+                          trailing: const Icon(Icons.logout_rounded,
+                              color: AppColors.error, size: 20),
+                          onTap: () async {
+                            await authProvider.logout();
+                            if (context.mounted) context.go('/login');
+                          },
+                        ),
+
+                        const SizedBox(height: 24),
+                        Text(
+                          'BeautyConnect · Votre beauté, notre connexion',
+                          textAlign: TextAlign.center,
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: AppColors.textLight,
+                                  ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-                
-                const SizedBox(height: 16),
               ],
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
 }
 
-class _ProfileMenuItem extends StatelessWidget {
-  final IconData icon;
+class _ProfileAvatar extends StatelessWidget {
+  final String? imageUrl;
+  final String initials;
+  final VoidCallback onEdit;
+
+  const _ProfileAvatar({
+    required this.imageUrl,
+    required this.initials,
+    required this.onEdit,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final hasImage = imageUrl != null && imageUrl!.isNotEmpty;
+
+    return SizedBox(
+      width: 84,
+      height: 84,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          CircleAvatar(
+            radius: 40,
+            backgroundColor: Colors.white,
+            backgroundImage:
+                hasImage ? CachedNetworkImageProvider(imageUrl!) : null,
+            child: hasImage
+                ? null
+                : Text(
+                    initials.toUpperCase(),
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w700,
+                        ),
+                  ),
+          ),
+          Positioned(
+            right: 0,
+            bottom: 0,
+            child: Material(
+              color: AppColors.accent,
+              shape: const CircleBorder(),
+              elevation: 3,
+              child: InkWell(
+                onTap: onEdit,
+                customBorder: const CircleBorder(),
+                child: const SizedBox(
+                  width: 28,
+                  height: 28,
+                  child:
+                      Icon(Icons.edit_outlined, color: Colors.white, size: 15),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Stat extends StatelessWidget {
+  final String number;
+  final String label;
+
+  const _Stat({required this.number, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          number,
+          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.w800,
+              ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          label,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Colors.white.withValues(alpha: 0.85),
+              ),
+        ),
+      ],
+    );
+  }
+}
+
+class _MenuItem extends StatelessWidget {
   final String title;
+  final String? subtitle;
+  final bool isDestructive;
+  final Widget? trailing;
   final VoidCallback onTap;
 
-  const _ProfileMenuItem({
-    required this.icon,
+  const _MenuItem({
     required this.title,
+    this.subtitle,
+    this.isDestructive = false,
+    this.trailing,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: ListTile(
-        leading: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Theme.of(context).primaryColor.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(8),
+    final color = isDestructive ? AppColors.error : AppColors.textDark;
+
+    return Column(
+      children: [
+        InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 14),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  color: color,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                      ),
+                      if (subtitle != null) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          subtitle!,
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: AppColors.textMedium,
+                                  ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                trailing ??
+                    const Icon(
+                      Icons.chevron_right_rounded,
+                      color: AppColors.textDark,
+                      size: 22,
+                    ),
+              ],
+            ),
           ),
-          child: Icon(
-            icon,
-            color: Theme.of(context).primaryColor,
-            size: 20,
-          ),
         ),
-        title: Text(
-          title,
-          style: const TextStyle(
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        trailing: Icon(
-          Icons.arrow_forward_ios,
-          size: 16,
-          color: Colors.grey[400],
-        ),
-        onTap: onTap,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 4,
-        ),
-      ),
+        const Divider(height: 1, color: AppColors.divider),
+      ],
     );
   }
 }
-
-

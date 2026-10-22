@@ -59,14 +59,16 @@ class NotificationProvider with ChangeNotifier {
 
   Future<bool> updateSettings(NotificationSettings newSettings) async {
     try {
-      final response = await ApiService.put('/notifications/settings', newSettings.toJson());
-      
+      final response =
+          await ApiService.put('/notifications/settings', newSettings.toJson());
+
       if (response['success']) {
         _settings = NotificationSettings.fromJson(response['data']);
         notifyListeners();
         return true;
       } else {
-        _error = response['message'] ?? 'Failed to update notification settings';
+        _error =
+            response['message'] ?? 'Failed to update notification settings';
         return false;
       }
     } catch (e) {
@@ -77,8 +79,9 @@ class NotificationProvider with ChangeNotifier {
 
   Future<bool> markAsRead(String notificationId) async {
     try {
-      final response = await ApiService.put('/notifications/$notificationId/read', {});
-      
+      final response =
+          await ApiService.put('/notifications/$notificationId/read', {});
+
       if (response['success']) {
         final index = _notifications.indexWhere((n) => n.id == notificationId);
         if (index != -1) {
@@ -99,15 +102,15 @@ class NotificationProvider with ChangeNotifier {
   Future<bool> markAllAsRead() async {
     try {
       final response = await ApiService.put('/notifications/mark-all-read', {});
-      
+
       if (response['success']) {
-        _notifications = _notifications
-            .map((n) => n.copyWith(isRead: true))
-            .toList();
+        _notifications =
+            _notifications.map((n) => n.copyWith(isRead: true)).toList();
         notifyListeners();
         return true;
       } else {
-        _error = response['message'] ?? 'Failed to mark all notifications as read';
+        _error =
+            response['message'] ?? 'Failed to mark all notifications as read';
         return false;
       }
     } catch (e) {
@@ -118,8 +121,9 @@ class NotificationProvider with ChangeNotifier {
 
   Future<bool> deleteNotification(String notificationId) async {
     try {
-      final response = await ApiService.delete('/notifications/$notificationId');
-      
+      final response =
+          await ApiService.delete('/notifications/$notificationId');
+
       if (response['success']) {
         _notifications.removeWhere((n) => n.id == notificationId);
         notifyListeners();
@@ -144,4 +148,3 @@ class NotificationProvider with ChangeNotifier {
     notifyListeners();
   }
 }
-

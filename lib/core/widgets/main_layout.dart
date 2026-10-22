@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
+import '../theme/app_colors.dart';
 import '../providers/auth_provider.dart';
 import '../providers/message_provider.dart';
 
@@ -15,10 +16,23 @@ class MainLayout extends StatefulWidget {
 
 class _MainLayoutState extends State<MainLayout> {
   int _getCurrentIndex(String location) {
-    if (location.startsWith('/home')) return 0;
-    if (location.startsWith('/services') || location.startsWith('/my-services')) return 1;
-    if (location.startsWith('/bookings') || location.startsWith('/my-bookings') || location.startsWith('/technician-bookings')) return 2;
-    if (location.startsWith('/messages')) return 3;
+    if (location.startsWith('/home') ||
+        location.startsWith('/technician-home')) {
+      return 0;
+    }
+    if (location.startsWith('/services') ||
+        location.startsWith('/my-services')) {
+      return 1;
+    }
+    if (location.startsWith('/bookings') ||
+        location.startsWith('/my-bookings') ||
+        location.startsWith('/booking-detail') ||
+        location.startsWith('/technician-bookings')) {
+      return 2;
+    }
+    if (location.startsWith('/messages') || location.startsWith('/chat')) {
+      return 3;
+    }
     if (location.startsWith('/profile')) return 4;
     return 0;
   }
@@ -30,152 +44,184 @@ class _MainLayoutState extends State<MainLayout> {
     final location = GoRouterState.of(context).matchedLocation;
     final currentIndex = _getCurrentIndex(location);
 
+    final items = <_NavItem>[
+      _NavItem(
+        icon: isCustomer ? Icons.home_outlined : Icons.dashboard_outlined,
+        activeIcon: isCustomer ? Icons.home : Icons.dashboard,
+        label: isCustomer ? 'Accueil' : 'Dashboard',
+      ),
+      _NavItem(
+        icon: isCustomer ? Icons.search : Icons.content_cut_outlined,
+        activeIcon: isCustomer ? Icons.search : Icons.content_cut,
+        label: isCustomer ? 'Recherche' : 'Services',
+      ),
+      const _NavItem(
+        icon: Icons.calendar_today_outlined,
+        activeIcon: Icons.calendar_today,
+        label: 'Réservations',
+      ),
+      const _NavItem(
+        icon: Icons.chat_bubble_outline,
+        activeIcon: Icons.chat_bubble,
+        label: 'Messages',
+        isMessages: true,
+      ),
+      const _NavItem(
+        icon: Icons.person_outline,
+        activeIcon: Icons.person,
+        label: 'Profil',
+      ),
+    ];
+
     return Scaffold(
       body: widget.child,
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: currentIndex,
-        onTap: (index) {
-          switch (index) {
-            case 0:
-              if (isCustomer) {
-                context.go('/home');
-              } else {
-                context.go('/technician-home');
-              }
-              break;
-            case 1:
-              if (isCustomer) {
-                context.go('/services');
-              } else {
-                context.go('/my-services');
-              }
-              break;
-            case 2:
-              if (isCustomer) {
-                context.go('/bookings');
-              } else {
-                context.go('/technician-bookings');
-              }
-              break;
-            case 3:
-              context.go('/messages');
-              break;
-            case 4:
-              context.go('/profile');
-              break;
-          }
-        },
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: Theme.of(context).primaryColor,
-        unselectedItemColor: Colors.grey,
-        items: [
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.spa_outlined),
-            activeIcon: const Icon(Icons.spa),
-            label: isCustomer ? 'Services' : 'My Services',
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.calendar_today_outlined),
-            activeIcon: const Icon(Icons.calendar_today),
-            label: isCustomer ? 'Bookings' : 'Schedule',
-          ),
-          BottomNavigationBarItem(
-            icon: Consumer<MessageProvider>(
-              builder: (context, messageProvider, _) {
-                final unreadCount = messageProvider.conversations
-                    .fold<int>(0, (sum, conv) => sum + (conv.unreadCount ?? 0));
-                
-                return Stack(
-                  children: [
-                    const Icon(Icons.chat_bubble_outline),
-                    if (unreadCount > 0)
-                      Positioned(
-                        right: 0,
-                        top: 0,
-                        child: Container(
-                          padding: const EdgeInsets.all(2),
-                          decoration: BoxDecoration(
-                            color: Colors.red,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          constraints: const BoxConstraints(
-                            minWidth: 16,
-                            minHeight: 16,
-                          ),
-                          child: Text(
-                            unreadCount > 99 ? '99+' : unreadCount.toString(),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.textDark.withValues(alpha: 0.05),
+              blurRadius: 20,
+              offset: const Offset(0, -5),
+            ),
+          ],
+        ),
+        child: SafeArea(
+          child: SizedBox(
+            height: 64,
+            child: Row(
+              children: List.generate(items.length, (index) {
+                final item = items[index];
+                final active = index == currentIndex;
+                return Expanded(
+                  child: InkWell(
+                    onTap: () => _onTap(index, isCustomer),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        item.isMessages
+                            ? _MessageIcon(active: active)
+                            : Icon(
+                                active ? item.activeIcon : item.icon,
+                                color: active
+                                    ? AppColors.accent
+                                    : AppColors.textLight,
+                                size: 24,
+                              ),
+                        const SizedBox(height: 4),
+                        Text(
+                          item.label,
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight:
+                                active ? FontWeight.w700 : FontWeight.w500,
+                            color:
+                                active ? AppColors.accent : AppColors.textLight,
                           ),
                         ),
-                      ),
-                  ],
-                );
-              },
-            ),
-            activeIcon: Consumer<MessageProvider>(
-              builder: (context, messageProvider, _) {
-                final unreadCount = messageProvider.conversations
-                    .fold<int>(0, (sum, conv) => sum + (conv.unreadCount ?? 0));
-                
-                return Stack(
-                  children: [
-                    const Icon(Icons.chat_bubble),
-                    if (unreadCount > 0)
-                      Positioned(
-                        right: 0,
-                        top: 0,
-                        child: Container(
-                          padding: const EdgeInsets.all(2),
+                        const SizedBox(height: 2),
+                        Container(
+                          width: 4,
+                          height: 4,
                           decoration: BoxDecoration(
-                            color: Colors.red,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          constraints: const BoxConstraints(
-                            minWidth: 16,
-                            minHeight: 16,
-                          ),
-                          child: Text(
-                            unreadCount > 99 ? '99+' : unreadCount.toString(),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
+                            shape: BoxShape.circle,
+                            color:
+                                active ? AppColors.accent : Colors.transparent,
                           ),
                         ),
-                      ),
-                  ],
+                      ],
+                    ),
+                  ),
                 );
-              },
+              }),
             ),
-            label: 'Messages',
           ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            activeIcon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
+        ),
       ),
     );
   }
+
+  void _onTap(int index, bool isCustomer) {
+    switch (index) {
+      case 0:
+        context.go(isCustomer ? '/home' : '/technician-home');
+        break;
+      case 1:
+        context.go(isCustomer ? '/services' : '/my-services');
+        break;
+      case 2:
+        context.go(isCustomer ? '/bookings' : '/technician-bookings');
+        break;
+      case 3:
+        context.go('/messages');
+        break;
+      case 4:
+        context.go('/profile');
+        break;
+    }
+  }
 }
 
+class _NavItem {
+  final IconData icon;
+  final IconData activeIcon;
+  final String label;
+  final bool isMessages;
 
+  const _NavItem({
+    required this.icon,
+    required this.activeIcon,
+    required this.label,
+    this.isMessages = false,
+  });
+}
 
+class _MessageIcon extends StatelessWidget {
+  final bool active;
 
+  const _MessageIcon({required this.active});
 
+  @override
+  Widget build(BuildContext context) {
+    final unreadCount = context
+        .watch<MessageProvider>()
+        .conversations
+        .fold<int>(0, (sum, conv) => sum + conv.unreadCount);
+    final icon = active ? Icons.chat_bubble : Icons.chat_bubble_outline;
 
+    final iconWidget = Icon(
+      icon,
+      color: active ? AppColors.accent : AppColors.textLight,
+      size: 24,
+    );
+    if (unreadCount <= 0) return iconWidget;
 
-
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        iconWidget,
+        Positioned(
+          right: -6,
+          top: -4,
+          child: Container(
+            padding: const EdgeInsets.all(2),
+            decoration: const BoxDecoration(
+              color: AppColors.error,
+              shape: BoxShape.circle,
+            ),
+            constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+            child: Text(
+              unreadCount > 99 ? '99+' : unreadCount.toString(),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 9,
+                fontWeight: FontWeight.bold,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}

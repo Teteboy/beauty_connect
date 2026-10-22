@@ -165,10 +165,10 @@ class NotificationSettings {
     return NotificationSettings(
       bookingNotifications: bookingNotifications ?? this.bookingNotifications,
       messageNotifications: messageNotifications ?? this.messageNotifications,
-      reminderNotifications: reminderNotifications ?? this.reminderNotifications,
-      marketingNotifications: marketingNotifications ?? this.marketingNotifications,
+      reminderNotifications:
+          reminderNotifications ?? this.reminderNotifications,
+      marketingNotifications:
+          marketingNotifications ?? this.marketingNotifications,
     );
   }
 }
-
-

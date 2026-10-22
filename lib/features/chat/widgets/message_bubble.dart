@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../core/models/message.dart';
+import '../../../core/theme/app_colors.dart';
 
 class MessageBubble extends StatelessWidget {
   final Message message;
@@ -17,7 +18,8 @@ class MessageBubble extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
-        mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment:
+            isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
           if (!isMe) const SizedBox(width: 8),
           Flexible(
@@ -27,14 +29,12 @@ class MessageBubble extends StatelessWidget {
               ),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               decoration: BoxDecoration(
-                color: isMe 
-                    ? Theme.of(context).primaryColor 
-                    : Colors.grey[200],
+                color: isMe ? AppColors.accent : AppColors.navyBackground,
                 borderRadius: BorderRadius.only(
-                  topLeft: const Radius.circular(16),
-                  topRight: const Radius.circular(16),
-                  bottomLeft: Radius.circular(isMe ? 16 : 4),
-                  bottomRight: Radius.circular(isMe ? 4 : 16),
+                  topLeft: const Radius.circular(20),
+                  topRight: const Radius.circular(20),
+                  bottomLeft: Radius.circular(isMe ? 20 : 6),
+                  bottomRight: Radius.circular(isMe ? 6 : 20),
                 ),
               ),
               child: Column(
@@ -43,7 +43,7 @@ class MessageBubble extends StatelessWidget {
                   Text(
                     message.content,
                     style: TextStyle(
-                      color: isMe ? Colors.white : Colors.black87,
+                      color: isMe ? Colors.white : AppColors.primary,
                       fontSize: 16,
                     ),
                   ),
@@ -54,9 +54,9 @@ class MessageBubble extends StatelessWidget {
                       Text(
                         DateFormat('HH:mm').format(message.timestamp),
                         style: TextStyle(
-                          color: isMe 
-                              ? Colors.white.withOpacity(0.7) 
-                              : Colors.grey[600],
+                          color: isMe
+                              ? Colors.white.withValues(alpha: 0.7)
+                              : AppColors.textLight,
                           fontSize: 12,
                         ),
                       ),
@@ -65,9 +65,9 @@ class MessageBubble extends StatelessWidget {
                         Icon(
                           message.isRead ? Icons.done_all : Icons.done,
                           size: 16,
-                          color: message.isRead 
-                              ? Colors.blue[300] 
-                              : Colors.white.withOpacity(0.7),
+                          color: message.isRead
+                              ? Colors.white
+                              : Colors.white.withValues(alpha: 0.7),
                         ),
                       ],
                     ],

@@ -31,13 +31,13 @@ class AuthProvider with ChangeNotifier {
   }) async {
     _setLoading(true);
     _clearError();
-    
+
     try {
       final response = await ApiService.post('/auth/login', {
         'email': email,
         'password': password,
       });
-      
+
       if (response['token'] != null && response['user'] != null) {
         await ApiService.setToken(response['token']);
         _user = User.fromJson(response['user']);
@@ -89,7 +89,7 @@ class AuthProvider with ChangeNotifier {
       if (response['success']) {
         final token = response['token'];
         final userData = response['user'];
-        
+
         await ApiService.setToken(token);
         _user = User.fromJson(userData);
         _isAuthenticated = true;
@@ -170,13 +170,13 @@ class AuthProvider with ChangeNotifier {
   }) async {
     _setLoading(true);
     _clearError();
-    
+
     try {
       await ApiService.put('/auth/change-password', {
         'currentPassword': currentPassword,
         'newPassword': newPassword,
       });
-      
+
       notifyListeners();
       return true;
     } catch (e) {
@@ -197,12 +197,12 @@ class AuthProvider with ChangeNotifier {
 
     _setLoading(true);
     _clearError();
-    
+
     try {
       await ApiService.post('/auth/forgot-password', {
         'email': email.trim(),
       });
-      
+
       notifyListeners();
       return true;
     } catch (e) {
@@ -226,19 +226,19 @@ class AuthProvider with ChangeNotifier {
 
     _setLoading(true);
     _clearError();
-    
+
     try {
       final response = await ApiService.post('/auth/reset-password', {
         'token': token.trim(),
         'password': newPassword,
       });
-      
+
       // Auto-login after successful password reset
       if (response['token'] != null) {
         await ApiService.setToken(response['token']);
         await getCurrentUser();
       }
-      
+
       notifyListeners();
       return true;
     } catch (e) {
@@ -253,7 +253,7 @@ class AuthProvider with ChangeNotifier {
   Future<bool> deleteAccount() async {
     _setLoading(true);
     _clearError();
-    
+
     try {
       await ApiService.delete('/auth/account');
       await logout();
@@ -290,7 +290,8 @@ class AuthProvider with ChangeNotifier {
 
   // Additional utility getters
   String? get userRole => _user?.role;
-  String? get userName => _user != null ? '${_user!.firstName} ${_user!.lastName}' : null;
+  String? get userName =>
+      _user != null ? '${_user!.firstName} ${_user!.lastName}' : null;
   String? get userEmail => _user?.email;
 
   Future<bool> updateProfile({
@@ -331,9 +332,3 @@ class AuthProvider with ChangeNotifier {
     }
   }
 }
-
-
-
-
-
-

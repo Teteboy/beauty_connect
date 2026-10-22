@@ -39,22 +39,22 @@ class Booking {
         customerId: json['customerId'] as int? ?? 0,
         technicianId: json['technicianId'] as int? ?? 0,
         serviceId: json['serviceId'] as int? ?? 0,
-        dateTime: json['dateTime'] != null 
+        dateTime: json['dateTime'] != null
             ? DateTime.parse(json['dateTime'].toString())
             : DateTime.now(),
         status: json['status']?.toString() ?? 'pending',
         notes: json['notes']?.toString(),
         price: _parseDouble(json['price']),
-        createdAt: json['createdAt'] != null 
+        createdAt: json['createdAt'] != null
             ? DateTime.parse(json['createdAt'].toString())
             : DateTime.now(),
-        updatedAt: json['updatedAt'] != null 
+        updatedAt: json['updatedAt'] != null
             ? DateTime.parse(json['updatedAt'].toString())
             : DateTime.now(),
-        service: json['service'] != null 
+        service: json['service'] != null
             ? Service.fromJson(json['service'] as Map<String, dynamic>)
             : null,
-        customer: json['customer'] != null 
+        customer: json['customer'] != null
             ? User.fromJson(json['customer'] as Map<String, dynamic>)
             : null,
       );
@@ -94,8 +94,18 @@ class Booking {
 
   String get formattedDate {
     final months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
     ];
     return '${months[dateTime.month - 1]} ${dateTime.day}, ${dateTime.year}';
   }
@@ -174,9 +184,3 @@ class Booking {
     );
   }
 }
-
-
-
-
-
-

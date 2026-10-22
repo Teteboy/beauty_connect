@@ -22,9 +22,11 @@ class MessageProvider with ChangeNotifier {
     try {
       final response = await ApiService.get('/messages/conversations');
       print('Conversations response: $response');
-      
+
       if (response is List) {
-        _conversations = response.map((json) => Conversation.fromJson(json as Map<String, dynamic>)).toList();
+        _conversations = response
+            .map((json) => Conversation.fromJson(json as Map<String, dynamic>))
+            .toList();
         print('Parsed ${_conversations.length} conversations');
       } else {
         _error = 'Invalid response format';
@@ -48,9 +50,11 @@ class MessageProvider with ChangeNotifier {
     try {
       final response = await ApiService.get('/messages/conversations/$userId');
       print('Messages response: $response');
-      
+
       if (response is List) {
-        _messages = response.map((json) => Message.fromJson(json as Map<String, dynamic>)).toList();
+        _messages = response
+            .map((json) => Message.fromJson(json as Map<String, dynamic>))
+            .toList();
         print('Parsed ${_messages.length} messages');
       } else {
         _error = 'Invalid response format';
@@ -71,13 +75,13 @@ class MessageProvider with ChangeNotifier {
     required String content,
   }) async {
     _error = null;
-    
+
     try {
       final response = await ApiService.post('/messages', {
         'receiverId': receiverId,
         'content': content,
       });
-      
+
       if (response is Map<String, dynamic>) {
         final newMessage = Message.fromJson(response);
         _messages.add(newMessage);
@@ -96,9 +100,10 @@ class MessageProvider with ChangeNotifier {
   Future<bool> markAsRead(String messageId) async {
     try {
       await ApiService.put('/messages/$messageId/read', {});
-      
+
       // Update local message
-      final messageIndex = _messages.indexWhere((m) => m.id.toString() == messageId);
+      final messageIndex =
+          _messages.indexWhere((m) => m.id.toString() == messageId);
       if (messageIndex != -1) {
         final updatedMessage = Message(
           id: _messages[messageIndex].id,
@@ -115,7 +120,7 @@ class MessageProvider with ChangeNotifier {
         _messages[messageIndex] = updatedMessage;
         notifyListeners();
       }
-      
+
       return true;
     } catch (e) {
       print('Error marking message as read: $e');
@@ -133,6 +138,3 @@ class MessageProvider with ChangeNotifier {
     notifyListeners();
   }
 }
-
-
-

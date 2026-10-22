@@ -35,7 +35,8 @@ class Message {
         isRead: json['isRead'] ?? false,
         timestamp: DateTime.parse(json['timestamp']),
         sender: json['sender'] != null ? User.fromJson(json['sender']) : null,
-        receiver: json['receiver'] != null ? User.fromJson(json['receiver']) : null,
+        receiver:
+            json['receiver'] != null ? User.fromJson(json['receiver']) : null,
         createdAt: DateTime.parse(json['createdAt']),
         updatedAt: DateTime.parse(json['updatedAt']),
       );
@@ -82,9 +83,3 @@ class Message {
     }
   }
 }
-
-
-
-
-
-

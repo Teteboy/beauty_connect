@@ -11,6 +11,7 @@ import 'core/providers/message_provider.dart';
 import 'core/providers/notification_provider.dart';
 import 'core/providers/profile_provider.dart';
 import 'core/providers/analytics_provider.dart';
+import 'core/providers/favorites_provider.dart';
 
 void main() {
   runApp(
@@ -25,6 +26,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => ChatProvider()),
         ChangeNotifierProvider(create: (_) => MessageProvider()),
         ChangeNotifierProvider(create: (_) => NotificationProvider()),
+        ChangeNotifierProvider(create: (_) => FavoritesProvider()),
       ],
       child: const MyApp(),
     ),
@@ -41,7 +43,7 @@ class MyApp extends StatelessWidget {
         return MaterialApp.router(
           title: 'Beauty Connect',
           theme: AppTheme.lightTheme,
-          darkTheme: AppTheme.darkTheme,
+          themeMode: ThemeMode.light,
           routerConfig: AppRouter.router,
         );
       },

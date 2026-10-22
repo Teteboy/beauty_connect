@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 // Screens
 import '../../features/splash/splash_screen.dart';
 import '../../features/onboarding/onboarding_screen.dart';
+import '../../features/role_selection/role_selection_screen.dart';
 import '../../features/auth/screens/login_screen.dart';
 import '../../features/auth/screens/register_screen.dart';
 import '../../features/auth/screens/forgot_password_screen.dart';
@@ -17,14 +18,18 @@ import '../../features/services/screens/my_services_screen.dart';
 import '../../features/services/screens/services_screen.dart';
 import '../../features/services/screens/edit_service_screen.dart';
 import '../../features/services/screens/service_catalogue_screen.dart';
-import '../../features/booking/screens/booking_screen.dart';
 import '../../features/booking/screens/booking_detail_screen.dart';
+import '../../features/booking/screens/deposit_payment_screen.dart';
 import '../../features/booking/screens/bookings_screen.dart';
 import '../../features/booking/screens/technician_bookings_screen.dart';
 import '../../features/booking/screens/create_booking_screen.dart';
+import '../../features/home/screens/recommendations_screen.dart';
 import '../../features/messages/screens/chat_screen.dart';
 import '../../features/messages/screens/messages_screen.dart';
+import '../../features/messages/screens/video_call_screen.dart';
 import '../../features/profile/screens/profile_screen.dart';
+import '../../features/profile/screens/payment_methods_screen.dart';
+import '../../features/profile/screens/earnings_screen.dart';
 import '../../features/profile/screens/edit_profile_screen.dart';
 import '../../features/profile/screens/notification_settings_screen.dart';
 import '../../features/profile/screens/change_password_screen.dart';
@@ -34,6 +39,11 @@ import '../../features/profile/screens/help_support_screen.dart';
 import '../../features/profile/screens/analytics_screen.dart';
 import '../../features/profile/screens/about_screen.dart';
 import '../../features/profile/screens/privacy_policy_screen.dart';
+import '../../features/profile/screens/favorites_screen.dart';
+import '../../features/profile/screens/availability_screen.dart';
+import '../../features/profile/screens/verification_screen.dart';
+import '../../features/profile/screens/subscription_screen.dart';
+import '../../features/profile/screens/whatsapp_preferences_screen.dart';
 
 // Providers
 import '../providers/auth_provider.dart';
@@ -52,9 +62,11 @@ class AppRouter {
       final publicRoutes = [
         '/',
         '/onboarding',
+        '/role-selection',
         '/login',
         '/register',
         '/forgot-password',
+        '/reset-password',
       ];
 
       // If not logged in and trying to access protected route
@@ -90,6 +102,12 @@ class AppRouter {
         builder: (context, state) => const OnboardingScreen(),
       ),
 
+      // Role Selection
+      GoRoute(
+        path: '/role-selection',
+        builder: (context, state) => const RoleSelectionScreen(),
+      ),
+
       // Auth Routes
       GoRoute(
         path: '/login',
@@ -97,11 +115,19 @@ class AppRouter {
       ),
       GoRoute(
         path: '/register',
-        builder: (context, state) => const RegisterScreen(),
+        builder: (context, state) =>
+            RegisterScreen(initialRole: state.extra as String?),
       ),
       GoRoute(
         path: '/forgot-password',
         builder: (context, state) => const ForgotPasswordScreen(),
+      ),
+
+      GoRoute(
+        path: '/reset-password',
+        builder: (context, state) => ResetPasswordScreen(
+          token: state.uri.queryParameters['token'] ?? '',
+        ),
       ),
 
       // Main App Routes with Bottom Navigation
@@ -113,7 +139,8 @@ class AppRouter {
       // Technician Dashboard
       GoRoute(
         path: '/technician-home',
-        builder: (context, state) => const MainLayout(child: TechnicianHomeScreen()),
+        builder: (context, state) =>
+            const MainLayout(child: TechnicianHomeScreen()),
       ),
 
       // Service Routes with Bottom Navigation
@@ -123,7 +150,8 @@ class AppRouter {
       ),
       GoRoute(
         path: '/my-services',
-        builder: (context, state) => const MainLayout(child: ServicesScreen(showMyServices: true)),
+        builder: (context, state) =>
+            const MainLayout(child: MyServicesScreen()),
       ),
       // Service detail and add service don't need bottom nav
       GoRoute(
@@ -163,14 +191,15 @@ class AppRouter {
       ),
       GoRoute(
         path: '/technician-bookings',
-        builder: (context, state) => const MainLayout(child: TechnicianBookingsScreen()),
+        builder: (context, state) =>
+            const MainLayout(child: TechnicianBookingsScreen()),
       ),
       // Booking screens without bottom nav
       GoRoute(
         path: '/book/:serviceId',
         builder: (context, state) {
           final serviceId = state.pathParameters['serviceId']!;
-          return BookingScreen(serviceId: serviceId);
+          return ServiceDetailScreen(serviceId: serviceId);
         },
       ),
       GoRoute(
@@ -229,6 +258,26 @@ class AppRouter {
         path: '/privacy',
         builder: (context, state) => const PrivacyPolicyScreen(),
       ),
+      GoRoute(
+        path: '/favorites',
+        builder: (context, state) => const FavoritesScreen(),
+      ),
+      GoRoute(
+        path: '/availability',
+        builder: (context, state) => const AvailabilityScreen(),
+      ),
+      GoRoute(
+        path: '/verification',
+        builder: (context, state) => const VerificationScreen(),
+      ),
+      GoRoute(
+        path: '/subscription',
+        builder: (context, state) => const SubscriptionScreen(),
+      ),
+      GoRoute(
+        path: '/whatsapp-preferences',
+        builder: (context, state) => const WhatsappPreferencesScreen(),
+      ),
 
       // Notification Routes
       GoRoute(
@@ -249,6 +298,37 @@ class AppRouter {
       GoRoute(
         path: '/users',
         builder: (context, state) => const MainLayout(child: UsersScreen()),
+      ),
+
+      // Future-concept Routes (no bottom nav — full-screen flows)
+      GoRoute(
+        path: '/payment-methods',
+        builder: (context, state) => const PaymentMethodsScreen(),
+      ),
+      GoRoute(
+        path: '/deposit/:bookingId',
+        builder: (context, state) {
+          final bookingId = state.pathParameters['bookingId']!;
+          return DepositPaymentScreen(bookingId: bookingId);
+        },
+      ),
+      GoRoute(
+        path: '/earnings',
+        builder: (context, state) => const EarningsScreen(),
+      ),
+      GoRoute(
+        path: '/video-call/:userId',
+        builder: (context, state) {
+          final userId = state.pathParameters['userId']!;
+          return VideoCallScreen(
+            userId: userId,
+            peerName: state.extra as String?,
+          );
+        },
+      ),
+      GoRoute(
+        path: '/recommendations',
+        builder: (context, state) => const RecommendationsScreen(),
       ),
 
       // Review Routes
@@ -291,22 +371,3 @@ class AppRouter {
     ),
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

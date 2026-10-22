@@ -1,26 +1,24 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/services/api_service.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/widgets/search_field.dart';
 
 class UsersScreen extends StatefulWidget {
   const UsersScreen({super.key});
-
   @override
-  State<UsersScreen> createState() {
-    print('UsersScreen created'); // Add this for debugging
-    return _UsersScreenState();
-  }
+  State<UsersScreen> createState() => _UsersScreenState();
 }
 
 class _UsersScreenState extends State<UsersScreen> {
-  final TextEditingController _searchController = TextEditingController();
+  final _searchController = TextEditingController();
   List<dynamic> _users = [];
   List<dynamic> _filteredUsers = [];
   bool _isLoading = false;
   String? _error;
-
   @override
   void initState() {
     super.initState();
@@ -38,54 +36,45 @@ class _UsersScreenState extends State<UsersScreen> {
       _isLoading = true;
       _error = null;
     });
-
     try {
       final currentUser = context.read<AuthProvider>().user;
-      if (currentUser == null) {
-        throw Exception('User not authenticated');
-      }
-
-      // Determine which users to fetch based on current user role
-      final targetRole = currentUser.role == 'technician' ? 'customer' : 'technician';
-      
+      if (currentUser == null) throw Exception('Utilisateur non connecté');
+      final targetRole =
+          currentUser.role == 'technician' ? 'customer' : 'technician';
       final response = await ApiService.get('/auth/users?role=$targetRole');
-
       if (mounted) {
         setState(() {
           _users = response['users'] ?? [];
-          _filteredUsers = _users;
           _isLoading = false;
         });
+        _filterUsers(_searchController.text);
       }
-    } catch (e) {
-      if (mounted) {
+    } catch (_) {
+      if (mounted)
         setState(() {
-          _error = e.toString();
+          _error = 'Impossible de charger les utilisateurs.';
           _isLoading = false;
         });
-      }
     }
   }
 
-  void _filterUsers(String query) {
-    setState(() {
-      if (query.isEmpty) {
-        _filteredUsers = _users;
-      } else {
-        _filteredUsers = _users.where((user) {
-          final name = '${user['firstName']} ${user['lastName']}'.toLowerCase();
-          final location = (user['location'] ?? '').toLowerCase();
-          final specialty = (user['specialty'] ?? '').toLowerCase();
-          final searchQuery = query.toLowerCase();
-          
-          return name.contains(searchQuery) ||
-                 location.contains(searchQuery) ||
-                 specialty.contains(searchQuery);
-        }).toList();
-      }
-    });
-  }
-
+  void _filterUsers(String query) => setState(() {
+        final search = query.toLowerCase();
+        _filteredUsers = _users
+            .where((user) =>
+                '${user['firstName']} ${user['lastName']}'
+                    .toLowerCase()
+                    .contains(search) ||
+                (user['location'] ?? '')
+                    .toString()
+                    .toLowerCase()
+                    .contains(search) ||
+                (user['specialty'] ?? '')
+                    .toString()
+                    .toLowerCase()
+                    .contains(search))
+            .toList();
+      });
   void _startChat(dynamic user) {
     Navigator.pop(context);
     context.go('/chat/${user['id']}');
@@ -93,236 +82,131 @@ class _UsersScreenState extends State<UsersScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final currentUser = context.read<AuthProvider>().user;
-    final targetRole = currentUser?.role == 'technician' ? 'customers' : 'technicians';
-    
+    final provider = context.read<AuthProvider>().user?.role == 'technician';
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Find ${targetRole.capitalize()}'),
-        backgroundColor: Theme.of(context).primaryColor,
-        foregroundColor: Colors.white,
-      ),
-      body: Column(
-        children: [
-          // Search Bar
-          Container(
-            padding: const EdgeInsets.all(16),
-            color: Colors.grey[50],
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                hintText: 'Search by name, location, or specialty...',
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-                filled: true,
-                fillColor: Colors.white,
-              ),
-              onChanged: _filterUsers,
-            ),
-          ),
-          
-          // Users List
+        backgroundColor: AppColors.navyBackground,
+        appBar: AppBar(
+            backgroundColor: AppColors.primary,
+            foregroundColor: Colors.white,
+            title: Text(
+                provider ? 'Trouver des clients' : 'Trouver des prestataires'),
+            leading: IconButton(
+                onPressed: () => Navigator.of(context).maybePop(),
+                icon: const Icon(Icons.arrow_back))),
+        body: Column(children: [
+          Padding(
+              padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
+              child: SearchField(
+                  controller: _searchController,
+                  hintText: 'Nom, lieu ou spécialité…',
+                  onChanged: _filterUsers,
+                  showFilterButton: false)),
           Expanded(
-            child: _buildBody(),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBody() {
-    if (_isLoading) {
-      return const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 16),
-            Text('Loading users...'),
-          ],
-        ),
-      );
-    }
-
-    if (_error != null) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(32),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.error_outline,
-                size: 64,
-                color: Colors.grey[400],
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Failed to load users',
-                style: Theme.of(context).textTheme.titleLarge,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                _error!,
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.grey[600]),
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton.icon(
-                onPressed: _loadUsers,
-                icon: const Icon(Icons.refresh),
-                label: const Text('Try Again'),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    if (_filteredUsers.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(32),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.people_outline,
-                size: 80,
-                color: Colors.grey[300],
-              ),
-              const SizedBox(height: 24),
-              Text(
-                _searchController.text.isEmpty ? 'No users found' : 'No matching users',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  color: Colors.grey[600],
-                ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                _searchController.text.isEmpty 
-                    ? 'There are no users available to chat with at the moment'
-                    : 'Try adjusting your search terms',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.grey[500]),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      itemCount: _filteredUsers.length,
-      itemBuilder: (context, index) {
-        final user = _filteredUsers[index];
-        return _UserTile(
-          user: user,
-          onTap: () => _startChat(user),
-        );
-      },
-    );
-  }
-}
-
-class _UserTile extends StatelessWidget {
-  final dynamic user;
-  final VoidCallback onTap;
-
-  const _UserTile({
-    required this.user,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 3,
-            offset: const Offset(0, 1),
-          ),
-        ],
-      ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        leading: CircleAvatar(
-          radius: 24,
-          backgroundColor: theme.primaryColor.withOpacity(0.1),
-          child: Text(
-            '${user['firstName'][0]}${user['lastName'][0]}'.toUpperCase(),
-            style: TextStyle(
-              color: theme.primaryColor,
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
-            ),
-          ),
-        ),
-        title: Text(
-          '${user['firstName']} ${user['lastName']}',
-          style: const TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 16,
-          ),
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (user['specialty'] != null && user['specialty'].isNotEmpty)
-              Text(
-                user['specialty'],
-                style: TextStyle(
-                  color: theme.primaryColor,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            if (user['location'] != null && user['location'].isNotEmpty)
-              Text(
-                user['location'],
-                style: TextStyle(
-                  color: Colors.grey[600],
-                  fontSize: 12,
-                ),
-              ),
-            if (user['bio'] != null && user['bio'].isNotEmpty)
-              Text(
-                user['bio'],
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: Colors.grey[600],
-                  fontSize: 12,
-                ),
-              ),
-          ],
-        ),
-        trailing: Icon(
-          Icons.chat_bubble_outline,
-          color: theme.primaryColor,
-        ),
-        onTap: onTap,
-      ),
-    );
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _error != null
+                      ? Center(
+                          child:
+                              Column(mainAxisSize: MainAxisSize.min, children: [
+                          const Icon(Icons.error_outline,
+                              color: AppColors.error, size: 48),
+                          const SizedBox(height: 16),
+                          Text(_error!),
+                          TextButton(
+                              onPressed: _loadUsers,
+                              child: const Text('Réessayer'))
+                        ]))
+                      : _filteredUsers.isEmpty
+                          ? Center(
+                              child: Padding(
+                                  padding: const EdgeInsets.all(24),
+                                  child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const Icon(Icons.people_outline,
+                                            color: AppColors.primary, size: 64),
+                                        const SizedBox(height: 16),
+                                        Text(
+                                            _searchController.text.isEmpty
+                                                ? 'Aucun utilisateur disponible'
+                                                : 'Aucun résultat',
+                                            style: const TextStyle(
+                                                color: AppColors.primaryDark,
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w700)),
+                                        const SizedBox(height: 8),
+                                        const Text(
+                                            'Essayez de modifier votre recherche.',
+                                            textAlign: TextAlign.center),
+                                      ])))
+                          : RefreshIndicator(
+                              onRefresh: _loadUsers,
+                              child: ListView.builder(
+                                  physics:
+                                      const AlwaysScrollableScrollPhysics(),
+                                  padding: const EdgeInsets.all(16),
+                                  itemCount: _filteredUsers.length,
+                                  itemBuilder: (context, index) {
+                                    final user = _filteredUsers[index];
+                                    final first =
+                                        (user['firstName'] ?? '').toString();
+                                    final last =
+                                        (user['lastName'] ?? '').toString();
+                                    final image =
+                                        user['profileImage'] as String?;
+                                    return Container(
+                                        margin:
+                                            const EdgeInsets.only(bottom: 12),
+                                        decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius:
+                                                BorderRadius.circular(16),
+                                            boxShadow: AppColors.cardShadow),
+                                        child: ListTile(
+                                            contentPadding:
+                                                const EdgeInsets.all(16),
+                                            onTap: () => _startChat(user),
+                                            leading: CircleAvatar(
+                                                radius: 28,
+                                                backgroundColor:
+                                                    AppColors.navyBackground,
+                                                backgroundImage: image != null &&
+                                                        image.isNotEmpty
+                                                    ? CachedNetworkImageProvider(
+                                                        image)
+                                                    : null,
+                                                child: image == null ||
+                                                        image.isEmpty
+                                                    ? Text(
+                                                        '${first.isEmpty ? '' : first[0]}${last.isEmpty ? '' : last[0]}'
+                                                            .toUpperCase(),
+                                                        style: const TextStyle(
+                                                            color: AppColors.primary,
+                                                            fontWeight: FontWeight.w700))
+                                                    : null),
+                                            title: Text('$first $last', style: const TextStyle(color: AppColors.primaryDark, fontWeight: FontWeight.w700)),
+                                            subtitle: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                                              if ((user['specialty'] ?? '')
+                                                  .toString()
+                                                  .isNotEmpty)
+                                                Text(user['specialty'],
+                                                    style: const TextStyle(
+                                                        color:
+                                                            AppColors.primary)),
+                                              if ((user['location'] ?? '')
+                                                  .toString()
+                                                  .isNotEmpty)
+                                                Text(user['location']),
+                                              if ((user['bio'] ?? '')
+                                                  .toString()
+                                                  .isNotEmpty)
+                                                Text(user['bio'],
+                                                    maxLines: 2,
+                                                    overflow:
+                                                        TextOverflow.ellipsis),
+                                            ]),
+                                            trailing: const CircleAvatar(backgroundColor: AppColors.orangePale, child: Icon(Icons.chat_bubble_outline, color: AppColors.accent, size: 20))));
+                                  }))),
+        ]));
   }
 }
-
-extension StringExtension on String {
-  String capitalize() {
-    return "${this[0].toUpperCase()}${substring(1)}";
-  }
-}
-
-

@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import '../../../core/providers/notification_provider.dart';
+
 import '../../../core/models/notification.dart';
+import '../../../core/providers/notification_provider.dart';
+import '../../../core/theme/app_colors.dart';
 
 class NotificationSettingsScreen extends StatefulWidget {
   const NotificationSettingsScreen({super.key});
 
   @override
-  State<NotificationSettingsScreen> createState() => _NotificationSettingsScreenState();
+  State<NotificationSettingsScreen> createState() =>
+      _NotificationSettingsScreenState();
 }
 
-class _NotificationSettingsScreenState extends State<NotificationSettingsScreen> {
+class _NotificationSettingsScreenState
+    extends State<NotificationSettingsScreen> {
   @override
   void initState() {
     super.initState();
@@ -20,141 +24,111 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
     });
   }
 
+  void _goBack() {
+    if (context.canPop()) {
+      context.pop();
+    } else {
+      context.go('/profile');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.scaffoldBackground,
       appBar: AppBar(
-        title: const Text('Notification Settings'),
+        title: const Text('Notifications'),
         leading: IconButton(
-          onPressed: () => context.go('/profile'),
-          icon: const Icon(Icons.arrow_back),
+          onPressed: _goBack,
+          icon: const Icon(Icons.arrow_back_rounded),
         ),
       ),
       body: Consumer<NotificationProvider>(
-        builder: (context, notificationProvider, _) {
-          if (notificationProvider.isLoading) {
-            return const Center(child: CircularProgressIndicator());
+        builder: (context, provider, _) {
+          if (provider.isLoading) {
+            return const Center(
+              child: CircularProgressIndicator(color: AppColors.primary),
+            );
           }
-
-          final settings = notificationProvider.settings;
-
+          final settings = provider.settings;
           return ListView(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
             children: [
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Push Notifications',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Choose which notifications you want to receive',
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 14,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      
-                      _buildSettingTile(
-                        title: 'Booking Notifications',
-                        subtitle: 'Get notified about booking updates',
-                        icon: Icons.calendar_today,
-                        value: settings.bookingNotifications,
-                        onChanged: (value) => _updateSetting(
-                          settings.copyWith(bookingNotifications: value),
-                        ),
-                      ),
-                      
-                      _buildSettingTile(
-                        title: 'Message Notifications',
-                        subtitle: 'Get notified about new messages',
-                        icon: Icons.message,
-                        value: settings.messageNotifications,
-                        onChanged: (value) => _updateSetting(
-                          settings.copyWith(messageNotifications: value),
-                        ),
-                      ),
-                      
-                      _buildSettingTile(
-                        title: 'Reminder Notifications',
-                        subtitle: 'Get reminded about upcoming appointments',
-                        icon: Icons.alarm,
-                        value: settings.reminderNotifications,
-                        onChanged: (value) => _updateSetting(
-                          settings.copyWith(reminderNotifications: value),
-                        ),
-                      ),
-                      
-                      _buildSettingTile(
-                        title: 'Marketing Notifications',
-                        subtitle: 'Get notified about promotions and offers',
-                        icon: Icons.campaign,
-                        value: settings.marketingNotifications,
-                        onChanged: (value) => _updateSetting(
-                          settings.copyWith(marketingNotifications: value),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
+              Text('PRÉFÉRENCES DE NOTIFICATIONS',
+                  style: Theme.of(context).textTheme.labelLarge),
+              const SizedBox(height: 8),
+              Text('Choisissez les notifications que vous souhaitez recevoir',
+                  style: Theme.of(context).textTheme.bodyMedium),
               const SizedBox(height: 16),
-
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Notification History',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      
-                      ListTile(
-                        leading: const Icon(Icons.clear_all),
-                        title: const Text('Clear All Notifications'),
-                        subtitle: const Text('Remove all notification history'),
-                        onTap: _showClearNotificationsDialog,
-                      ),
-                    ],
+              _settingsCard([
+                _settingTile(
+                  title: 'Rendez-vous',
+                  subtitle: 'Soyez informé des mises à jour de réservation',
+                  icon: Icons.calendar_today_outlined,
+                  value: settings.bookingNotifications,
+                  onChanged: (value) => _updateSetting(
+                    settings.copyWith(bookingNotifications: value),
                   ),
                 ),
-              ),
-
-              if (notificationProvider.error != null) ...[
-                const SizedBox(height: 16),
-                Card(
-                  color: Colors.red.shade50,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.error, color: Colors.red),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            notificationProvider.error!,
-                            style: const TextStyle(color: Colors.red),
-                          ),
-                        ),
-                      ],
-                    ),
+                _settingTile(
+                  title: 'Messages',
+                  subtitle: 'Soyez informé des nouveaux messages',
+                  icon: Icons.message_outlined,
+                  value: settings.messageNotifications,
+                  onChanged: (value) => _updateSetting(
+                    settings.copyWith(messageNotifications: value),
                   ),
+                ),
+                _settingTile(
+                  title: 'Rappels',
+                  subtitle: 'Rappels de vos rendez-vous à venir',
+                  icon: Icons.alarm_outlined,
+                  value: settings.reminderNotifications,
+                  onChanged: (value) => _updateSetting(
+                    settings.copyWith(reminderNotifications: value),
+                  ),
+                ),
+                _settingTile(
+                  title: 'Conseils et nouveautés',
+                  subtitle: 'Recevoir les nouvelles de BeautyConnect',
+                  icon: Icons.campaign_outlined,
+                  value: settings.marketingNotifications,
+                  onChanged: (value) => _updateSetting(
+                    settings.copyWith(marketingNotifications: value),
+                  ),
+                ),
+              ]),
+              const SizedBox(height: 28),
+              Text('HISTORIQUE DES NOTIFICATIONS',
+                  style: Theme.of(context).textTheme.labelLarge),
+              const SizedBox(height: 12),
+              _settingsCard([
+                ListTile(
+                  leading: const Icon(Icons.clear_all_rounded,
+                      color: AppColors.primary),
+                  title: const Text('Effacer toutes les notifications'),
+                  subtitle: const Text('Supprimer tout l\'historique'),
+                  trailing: const Icon(Icons.chevron_right_rounded,
+                      color: AppColors.textLight),
+                  onTap: _showClearNotificationsDialog,
+                ),
+              ]),
+              if (provider.error != null) ...[
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppColors.error.withOpacity(.08),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(children: [
+                    const Icon(Icons.error_outline, color: AppColors.error),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(provider.error!,
+                          style: const TextStyle(color: AppColors.error)),
+                    ),
+                  ]),
                 ),
               ],
             ],
@@ -164,80 +138,82 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
     );
   }
 
-  Widget _buildSettingTile({
+  Widget _settingsCard(List<Widget> children) => Container(
+        decoration: BoxDecoration(
+          color: AppColors.cardBackground,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: const [
+            BoxShadow(
+                color: AppColors.shadow, blurRadius: 18, offset: Offset(0, 6)),
+          ],
+        ),
+        child: Column(children: children),
+      );
+
+  Widget _settingTile({
     required String title,
     required String subtitle,
     required IconData icon,
     required bool value,
     required ValueChanged<bool> onChanged,
-  }) {
-    return ListTile(
-      leading: Icon(icon),
-      title: Text(title),
-      subtitle: Text(subtitle),
-      trailing: Switch(
+  }) =>
+      SwitchListTile(
+        secondary: Icon(icon, color: AppColors.primary),
+        title: Text(title),
+        subtitle: Text(subtitle),
         value: value,
+        activeColor: AppColors.primary,
         onChanged: onChanged,
-      ),
-      contentPadding: EdgeInsets.zero,
-    );
-  }
-
-  void _updateSetting(NotificationSettings newSettings) async {
-    final success = await context.read<NotificationProvider>().updateSettings(newSettings);
-    
-    if (mounted && !success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Failed to update notification settings'),
-          backgroundColor: Colors.red,
-        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       );
+
+  Future<void> _updateSetting(NotificationSettings newSettings) async {
+    final success =
+        await context.read<NotificationProvider>().updateSettings(newSettings);
+    if (mounted && !success) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Échec de la mise à jour des paramètres'),
+        backgroundColor: AppColors.error,
+      ));
     }
   }
 
   void _showClearNotificationsDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Clear All Notifications'),
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: AppColors.cardBackground,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text('Effacer toutes les notifications'),
         content: const Text(
-          'Are you sure you want to clear all notification history? This action cannot be undone.',
+          'Voulez-vous vraiment effacer tout l\'historique des notifications ? Cette action est irréversible.',
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Annuler'),
           ),
           TextButton(
             onPressed: () {
-              Navigator.pop(context);
+              Navigator.pop(dialogContext);
               _clearAllNotifications();
             },
-            child: const Text('Clear All', style: TextStyle(color: Colors.red)),
+            child: const Text('Tout effacer',
+                style: TextStyle(color: AppColors.error)),
           ),
         ],
       ),
     );
   }
 
-  void _clearAllNotifications() async {
+  Future<void> _clearAllNotifications() async {
     final success = await context.read<NotificationProvider>().markAllAsRead();
-    
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            success 
-                ? 'All notifications cleared' 
-                : 'Failed to clear notifications',
-          ),
-          backgroundColor: success ? Colors.green : Colors.red,
-        ),
-      );
-    }
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(success
+          ? 'Toutes les notifications ont été effacées'
+          : 'Échec de l\'effacement des notifications'),
+      backgroundColor: success ? AppColors.success : AppColors.error,
+    ));
   }
 }
-
-
-

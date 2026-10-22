@@ -1,4 +1,5 @@
 import 'dart:convert';
+import '../utils/asset_url.dart';
 
 class ServiceImage {
   final int id;
@@ -19,7 +20,7 @@ class ServiceImage {
     return ServiceImage(
       id: json['id'],
       serviceId: json['serviceId'],
-      imageUrl: json['imageUrl'],
+      imageUrl: resolveAssetUrl(json['imageUrl']) ?? '',
       caption: json['caption'],
       createdAt: DateTime.parse(json['createdAt']),
     );

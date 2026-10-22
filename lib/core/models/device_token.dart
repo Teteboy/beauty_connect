@@ -134,8 +134,10 @@ class NotificationSettings {
       userId: userId ?? this.userId,
       bookingNotifications: bookingNotifications ?? this.bookingNotifications,
       messageNotifications: messageNotifications ?? this.messageNotifications,
-      reminderNotifications: reminderNotifications ?? this.reminderNotifications,
-      marketingNotifications: marketingNotifications ?? this.marketingNotifications,
+      reminderNotifications:
+          reminderNotifications ?? this.reminderNotifications,
+      marketingNotifications:
+          marketingNotifications ?? this.marketingNotifications,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );

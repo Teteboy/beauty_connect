@@ -1,129 +1,100 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import '../../../core/providers/service_provider.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../services/widgets/service_card.dart';
 
 class FeaturedServices extends StatelessWidget {
   const FeaturedServices({super.key});
-
   @override
-  Widget build(BuildContext context) {
-    return Consumer<ServiceProvider>(
-      builder: (context, serviceProvider, _) {
-        final services = serviceProvider.services.take(5).toList();
-
-        if (serviceProvider.isLoading) {
+  Widget build(BuildContext context) =>
+      Consumer<ServiceProvider>(builder: (context, provider, _) {
+        if (provider.isLoading)
           return const SizedBox(
-            height: 200,
-            child: Center(child: CircularProgressIndicator()),
-          );
-        }
-
-        if (services.isEmpty) {
+              height: 240, child: Center(child: CircularProgressIndicator()));
+        if (provider.services.isEmpty)
           return const SizedBox(
-            height: 200,
-            child: Center(
-              child: Text('No services available'),
-            ),
-          );
-        }
-
+              height: 160,
+              child: Center(
+                  child: Text('Aucun talent à découvrir pour le moment.')));
+        final seen = <int>{};
+        final services = provider.services
+            .where((s) => seen.add(s.technicianId))
+            .take(5)
+            .toList();
         return SizedBox(
-          height: 220,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: services.length,
-            itemBuilder: (context, index) {
-              final service = services[index];
-              return Padding(
-                padding: const EdgeInsets.only(right: 16),
-                child: GestureDetector(
-                  onTap: () => context.go('/service/${service.id}'),
-                  child: Container(
-                    width: 160,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.1),
-                          spreadRadius: 1,
-                          blurRadius: 10,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ClipRRect(
-                          borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-                          child: service.imageUrl != null
-                              ? CachedNetworkImage(
-                                  imageUrl: service.imageUrl!,
-                                  height: 120,
-                                  width: double.infinity,
-                                  fit: BoxFit.cover,
-                                  placeholder: (context, url) => Container(
-                                    height: 120,
-                                    color: Colors.grey[200],
-                                    child: const Icon(Icons.spa),
-                                  ),
-                                  errorWidget: (context, url, error) => Container(
-                                    height: 120,
-                                    color: Colors.grey[200],
-                                    child: const Icon(Icons.spa),
-                                  ),
-                                )
-                              : Container(
-                                  height: 120,
-                                  color: Colors.grey[200],
-                                  child: const Icon(Icons.spa, size: 40),
-                                ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                service.name,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 14,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                service.formattedPrice,
-                                style: TextStyle(
-                                  color: Theme.of(context).primaryColor,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                service.formattedDuration,
-                                style: const TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
-        );
-      },
-    );
-  }
+            height: 258,
+            child: ListView.separated(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              scrollDirection: Axis.horizontal,
+              itemCount: services.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 12),
+              itemBuilder: (context, index) {
+                final service = services[index];
+                final image =
+                    service.imageUrl ?? service.technician?.profileImage;
+                return GestureDetector(
+                    onTap: () => context
+                        .go('/service-catalogue/${service.technicianId}'),
+                    child: Container(
+                      width: 280,
+                      clipBehavior: Clip.antiAlias,
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: AppColors.cardShadow,
+                          border: Border.all(color: AppColors.divider)),
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                                height: 142,
+                                width: double.infinity,
+                                child: image != null && image.isNotEmpty
+                                    ? Image.network(image,
+                                        fit: BoxFit.cover,
+                                        errorBuilder: (_, __, ___) =>
+                                            _placeholder())
+                                    : _placeholder()),
+                            Padding(
+                                padding: const EdgeInsets.all(12),
+                                child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                          service.technician?.fullName ??
+                                              service.name,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleMedium
+                                              ?.copyWith(
+                                                  color: AppColors.primary,
+                                                  fontWeight: FontWeight.w700)),
+                                      const SizedBox(height: 5),
+                                      Text(
+                                          '${ServiceCard.category(service.category)}${service.technician?.location == null ? '' : ' · ${service.technician!.location}'}',
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodySmall),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                          'À partir de ${ServiceCard.price(service.price)}',
+                                          style: const TextStyle(
+                                              color: AppColors.primary,
+                                              fontWeight: FontWeight.w700)),
+                                    ])),
+                          ]),
+                    ));
+              },
+            ));
+      });
+  Widget _placeholder() => const ColoredBox(
+      color: AppColors.navyBackground,
+      child: Icon(Icons.spa_outlined, color: AppColors.primary, size: 40));
 }

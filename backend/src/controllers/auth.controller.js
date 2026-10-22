@@ -25,7 +25,7 @@ exports.register = async (req, res) => {
       return res.status(400).json({ errors: errors.array() });
     }
     
-    const { firstName, lastName, email, password, phone, role, location, bio } = req.body;
+    const { firstName, lastName, email, password, phone, role, location, bio, specialty } = req.body;
     
     // Check if user already exists
     const existingUser = await User.findOne({ where: { email } });
@@ -42,7 +42,8 @@ exports.register = async (req, res) => {
       phone,
       role: role || 'customer',
       location,
-      bio
+      bio,
+      specialty
     });
     
     // Generate token

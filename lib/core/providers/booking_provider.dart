@@ -18,8 +18,8 @@ class BookingProvider with ChangeNotifier {
   List<Booking> get upcomingBookings {
     final now = DateTime.now();
     return _customerBookings
-        .where((booking) => 
-            booking.dateTime.isAfter(now) && 
+        .where((booking) =>
+            booking.dateTime.isAfter(now) &&
             booking.status != 'cancelled' &&
             booking.status != 'completed')
         .toList()
@@ -29,7 +29,7 @@ class BookingProvider with ChangeNotifier {
   List<Booking> get todayBookings {
     final now = DateTime.now();
     return _technicianBookings
-        .where((booking) => 
+        .where((booking) =>
             booking.dateTime.year == now.year &&
             booking.dateTime.month == now.month &&
             booking.dateTime.day == now.day)
@@ -53,13 +53,16 @@ class BookingProvider with ChangeNotifier {
       final response = await ApiService.get('/bookings');
       print('Bookings response type: ${response.runtimeType}');
       print('Bookings response: $response');
-      
+
       if (response is List) {
-        _bookings = response.map((json) => Booking.fromJson(json as Map<String, dynamic>)).toList();
+        _bookings = response
+            .map((json) => Booking.fromJson(json as Map<String, dynamic>))
+            .toList();
         _customerBookings = _bookings;
         print('Parsed ${_bookings.length} bookings');
       } else {
-        print('Invalid bookings response format - expected List, got ${response.runtimeType}');
+        print(
+            'Invalid bookings response format - expected List, got ${response.runtimeType}');
         _error = 'Invalid response format';
         _bookings = [];
         _customerBookings = [];
@@ -81,16 +84,20 @@ class BookingProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await ApiService.get('/bookings/technician/$technicianId');
+      final response =
+          await ApiService.get('/bookings/technician/$technicianId');
       print('Technician bookings response type: ${response.runtimeType}');
       print('Technician bookings response: $response');
-      
+
       if (response is List) {
-        _bookings = response.map((json) => Booking.fromJson(json as Map<String, dynamic>)).toList();
+        _bookings = response
+            .map((json) => Booking.fromJson(json as Map<String, dynamic>))
+            .toList();
         _technicianBookings = _bookings;
         print('Parsed ${_bookings.length} technician bookings');
       } else {
-        print('Invalid technician bookings response format - expected List, got ${response.runtimeType}');
+        print(
+            'Invalid technician bookings response format - expected List, got ${response.runtimeType}');
         _error = 'Invalid response format';
         _bookings = [];
         _technicianBookings = [];
@@ -153,34 +160,37 @@ class BookingProvider with ChangeNotifier {
       // Backend returns booking data directly with message, not wrapped in success/data
       if (response != null && response is Map<String, dynamic>) {
         // Check if response has booking data or message indicating success
-        if (response.containsKey('booking') || response.containsKey('message')) {
+        if (response.containsKey('booking') ||
+            response.containsKey('message')) {
           final bookingData = response['booking'] ?? response;
           final updatedBooking = Booking.fromJson(bookingData);
-          
+
           // Update in customer bookings
-          final customerIndex = _customerBookings.indexWhere((b) => b.id == bookingId);
+          final customerIndex =
+              _customerBookings.indexWhere((b) => b.id == bookingId);
           if (customerIndex != -1) {
             _customerBookings[customerIndex] = updatedBooking;
           }
-          
+
           // Update in technician bookings
-          final technicianIndex = _technicianBookings.indexWhere((b) => b.id == bookingId);
+          final technicianIndex =
+              _technicianBookings.indexWhere((b) => b.id == bookingId);
           if (technicianIndex != -1) {
             _technicianBookings[technicianIndex] = updatedBooking;
           }
-          
+
           // Update main bookings list
           final mainIndex = _bookings.indexWhere((b) => b.id == bookingId);
           if (mainIndex != -1) {
             _bookings[mainIndex] = updatedBooking;
           }
-          
+
           _isLoading = false;
           notifyListeners();
           return true;
         }
       }
-      
+
       _error = 'Failed to update booking status';
       _isLoading = false;
       notifyListeners();
@@ -197,7 +207,7 @@ class BookingProvider with ChangeNotifier {
     try {
       final response = await ApiService.get('/bookings/$bookingId');
       print('Booking by ID response: $response');
-      
+
       // Backend returns booking data directly, not wrapped in success/data
       if (response is Map<String, dynamic>) {
         return Booking.fromJson(response);
@@ -216,12 +226,3 @@ class BookingProvider with ChangeNotifier {
     notifyListeners();
   }
 }
-
-
-
-
-
-
-
-
-
