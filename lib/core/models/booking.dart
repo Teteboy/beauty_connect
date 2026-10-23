@@ -57,6 +57,9 @@ class Booking {
         customer: json['customer'] != null
             ? User.fromJson(json['customer'] as Map<String, dynamic>)
             : null,
+        technician: json['technician'] != null
+            ? User.fromJson(json['technician'] as Map<String, dynamic>)
+            : null,
       );
     } catch (e) {
       print('Error parsing Booking JSON: $e');
