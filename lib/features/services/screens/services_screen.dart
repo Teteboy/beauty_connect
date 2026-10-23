@@ -3,6 +3,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../core/models/service.dart';
+import '../../../core/providers/auth_provider.dart';
 import '../../../core/providers/service_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_header.dart';
@@ -23,6 +24,25 @@ class _ServicesScreenState extends State<ServicesScreen> {
   String _selectedCategory = 'All';
   bool _availableOnly = false;
   bool _priceAscending = false;
+  bool _topRated = false;
+  bool _nearbyFirst = false;
+
+  /// Quelques puces correspondent à une spécialité de prestataire
+  /// (ex. Tatouage, Barbier) plutôt qu'à une catégorie de service.
+  static const _specialtyLabels = {
+    'Tattoo': 'Tatouage',
+    'Barber': 'Barbier',
+    'Wellness': 'Bien-être',
+    'Fitness': 'Fitness',
+    'Massage': 'Massage',
+    'Hair': 'Coiffure',
+    'Nails': 'Ongles',
+    'Makeup': 'Maquillage',
+    'Skincare': 'Esthétique',
+    'Eyebrows': 'Sourcils',
+    'Eyelashes': 'Cils',
+    'Other': 'Autre',
+  };
   static const _categories = [
     'All',
     'Hair',
@@ -78,10 +98,15 @@ class _ServicesScreenState extends State<ServicesScreen> {
 
   List<Service> _filteredServices(List<Service> services) {
     final query = _searchQuery.trim().toLowerCase();
+    final myCity = _cityOf(context.read<AuthProvider>().user?.location);
     final result = services.where((service) {
       final technician = service.technician;
+      final specialty = technician?.specialty?.toLowerCase() ?? '';
+      final chipLabel = _specialtyLabels[_selectedCategory]?.toLowerCase();
       final matchesCategory = _selectedCategory == 'All' ||
-          service.category.toLowerCase() == _selectedCategory.toLowerCase();
+          service.category.toLowerCase() == _selectedCategory.toLowerCase() ||
+          (chipLabel != null && specialty == chipLabel) ||
+          specialty == _selectedCategory.toLowerCase();
       final matchesSearch = query.isEmpty ||
           service.name.toLowerCase().contains(query) ||
           service.description.toLowerCase().contains(query) ||
@@ -93,8 +118,31 @@ class _ServicesScreenState extends State<ServicesScreen> {
           matchesSearch &&
           (!_availableOnly || service.isAvailable);
     }).toList();
-    if (_priceAscending) result.sort((a, b) => a.price.compareTo(b.price));
+    if (_topRated) {
+      result.sort((a, b) => (b.technician?.ratingAvg ?? 0)
+          .compareTo(a.technician?.ratingAvg ?? 0));
+    } else if (_priceAscending) {
+      result.sort((a, b) => a.price.compareTo(b.price));
+    }
+    if (_nearbyFirst && myCity != null) {
+      result.sort((a, b) {
+        final aNear = _cityOf(a.technician?.location) == myCity ? 0 : 1;
+        final bNear = _cityOf(b.technician?.location) == myCity ? 0 : 1;
+        return aNear.compareTo(bNear);
+      });
+    }
     return result;
+  }
+
+  static String? _cityOf(String? location) {
+    if (location == null || location.isEmpty) return null;
+    // Formats attendus : « Douala, Bonapriso » ou « Bonapriso, Douala »
+    for (final part in location.split(',')) {
+      final city = part.trim();
+      if (city.toLowerCase().startsWith('douala')) return 'douala';
+      if (city.toLowerCase().startsWith('yaound')) return 'yaounde';
+    }
+    return location.split(',').first.trim().toLowerCase();
   }
 
   void _showCategoryFilters() {
@@ -128,16 +176,14 @@ class _ServicesScreenState extends State<ServicesScreen> {
                     ]))));
   }
 
-  void _unavailableFilter() =>
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text(
-              'Ce filtre sera disponible lorsque ces informations seront renseignées.')));
   void _reset() => setState(() {
         _searchController.clear();
         _searchQuery = '';
         _selectedCategory = 'All';
         _availableOnly = false;
         _priceAscending = false;
+        _topRated = false;
+        _nearbyFirst = false;
       });
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -171,17 +217,21 @@ class _ServicesScreenState extends State<ServicesScreen> {
                           ? 'Catégorie'
                           : _label(_selectedCategory),
                       _showCategoryFilters,
-                      _selectedCategory != 'All'),
+                      _selectedCategory != 'All',
+                      dropdown: true),
                   _chip(
                       'Prix',
                       () => setState(() => _priceAscending = !_priceAscending),
                       _priceAscending),
-                  _chip('Note', _unavailableFilter, false),
+                  _chip('Note',
+                      () => setState(() => _topRated = !_topRated), _topRated),
                   _chip(
                       'Disponible',
                       () => setState(() => _availableOnly = !_availableOnly),
                       _availableOnly),
-                  _chip('Distance', _unavailableFilter, false),
+                  _chip('Distance',
+                      () => setState(() => _nearbyFirst = !_nearbyFirst),
+                      _nearbyFirst),
                 ])),
         Expanded(
             child: Consumer<ServiceProvider>(builder: (context, provider, _) {
@@ -238,12 +288,15 @@ class _ServicesScreenState extends State<ServicesScreen> {
                       }));
         })),
       ])));
-  Widget _chip(String label, VoidCallback onTap, bool selected) => Padding(
+  Widget _chip(String label, VoidCallback onTap, bool selected,
+          {bool dropdown = false}) =>
+      Padding(
       padding: const EdgeInsets.only(right: 8),
       child: ActionChip(
           label: Text(label),
-          avatar: Icon(LucideIcons.chevronDown,
-              size: 16, color: selected ? Colors.white : AppColors.primary),
+          avatar: Icon(
+              dropdown ? LucideIcons.chevronDown : LucideIcons.slidersHorizontal,
+              size: 14, color: selected ? Colors.white : AppColors.primary),
           backgroundColor:
               selected ? AppColors.primary : AppColors.navyBackground,
           side: BorderSide.none,
