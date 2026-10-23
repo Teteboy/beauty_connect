@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/services/api_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/storage_helper.dart';
 import '../../../core/widgets/custom_button.dart';
@@ -54,6 +55,19 @@ class _WhatsappPreferencesScreenState extends State<WhatsappPreferencesScreen> {
     _reminders = await StorageHelper.getBool(_remindersKey) ?? true;
     _messages = await StorageHelper.getBool(_messagesKey) ?? true;
     _marketing = await StorageHelper.getBool(_marketingKey) ?? false;
+    try {
+      final response = await ApiService.get('/settings/preferences');
+      final p = response['preferences'];
+      if (p is Map<String, dynamic>) {
+        if (p['whatsappNumber']?.toString().isNotEmpty == true) {
+          _numberController.text = p['whatsappNumber'].toString();
+        }
+        _transactional = p['whatsappConsent'] == true;
+        _reminders = p['whatsappReminders'] == true;
+        _messages = p['whatsappUpdates'] == true;
+        _marketing = p['marketingConsent'] == true;
+      }
+    } catch (_) {}
     if (mounted) setState(() {});
   }
 
@@ -65,6 +79,15 @@ class _WhatsappPreferencesScreenState extends State<WhatsappPreferencesScreen> {
       await StorageHelper.saveBool(_remindersKey, _reminders);
       await StorageHelper.saveBool(_messagesKey, _messages);
       await StorageHelper.saveBool(_marketingKey, _marketing);
+      try {
+        await ApiService.put('/settings/preferences', {
+          'whatsappNumber': _numberController.text.trim(),
+          'whatsappConsent': _transactional,
+          'whatsappReminders': _reminders,
+          'whatsappUpdates': _messages,
+          'marketingConsent': _marketing,
+        });
+      } catch (_) {}
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

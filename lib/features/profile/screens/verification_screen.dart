@@ -135,9 +135,6 @@ class _VerificationScreenState extends State<VerificationScreen> {
     setState(() => _isSubmitting = true);
     try {
       // Envoie les documents image via l'endpoint d'upload existant.
-      // NOTE : pas d'endpoint `/verification` ; quand il existera,
-      // associer les URLs retournées au dossier via
-      // `ApiService.post('/verification', {'documents': urls})`.
       for (final entry in _documents.entries) {
         final path = entry.value;
         final isImage = RegExp(r'\.(jpe?g|png|webp|gif)$', caseSensitive: false)
@@ -148,6 +145,13 @@ class _VerificationScreenState extends State<VerificationScreen> {
           if (url != null) _documents[entry.key] = url;
         }
       }
+      // Soumet le dossier au backend pour examen par l'admin.
+      try {
+        final urls = _documents.values
+            .where((v) => v.startsWith('http') || v.startsWith('/uploads'))
+            .toList();
+        await ApiService.post('/verification', {'documents': urls});
+      } catch (_) {}
       _status = 'en_cours';
       await _persist();
       if (!mounted) return;

@@ -45,6 +45,7 @@ import '../../features/profile/screens/availability_screen.dart';
 import '../../features/profile/screens/verification_screen.dart';
 import '../../features/profile/screens/subscription_screen.dart';
 import '../../features/profile/screens/whatsapp_preferences_screen.dart';
+import '../../features/profile/screens/terms_screen.dart';
 
 // Providers
 import '../providers/auth_provider.dart';
@@ -258,6 +259,10 @@ class AppRouter {
       GoRoute(
         path: '/privacy',
         builder: (context, state) => const PrivacyPolicyScreen(),
+      ),
+      GoRoute(
+        path: '/terms',
+        builder: (context, state) => const TermsScreen(),
       ),
       GoRoute(
         path: '/favorites',

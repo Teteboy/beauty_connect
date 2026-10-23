@@ -3,6 +3,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../../../core/providers/favorites_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/app_logo.dart';
 import '../../../core/widgets/custom_button.dart';
@@ -42,6 +43,8 @@ class _LoginScreenState extends State<LoginScreen> {
     );
     if (!mounted) return;
     if (success) {
+      context.read<FavoritesProvider>().reset();
+      context.read<FavoritesProvider>().load();
       context.go('/home');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(

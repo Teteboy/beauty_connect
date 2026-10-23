@@ -3,6 +3,7 @@ import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../core/services/api_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../../../core/utils/navigation.dart';
@@ -77,6 +78,40 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
 
   String _currentPlan = 'Gratuit';
   String _selectedPlan = 'Gratuit';
+  bool _isSaving = false;
+
+  static const _apiPlanNames = {
+    'basic': 'Gratuit',
+    'pro': 'Pro',
+    'premium': 'Premium',
+  };
+  static const _apiPlanKeys = {
+    'Gratuit': 'basic',
+    'Pro': 'pro',
+    'Premium': 'premium',
+  };
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCurrentPlan();
+  }
+
+  Future<void> _loadCurrentPlan() async {
+    try {
+      final response = await ApiService.get('/subscriptions/mine');
+      final sub = response['subscription'];
+      if (sub is Map<String, dynamic> && sub['plan'] != null) {
+        final name = _apiPlanNames[sub['plan'].toString().toLowerCase()];
+        if (name != null && mounted) {
+          setState(() {
+            _currentPlan = name;
+            _selectedPlan = name;
+          });
+        }
+      }
+    } catch (_) {}
+  }
 
   void _goBack() {
     if (context.canPop()) {
@@ -89,17 +124,31 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
   static String _price(num value) =>
       '${NumberFormat('#,##0', 'fr').format(value).replaceAll('\u202f', ' ').replaceAll('\u00a0', ' ')} CFA';
 
-  void _changePlan() {
-    if (_selectedPlan == _currentPlan) return;
-    // NOTE : pas d'endpoint d'abonnement — changement simulé en local.
-    // Quand il existera : `ApiService.post('/subscription', {'plan': ...})`.
-    setState(() => _currentPlan = _selectedPlan);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Plan « $_currentPlan » sélectionné (démo)'),
-        backgroundColor: AppColors.success,
-      ),
-    );
+  Future<void> _changePlan() async {
+    if (_selectedPlan == _currentPlan || _isSaving) return;
+    setState(() => _isSaving = true);
+    try {
+      await ApiService.post(
+          '/subscriptions', {'plan': _apiPlanKeys[_selectedPlan] ?? 'basic'});
+      if (!mounted) return;
+      setState(() => _currentPlan = _selectedPlan);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Plan « $_currentPlan » activé'),
+          backgroundColor: AppColors.success,
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Impossible de changer de plan. Réessayez.'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
   }
 
   @override

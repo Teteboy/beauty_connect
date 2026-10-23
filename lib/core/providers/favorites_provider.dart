@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../services/api_service.dart';
 
 /// Gère les prestataires favoris du client.
 ///
-/// Les IDs (techniciens / prestataires) sont persistés localement dans
-/// SharedPreferences. Il n'existe pas encore d'endpoint backend
-/// `/favorites` : quand il sera disponible, remplacer [_persist] par un
-/// appel `ApiService.post('/favorites', ...)` / `delete` et [load] par un
-/// `ApiService.get('/favorites')`.
+/// Les IDs sont synchronisés avec `GET /favorites/ids` et
+/// `POST /favorites/:id` (bascule). Un cache SharedPreferences sert de
+/// repli hors-ligne ou si l'API échoue.
 class FavoritesProvider with ChangeNotifier {
   static const String _storageKey = 'favorite_provider_ids';
 
@@ -19,7 +18,7 @@ class FavoritesProvider with ChangeNotifier {
 
   bool isFavorite(dynamic id) => _favoriteIds.contains(id.toString());
 
-  /// Charge les favoris depuis le stockage local (idempotent).
+  /// Charge les favoris (backend puis repli local).
   Future<void> load() async {
     if (_loaded) return;
     final prefs = await SharedPreferences.getInstance();
@@ -27,19 +26,47 @@ class FavoritesProvider with ChangeNotifier {
         (prefs.getStringList(_storageKey) ?? const <String>[]).toSet();
     _loaded = true;
     notifyListeners();
+    try {
+      final response = await ApiService.get('/favorites/ids');
+      final ids = (response['ids'] as List? ?? [])
+          .map((e) => e.toString())
+          .toSet();
+      _favoriteIds = ids;
+      await _persist();
+      notifyListeners();
+    } catch (_) {
+      // Repli sur le cache local si l'API est injoignable.
+    }
   }
 
-  /// Ajoute ou retire un favori puis persiste localement.
+  /// Réinitialise le chargement (à appeler après connexion).
+  void reset() => _loaded = false;
+
+  /// Ajoute ou retire un favori (optimiste + synchro backend).
   Future<void> toggle(dynamic id) async {
     await load();
     final key = id.toString();
-    if (_favoriteIds.contains(key)) {
+    final wasFavorite = _favoriteIds.contains(key);
+    if (wasFavorite) {
       _favoriteIds.remove(key);
     } else {
       _favoriteIds.add(key);
     }
     notifyListeners();
     await _persist();
+    try {
+      final response = await ApiService.post('/favorites/$key', {});
+      final favorited = response['favorited'] == true;
+      if (favorited != !wasFavorite) {
+        if (favorited) {
+          _favoriteIds.add(key);
+        } else {
+          _favoriteIds.remove(key);
+        }
+        notifyListeners();
+        await _persist();
+      }
+    } catch (_) {}
   }
 
   Future<void> _persist() async {

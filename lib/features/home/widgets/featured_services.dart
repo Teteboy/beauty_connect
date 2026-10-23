@@ -24,11 +24,13 @@ class FeaturedServices extends StatelessWidget {
         final seen = <int>{};
         final services = provider.services
             .where((s) => seen.add(s.technicianId))
-            .take(5)
+            .take(8)
             .toList();
         return SizedBox(
             height: 280,
             child: ListView.separated(
+              physics: const BouncingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics()),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               scrollDirection: Axis.horizontal,
               itemCount: services.length,

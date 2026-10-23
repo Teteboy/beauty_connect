@@ -14,6 +14,12 @@ const notificationRoutes = require('./routes/notification.routes');
 const reviewRoutes = require('./routes/review.routes');
 const analyticsRoutes = require('./routes/analytics.routes');
 const uploadRoutes = require('./routes/upload.routes');
+const favoriteRoutes = require('./routes/favorite.routes');
+const availabilityRoutes = require('./routes/availability.routes');
+const verificationRoutes = require('./routes/verification.routes');
+const subscriptionRoutes = require('./routes/subscription.routes');
+const settingsRoutes = require('./routes/settings.routes');
+const adminRoutes = require('./routes/admin.routes');
 
 const app = express();
 
@@ -35,6 +41,12 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/favorites', favoriteRoutes);
+app.use('/api/availability', availabilityRoutes);
+app.use('/api/verification', verificationRoutes);
+app.use('/api/subscriptions', subscriptionRoutes);
+app.use('/api/settings', settingsRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Root route
 app.get('/', (req, res) => {

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/services/api_service.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/storage_helper.dart';
 import '../../../core/widgets/custom_button.dart';
@@ -101,6 +102,27 @@ class _AvailabilityScreenState extends State<AvailabilityScreen> {
       }
       _lunchBreakEnabled =
           await StorageHelper.getBool(_lunchKey) ?? _lunchBreakEnabled;
+      // Synchronise avec le backend si disponible.
+      try {
+        final response = await ApiService.get('/availability/me');
+        final days = (response['availability'] as List? ?? []);
+        for (final row in days) {
+          final dow = (row['dayOfWeek'] as num?)?.toInt();
+          if (dow == null || dow < 0 || dow > 6) continue;
+          // dayOfWeek : 0=dimanche…6=samedi → index dans _days (Lundi=0)
+          final day = _days[dow == 0 ? 6 : dow - 1];
+          final slots = (row['slots'] as List? ?? []).cast<String>();
+          if (slots.isNotEmpty) {
+            _schedule[day] = _DaySchedule(
+              isOpen: row['isEnabled'] == true,
+              open: _DaySchedule._parse(slots.first),
+              close: _DaySchedule._parse(slots.last),
+            );
+          } else {
+            _schedule[day]?.isOpen = row['isEnabled'] == true;
+          }
+        }
+      } catch (_) {}
       if (mounted) setState(() {});
     } catch (_) {
       // Garde les valeurs par défaut en cas de données corrompues.
@@ -118,10 +140,22 @@ class _AvailabilityScreenState extends State<AvailabilityScreen> {
   Future<void> _save() async {
     setState(() => _isSaving = true);
     try {
-      // NOTE : il n'existe pas encore d'endpoint backend pour les
-      // disponibilités. Quand il sera disponible, envoyer aussi :
-      //   await ApiService.put('/availability', payload);
       await _persist();
+      // Synchronisation backend : 0=dimanche…6=samedi, créneaux
+      // représentés par les heures d'ouverture/fermeture.
+      final days = <Map<String, dynamic>>[];
+      for (var i = 0; i < _days.length; i++) {
+        final s = _schedule[_days[i]]!;
+        final dow = i == 6 ? 0 : i + 1;
+        days.add({
+          'dayOfWeek': dow,
+          'isEnabled': s.isOpen,
+          'slots': s.isOpen ? [_fmt(s.open), _fmt(s.close)] : <String>[],
+        });
+      }
+      try {
+        await ApiService.put('/availability/me', {'days': days});
+      } catch (_) {}
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

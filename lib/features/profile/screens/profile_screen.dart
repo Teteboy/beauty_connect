@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/providers/auth_provider.dart';
+import '../../../core/providers/favorites_provider.dart';
 import '../../../core/providers/service_provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/custom_button.dart';
@@ -219,6 +220,7 @@ class ProfileScreen extends StatelessWidget {
                               color: AppColors.error, size: 20),
                           onTap: () async {
                             await authProvider.logout();
+                            context.read<FavoritesProvider>().reset();
                             if (context.mounted) context.go('/login');
                           },
                         ),
