@@ -146,34 +146,131 @@ class _ServicesScreenState extends State<ServicesScreen> {
   }
 
   void _showCategoryFilters() {
+    var category = _selectedCategory;
+    var availableOnly = _availableOnly;
+    var priceAscending = _priceAscending;
+    var topRated = _topRated;
+    var nearbyFirst = _nearbyFirst;
+
     showModalBottomSheet<void>(
         context: context,
+        isScrollControlled: true,
         showDragHandle: true,
-        builder: (sheetContext) => SafeArea(
-            child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
-                child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Choisir une catégorie',
-                          style: Theme.of(context).textTheme.headlineSmall),
-                      const SizedBox(height: 18),
-                      Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: _categories
-                              .map((category) => ChoiceChip(
-                                  label: Text(_label(category)),
-                                  selected: category == _selectedCategory,
-                                  showCheckmark: false,
-                                  onSelected: (_) {
-                                    setState(
-                                        () => _selectedCategory = category);
-                                    Navigator.of(sheetContext).pop();
-                                  }))
-                              .toList()),
-                    ]))));
+        builder: (sheetContext) => StatefulBuilder(
+            builder: (context, setSheetState) => DraggableScrollableSheet(
+                expand: false,
+                initialChildSize: 0.75,
+                maxChildSize: 0.92,
+                minChildSize: 0.5,
+                builder: (context, scrollController) => Column(children: [
+                  Expanded(
+                      child: SingleChildScrollView(
+                          controller: scrollController,
+                          padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Filtres',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headlineSmall),
+                                const SizedBox(height: 18),
+                                Text('Catégorie',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium),
+                                const SizedBox(height: 10),
+                                Wrap(
+                                    spacing: 8,
+                                    runSpacing: 8,
+                                    children: _categories
+                                        .map((c) => ChoiceChip(
+                                            label: Text(_label(c)),
+                                            selected: c == category,
+                                            showCheckmark: false,
+                                            onSelected: (_) =>
+                                                setSheetState(() =>
+                                                    category = c)))
+                                        .toList()),
+                                const SizedBox(height: 20),
+                                Text('Trier par',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium),
+                                const SizedBox(height: 10),
+                                Wrap(spacing: 8, runSpacing: 8, children: [
+                                  ChoiceChip(
+                                      label: const Text('Prix croissant'),
+                                      selected: priceAscending,
+                                      showCheckmark: false,
+                                      onSelected: (_) => setSheetState(() =>
+                                          priceAscending = !priceAscending)),
+                                  ChoiceChip(
+                                      label: const Text('Meilleures notes'),
+                                      selected: topRated,
+                                      showCheckmark: false,
+                                      onSelected: (_) => setSheetState(
+                                          () => topRated = !topRated)),
+                                  ChoiceChip(
+                                      label:
+                                          const Text('Près de moi d’abord'),
+                                      selected: nearbyFirst,
+                                      showCheckmark: false,
+                                      onSelected: (_) => setSheetState(
+                                          () => nearbyFirst = !nearbyFirst)),
+                                ]),
+                                const SizedBox(height: 20),
+                                Text('Disponibilité',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium),
+                                const SizedBox(height: 10),
+                                ChoiceChip(
+                                    label: const Text(
+                                        'Disponibles uniquement'),
+                                    selected: availableOnly,
+                                    showCheckmark: false,
+                                    onSelected: (_) => setSheetState(
+                                        () => availableOnly = !availableOnly)),
+                              ]))),
+                  Padding(
+                      padding:
+                          const EdgeInsets.fromLTRB(20, 8, 20, 24),
+                      child: SafeArea(
+                          top: false,
+                          child: Row(children: [
+                            Expanded(
+                                child: OutlinedButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _selectedCategory = 'All';
+                                        _availableOnly = false;
+                                        _priceAscending = false;
+                                        _topRated = false;
+                                        _nearbyFirst = false;
+                                        _searchQuery = '';
+                                        _searchController.clear();
+                                      });
+                                      Navigator.pop(sheetContext);
+                                    },
+                                    child: const Text('Réinitialiser'))),
+                            const SizedBox(width: 12),
+                            Expanded(
+                                flex: 2,
+                                child: ElevatedButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _selectedCategory = category;
+                                        _availableOnly = availableOnly;
+                                        _priceAscending = priceAscending;
+                                        _topRated = topRated;
+                                        _nearbyFirst = nearbyFirst;
+                                      });
+                                      Navigator.pop(sheetContext);
+                                    },
+                                    child: const Text('Appliquer'))),
+                          ]))),
+                ]))));
   }
 
   void _reset() => setState(() {
